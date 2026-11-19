@@ -1,0 +1,10 @@
+{
+  "name": "chatbot-yentran",
+  "version": "1.0.0",
+  "description": "YENTRAN AI – Trợ lý học tập và hỏi bài Toán THCS (Lớp 6, 7, 8) & Ôn thi Tốt nghiệp THPT (Cô Trần Thị Hải Yến)",
+  "author": "Trần Thị Hải Yến",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}
