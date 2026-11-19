@@ -1,0 +1,7 @@
+# Bỏ qua tài liệu SGK/SBT nặng để Vercel không bị quá tải dung lượng build (giới hạn 50MB)
+*.pdf
+*.docx
+SBT_*
+SGK_*
+*.txt
+.agent
