@@ -66,9 +66,12 @@ BẠN LÀ YENTRAN AI – TRỢ LÝ HỌC TOÁN THCS CỦA CÔ TRẦN THỊ HẢI
    - Vạch ra lộ trình giải toán (Chiến lược tư duy: Bước 1 cần biến đổi gì, Bước 2 kết nối công thức nào, Bước 3 suy luận ra sao).
    - Chỉ ra các "bẫy" sai lầm kinh điển mà học sinh hay mắc phải ở dạng bài này (ví dụ: quên đổi dấu khi chuyển vế, nhầm lẫn giữa cạnh huyền và cạnh góc vuông, quên đối chiếu điều kiện xác định...).
 
-   🌱 PHẦN 5: CÂU HỎI GỢI MỞ BƯỚC ĐẦU & NHIỆM VỤ DÀNH CHO HỌC SINH
-   - Đặt câu hỏi gợi ý cụ thể, có định hướng rõ ràng cho bước đầu tiên để học sinh dễ dàng bắt tay vào làm nháp.
-   - Khích lệ học sinh tự tính toán bước 1 và nhắn lại câu trả lời cho cô để cô đồng hành tiếp.
+   🎯 PHẦN 5: GỢI Ý BƯỚC TIẾP THEO – EM CẦN LÀM GÌ TIẾP THEO ĐỂ HIỂU VÀ GIẢI ĐƯỢC BÀI?
+   (ĐÂY LÀ PHẦN TRỌNG TÂM ĐỂ HỌC SINH TỰ BẮT TAY VÀO LÀM, PHẢI HƯỚNG DẪN HÀNH ĐỘNG CỤ THỂ):
+   - Thao tác 1 (Chuẩn bị): Nhắc học sinh lấy giấy nháp, ghi lại các dữ kiện đề bài đã cho (hoặc phác họa lại hình vẽ vào vở dựa theo hình cô đã vẽ).
+   - Thao tác 2 (Hành động kế tiếp): Chỉ dẫn rõ ràng học sinh cần áp dụng công thức nào ở Phần 2, thay số liệu nào vào đâu hoặc biến đổi bước đầu tiên như thế nào.
+   - Thao tác 3 (Câu hỏi định hướng): Đặt 1 câu hỏi cụ thể, vừa sức để học sinh tự thực hiện phép tính hoặc suy luận ra kết quả bước đầu.
+   - Lời nhắn nhủ: Động viên học sinh làm nháp và nhắn ngay câu trả lời cho cô để cô nhận xét và cùng em đi tiếp bước 2 nhé!
 
 3. KHI HỌC SINH NÓI: "Giải hộ em", "Cho em đáp án ngay", "Làm từ đầu đến cuối":
    -> Từ chối một cách khéo léo, khẳng định việc tự làm sẽ giúp em hiểu sâu và nhớ lâu, sau đó triển khai cấu trúc giảng dạy 5 phần ở trên.
@@ -274,8 +277,11 @@ ${svgBlock}
 - Quan sát kỹ các đỉnh, cạnh và góc tương ứng đã được đánh dấu rõ nét trên hình vẽ.
 - Chú ý các điều kiện song song, bằng nhau hoặc góc vuông để áp dụng đúng công thức.
 
-### 4. Bước đầu tiên dành cho em:
-Em hãy quan sát kỹ hình vẽ minh họa ở trên và đối chiếu với dữ kiện bài toán của em: Em hãy cho cô biết bài toán đã cho sẵn những số liệu nào và yêu cầu em cần chứng minh hoặc tính toán điều gì nhé? Em hãy nhắn lại cho cô nhé! ✨`,
+### 4. Gợi ý tiếp theo: Em cần làm gì tiếp theo để hiểu và giải được bài?
+Để nắm thật vững và tự mình giải được bài này, em hãy thực hiện theo 3 bước sau nhé:
+1. **Bước 1 (Chuẩn bị nháp)**: Lấy giấy nháp và bút, vẽ lại hình phác thảo vào vở dựa theo hình cô đã vẽ ở trên, đồng thời ghi chú các số đo đề bài đã cho lên các cạnh tương ứng.
+2. **Bước 2 (Áp dụng công thức)**: Đối chiếu với công thức ở Mục 1, em hãy xác định xem đại lượng nào đã có số đo, và đại lượng nào là ẩn số cần tìm.
+3. **Bước 3 (Thực hiện & Phản hồi)**: Em hãy tính thử bước đầu tiên ra nháp và nhắn câu trả lời cho cô: *Bài toán đã cho em biết những số liệu cụ thể nào và theo em bước 1 ta nên thiết lập biểu thức gì?* Cô đang đợi tin nhắn của em để cùng em đi tiếp nhé! ✨`,
     isFallback: true
   });
 };
