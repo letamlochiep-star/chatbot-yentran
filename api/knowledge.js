@@ -41,23 +41,23 @@ const TOPICS_BY_GRADE = {
       { id: "8_8", ic: "🎯", name: "Dữ liệu & Xác suất thực nghiệm (Bảng số liệu, biểu đồ, xác suất biến cố)" }
     ]
   },
-  "thcs": {
-    name: "Ôn tập Toán THCS",
-    label: "Ôn THCS",
+  "9": {
+    name: "Toán Lớp 9",
+    label: "Toán 9",
     topics: [
-      { id: "thcs_1", ic: "√",  name: "Căn thức & Rút gọn biểu thức chứa căn (ĐKXĐ, tính giá trị, so sánh)" },
-      { id: "thcs_2", ic: "⚖️", name: "Hệ phương trình & Giải bài toán bằng cách lập PT / Hệ PT" },
-      { id: "thcs_3", ic: "📉", name: "Hàm số bậc nhất & Parabol y = ax² (Tương giao đường thẳng và Parabol)" },
-      { id: "thcs_4", ic: "🎯", name: "Phương trình bậc hai & Định lý Vi-ét (Nghiệm, dấu, tham số m)" },
-      { id: "thcs_5", ic: "📐", name: "Hệ thức lượng trong tam giác vuông & Tỉ số lượng giác góc nhọn" },
-      { id: "thcs_6", ic: "⭕", name: "Đường tròn & Tứ giác nội tiếp (Tiếp tuyến, góc nội tiếp, góc tạo bởi tia tiếp tuyến)" },
-      { id: "thcs_7", ic: "🏛️", name: "Hình học không gian thực tế THCS (Hình trụ, hình nón, hình cầu)" },
-      { id: "thcs_8", ic: "🌟", name: "Bài toán thực tế liên môn & Bất đẳng thức Min – Max THCS" }
+      { id: "9_1", ic: "⚖️", name: "Phương trình & Hệ hai phương trình bậc nhất 2 ẩn" },
+      { id: "9_2", ic: "⚡", name: "Phương trình & Bất phương trình bậc nhất 1 ẩn" },
+      { id: "9_3", ic: "√",  name: "Căn bậc hai & Căn bậc ba (Rút gọn biểu thức chứa căn)" },
+      { id: "9_4", ic: "📐", name: "Hệ thức lượng trong tam giác vuông & Tỉ số lượng giác góc nhọn" },
+      { id: "9_5", ic: "⭕", name: "Đường tròn & Góc với đường tròn (Tiếp tuyến, góc nội tiếp)" },
+      { id: "9_6", ic: "📉", name: "Hàm số y = ax² & Phương trình bậc hai một ẩn (Định lý Vi-ét)" },
+      { id: "9_7", ic: "📊", name: "Tần số, tần số tương đối & Xác suất của biến cố" },
+      { id: "9_8", ic: "🏛️", name: "Một số hình khối trong thực tiễn (Hình trụ, hình nón, hình cầu)" }
     ]
   }
 };
 
-const TOPICS = TOPICS_BY_GRADE["thcs"].topics;
+const TOPICS = TOPICS_BY_GRADE["6"].topics;
 
 const QUY_TRINH_GIAI = `
 QUY TRÌNH HỎI ĐỂ HIỂU – 5 BƯỚC TƯ DUY TOÁN THCS (KHÔNG GIẢI HỘ, HỎI ĐỂ HỌC SINH TỰ LÀM):
@@ -127,7 +127,7 @@ PHẦN 3: TOÁN LỚP 8
 - Tứ giác & Định lý Thalès: Hình bình hành, chữ nhật, thoi, vuông; Định lý Thalès thuận và đảo; Tam giác đồng dạng (c-c-c, c-g-c, g-g); Hình chóp tam giác đều, chóp tứ giác đều ($V = \\frac{1}{3} S_{\\text{đáy}} \\cdot h$).
 
 ============================================================
-PHẦN 4: CHUYÊN ĐỀ ÔN TẬP TOÁN THCS (TRỌNG TÂM ÔN THI VÀO 10)
+PHẦN 4: TOÁN LỚP 9
 ============================================================
 CHỦ ĐỀ 1: CĂN THỨC BẬC HAI & RÚT GỌN BIỂU THỨC
 - Điều kiện có nghĩa: $\\sqrt{A}$ có nghĩa khi $A \\ge 0$.

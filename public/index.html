@@ -1,800 +1,2183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>YENTRAN AI – Hỏi Để Hiểu, Ôn Tập Toán THCS (Cô Trần Thị Hải Yến)</title>
-<meta name="description" content="Trợ lý hỏi bài và ôn tập Toán THCS (Lớp 6, 7, 8 và Chuyên đề Ôn tập THCS) theo phương pháp 'Hỏi để hiểu, không lời giải chi tiết' do Cô Trần Thị Hải Yến xây dựng">
-<!-- KaTeX for standard mathematical notation -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cô Trần Thị Hải Yến – Trợ lý học Toán THCS</title>
+<meta name="description" content="Cô Trần Thị Hải Yến – Trợ lý học Toán THCS (Lớp 6, 7, 8, 9). Hỏi để hiểu – Không lời giải chi tiết.">
+
+<!-- KaTeX CDN cho công thức toán học -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
 <style>
-  :root{
-    --teal:#0f766e; --teal2:#0891b2; --deep:#083f46; --amber:#f59e0b; --rose:#f43f5e;
-    --ink:#1e293b; --muted:#64748b; --line:#e2e8f0; --bg:#f1f5f9;
+:root {
+  --sidebar-start: #1b5e48;
+  --sidebar-end: #144e3c;
+  --sidebar-active-bg: #d9f2e6;
+  --sidebar-active-text: #114e3b;
+  --primary: #196653;
+  --primary-dark: #144e3c;
+  --primary-light: #e6f6ee;
+  --accent-amber: #e5881e;
+  --bg-cream: #f7faf8;
+  --card-bg: #ffffff;
+  --card-border: #d4eade;
+  --text-dark: #153e32;
+  --text-muted: #5e796e;
+  --text-light: #ffffff;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow-sm: 0 4px 16px rgba(20, 78, 60, 0.05);
+  --shadow-md: 0 8px 24px rgba(20, 78, 60, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-cream);
+  color: var(--text-dark);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; border: none; outline: none; }
+
+/* APP LAYOUT */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR TRÁI */
+.sidebar {
+  width: 290px;
+  min-width: 290px;
+  background: linear-gradient(180deg, var(--sidebar-start) 0%, var(--sidebar-end) 100%);
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 18px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+}
+
+/* SIDEBAR TOP LOGO */
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.sidebar-logo-icon {
+  width: 42px;
+  height: 42px;
+  background: #f1cf68;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  color: #175440;
+  font-weight: 900;
+  font-size: 14px;
+  line-height: 1;
+  place-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+.sidebar-logo-text h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.25;
+}
+.sidebar-logo-text span {
+  font-size: 11.5px;
+  color: #bfe5d4;
+  font-weight: 500;
+}
+
+/* TEACHER AVATAR PROFILE */
+.sidebar-profile {
+  text-align: center;
+  margin-bottom: 22px;
+  position: relative;
+}
+.avatar-wreath-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.avatar-wreath-wrap .wreath-left,
+.avatar-wreath-wrap .wreath-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 90px;
+  pointer-events: none;
+  opacity: 0.85;
+}
+.avatar-wreath-wrap .wreath-left { left: -22px; }
+.avatar-wreath-wrap .wreath-right { right: -22px; transform: translateY(-50%) scaleX(-1); }
+
+.avatar-wreath-wrap img {
+  width: 106px;
+  height: 106px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  display: block;
+}
+
+.profile-badge {
+  background: #ffffff;
+  color: var(--primary-dark);
+  border-radius: 20px;
+  padding: 8px 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.profile-badge strong {
+  display: block;
+  font-size: 13.5px;
+  color: #144e3c;
+  font-weight: 800;
+}
+.profile-badge span {
+  display: block;
+  font-size: 11px;
+  color: #267a60;
+  font-weight: 600;
+}
+.profile-slogan {
+  font-size: 11.5px;
+  color: #cbeade;
+  font-style: italic;
+  line-height: 1.4;
+  padding: 0 8px;
+}
+
+/* NAVIGATION MENU */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  color: #e5f5ed;
+  font-size: 13.5px;
+  font-weight: 600;
+  background: transparent;
+  transition: all 0.18s ease;
+  width: 100%;
+  text-align: left;
+}
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+.nav-item.active {
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-active-text);
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+.nav-item .nav-icon {
+  font-size: 16px;
+  width: 22px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-item .nav-text {
+  flex: 1;
+}
+.nav-item .nav-arrow {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* SIDEBAR FOOTER DECORATION */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 15px;
+  position: relative;
+  text-align: center;
+}
+.sidebar-book-illustration {
+  width: 100%;
+  max-width: 170px;
+  margin: 0 auto;
+  display: block;
+  opacity: 0.95;
+}
+
+/* MAIN CONTENT AREA */
+.main-wrapper {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 28px 40px;
+  background: linear-gradient(135deg, #f7faf8 0%, #edf6f1 100%);
+  position: relative;
+}
+
+/* TOP HEADER BAR */
+.top-header {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 22px;
+}
+.top-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.header-grad-icon {
+  width: 44px;
+  height: 44px;
+  background: #1e7058;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 22px;
+  box-shadow: 0 4px 12px rgba(30, 112, 88, 0.2);
+}
+.header-titles h1 {
+  font-size: 17px;
+  color: #144e3c;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.header-titles p {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.top-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.18s ease;
+}
+.pill-btn-mint {
+  background: #eef8f3;
+  color: #155e47;
+  border: 1px solid #c2e5d3;
+}
+.pill-btn-mint:hover {
+  background: #dff2e8;
+}
+.pill-btn-sand {
+  background: #fbf9f4;
+  color: #5c4f3c;
+  border: 1px solid #e8dfcf;
+  position: relative;
+}
+.pill-btn-sand:hover {
+  background: #f4eee2;
+}
+
+/* CHỌN HÌNH THỨC DROPDOWN */
+.mode-dropdown {
+  position: absolute;
+  top: 105%;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 220px;
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  z-index: 50;
+}
+.mode-dropdown.show { display: flex; }
+.mode-dropdown button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+.mode-dropdown button:hover {
+  background: #eef7f2;
+  color: var(--primary);
+}
+
+/* HERO GREETING CARD */
+.hero-card {
+  background: linear-gradient(125deg, #ffffff 60%, #edf9f2 100%);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 30px 34px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero-left-content h2.greeting-title {
+  font-size: 28px;
+  color: var(--accent-amber);
+  font-weight: 800;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-left-content h3.intro-subtitle {
+  font-size: 20px;
+  color: #174e3d;
+  font-weight: 800;
+  margin-bottom: 14px;
+  line-height: 1.35;
+}
+.hero-left-content p.intro-desc {
+  font-size: 14px;
+  color: #3b5f52;
+  line-height: 1.7;
+  max-width: 580px;
+}
+
+/* HERO RIGHT VISUAL STAGE */
+.hero-right-stage {
+  position: relative;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.standing-photo-wrap {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 2;
+}
+.standing-photo-wrap img.co-yen-img {
+  height: 240px;
+  max-width: 180px;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 18px;
+  border: 4px solid #ffffff;
+  box-shadow: 0 10px 25px rgba(20, 78, 60, 0.16);
+}
+
+/* DOODLE FORMULAS IN HERO */
+.hero-doodle {
+  position: absolute;
+  color: #3c8c70;
+  font-size: 13.5px;
+  font-weight: 700;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 3px 8px;
+  border-radius: 8px;
+  border: 1px dashed rgba(60, 140, 112, 0.3);
+  backdrop-filter: blur(4px);
+}
+.doodle-top-left { top: 10px; left: 0; }
+.doodle-mid-left { top: 90px; left: -10px; }
+.doodle-bot-left { bottom: 15px; left: -5px; }
+.doodle-top-right { top: 12px; right: 0; }
+.doodle-mid-right { top: 85px; right: -5px; }
+.doodle-bot-right { bottom: 8px; right: -15px; }
+
+/* TEACHER SPEECH BUBBLE ROW */
+.teacher-bubble-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.bubble-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+.speech-bubble {
+  background: #ffffff;
+  border: 1px solid #d4ebdd;
+  border-radius: 20px;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: #174e3d;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  flex: 1;
+}
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 7px 9px 7px 0;
+  border-style: solid;
+  border-color: transparent #ffffff transparent transparent;
+  display: block;
+  width: 0;
+}
+
+/* INTERACTIVE QUESTION CARD ("HỎI BÀI TOÁN") */
+.question-card {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  padding: 22px 26px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+.question-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.q-circle-icon {
+  width: 32px;
+  height: 32px;
+  background: #1f7d62;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 16px;
+}
+.q-title {
+  font-size: 17.5px;
+  color: #144e3c;
+  font-weight: 800;
+}
+.q-grade-badge {
+  background: #edf7f2;
+  color: #17664f;
+  border: 1px solid #cce8da;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* CHAT PROMPT INPUT BAR */
+.prompt-input-box {
+  background: #fbfdfc;
+  border: 1px solid #c9e4d5;
+  border-radius: 16px;
+  padding: 10px 14px 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  transition: all 0.18s ease;
+}
+.prompt-input-box:focus-within {
+  border-color: #196653;
+  box-shadow: 0 0 0 3px rgba(25, 102, 83, 0.12);
+  background: #ffffff;
+}
+.prompt-input-box textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-dark);
+  font-size: 14px;
+  resize: none;
+  min-height: 24px;
+  max-height: 120px;
+  line-height: 1.5;
+}
+.send-circle-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 50%;
+  background: #1c735a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.send-circle-btn:hover {
+  background: #145844;
+  transform: scale(1.05);
+}
+.send-circle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ACTION BUTTONS ROW BELOW INPUT */
+.question-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.btn-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f3faf6;
+  border: 1px solid #cee7da;
+  border-radius: 20px;
+  padding: 7px 14px;
+  color: #165b45;
+  font-size: 12.5px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+.btn-action-pill:hover {
+  background: #e2f4eb;
+  border-color: #aed9c2;
+}
+.action-divider {
+  color: #d1ded8;
+}
+.action-limit-note {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #728d82;
+  font-size: 12px;
+}
+
+/* CHAT LOG FOR ON-PAGE INTERACTION */
+.home-chatlog {
+  max-height: 380px;
+  overflow-y: auto;
+  margin-top: 16px;
+  padding: 14px;
+  background: #f8fbf9;
+  border: 1px solid #e1efe7;
+  border-radius: 14px;
+  display: none;
+}
+.home-chatlog.show {
+  display: block;
+}
+.bubble {
+  max-width: 82%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  margin: 10px 0;
+  line-height: 1.65;
+  font-size: 14px;
+}
+.bubble.bot {
+  background: #eef7f2;
+  border-top-left-radius: 4px;
+  color: #123e32;
+  border: 1px solid #d4ebdd;
+}
+.bubble.user {
+  background: var(--primary);
+  color: #ffffff;
+  margin-left: auto;
+  border-top-right-radius: 4px;
+}
+.chatpic {
+  display: block;
+  max-width: min(100%, 260px);
+  max-height: 200px;
+  border-radius: 10px;
+  margin-top: 8px;
+  object-fit: contain;
+}
+
+/* PREVIEW BOX FOR ATTACHED IMAGE */
+.image-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f1f8f4;
+  border: 1px dashed #9bcbb2;
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+.image-preview-bar img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.image-preview-bar .meta {
+  flex: 1;
+  font-size: 12.5px;
+  color: #1b5643;
+}
+.btn-remove-img {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+/* 3 BOTTOM FEATURE CARDS */
+.feature-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 30px;
+}
+.feat-card {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.feat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: #aedbc2;
+}
+.feat-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.feat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #144e3c;
+}
+.feat-card-icon {
+  font-size: 20px;
+}
+.feat-card-arrow {
+  color: #7a9c8f;
+  font-size: 14px;
+}
+.feat-card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+.feat-grade-pills {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+.feat-grade-btn {
+  background: #eef7f2;
+  color: #145e47;
+  border: 1px solid #cce8da;
+  border-radius: 14px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+.feat-grade-btn:hover {
+  background: #196653;
+  color: #ffffff;
+  border-color: #196653;
+}
+.feat-doodle-box {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+  opacity: 0.85;
+}
+
+/* WATERMARK FOOTER DOODLE */
+.bottom-math-doodles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  padding-top: 20px;
+  color: #92b7a6;
+  font-size: 15px;
+  font-weight: 700;
+  opacity: 0.75;
+  user-select: none;
+  flex-wrap: wrap;
+}
+.bottom-math-doodles span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* GENERAL PANEL STYLING FOR DEDICATED TABS */
+.panel {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+.panel h2 {
+  font-size: 20px;
+  color: #144e3c;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+.panel p.sub {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+.grade-pills-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.grade-pill-item {
+  border: 1px solid var(--card-border);
+  background: #fbfdfc;
+  color: var(--text-dark);
+  border-radius: 20px;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+.grade-pill-item.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+/* QUIZ STYLES */
+.quiz-opt-btn {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 13px 18px;
+  border: 1px solid #d4ebdd;
+  background: #fbfefc;
+  border-radius: 14px;
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-dark);
+  transition: all 0.15s ease;
+}
+.quiz-opt-btn:hover {
+  background: #eff9f3;
+  border-color: #a7dcc0;
+}
+.quiz-opt-btn.selected {
+  border-color: var(--primary);
+  background: #e2f4ea;
+  font-weight: 700;
+  color: #144e3c;
+}
+.notice-box {
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-top: 14px;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.notice-box.success {
+  background: #edf8f2;
+  border: 1px solid #b7e3ca;
+  color: #13523f;
+}
+.notice-box.warn {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+.notice-box.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+/* BUTTONS */
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 9px 18px;
+  font-weight: 700;
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.15s ease;
+}
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+.btn-secondary {
+  background: #edf7f2;
+  color: var(--primary);
+  border: 1px solid #cbe9d9;
+  border-radius: 12px;
+  padding: 9px 18px;
+  font-weight: 700;
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  background: #ddf1e6;
+}
+
+/* METRICS GRID */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+.metric-box {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+.metric-box strong {
+  display: block;
+  font-size: 28px;
+  color: var(--primary);
+  font-weight: 800;
+}
+.metric-box span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* FIELD STYLING */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.form-field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.form-field input, .form-field select, .form-field textarea {
+  border: 1px solid #c9e3d5;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fcfffd;
+  font-size: 13.5px;
+}
+.form-field textarea { min-height: 90px; resize: vertical; }
+
+.hidden { display: none !important; }
+
+/* RESPONSIVE */
+@media (max-width: 1080px) {
+  .hero-card { grid-template-columns: 1fr; }
+  .hero-right-stage { height: 210px; }
+  .feature-cards-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 860px) {
+  .app-container { flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    position: relative;
+    padding: 16px;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0;font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:var(--bg)}
-  .layout{display:flex;height:100vh;height:100dvh}
-
-  /* ===== CỘT TRÁI: YÊU CẦU ===== */
-  aside{
-    width:330px;flex:0 0 330px;display:flex;flex-direction:column;color:#e6fffb;
-    background:
-      radial-gradient(circle at 15% 0%,rgba(8,145,178,.55),transparent 45%),
-      radial-gradient(circle at 100% 100%,rgba(245,158,11,.18),transparent 40%),
-      linear-gradient(180deg,#0b4f55 0%,#083f46 60%,#062c33 100%);
-    position:relative;overflow:hidden;
+  .sidebar-profile { display: none; }
+  .sidebar-footer { display: none; }
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 6px;
   }
-  aside::before{
-    content:"π  ∑  √  ∞  ≈  Δ  %  x²";position:absolute;right:-10px;bottom:12px;
-    font-size:42px;font-weight:700;letter-spacing:10px;opacity:.05;writing-mode:vertical-rl;pointer-events:none;
-  }
-  .brand{padding:20px 20px 14px}
-  .logo{display:flex;align-items:center;gap:12px}
-  .logo .badge{
-    width:50px;height:50px;border-radius:15px;display:grid;place-items:center;font-size:26px;font-weight:800;color:#fff;
-    background:linear-gradient(135deg,var(--amber),var(--rose));box-shadow:0 6px 18px rgba(244,63,94,.35);
-  }
-  .logo h1{margin:0;font-size:24px;letter-spacing:1px;color:#fff;line-height:1}
-  .logo h1 span{color:var(--amber)}
-  .slogan{margin:10px 0 0;font-size:12.5px;color:#a7f3d0;font-style:italic}
-  .author{margin:2px 0 0;font-size:11.5px;color:#99d5d0;opacity:.85}
-
-  .brand{padding:16px 18px 10px;flex-shrink:0}
-  .panel{flex:1 1 auto;min-height:0;overflow-y:auto;padding:4px 16px 36px}
-  .panel::-webkit-scrollbar{width:6px}
-  .panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px}
-  .step-title{display:flex;align-items:center;gap:8px;margin:16px 0 8px;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#7dd3c8}
-  .step-title i{font-style:normal;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--amber);color:#3b2400;font-size:12px}
-
-  .grade-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px;background:rgba(0,0,0,.22);padding:4px;border-radius:12px;border:1px solid rgba(255,255,255,.08)}
-  .grade-btn{border:0;padding:7px 2px;border-radius:9px;background:transparent;color:#bbf7d0;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:.18s}
-  .grade-btn:hover{background:rgba(255,255,255,.1);color:#fff}
-  .grade-btn.active{background:linear-gradient(135deg,var(--teal2),var(--teal));color:#fff;font-weight:700;box-shadow:0 3px 10px rgba(8,145,178,.4)}
-
-  .topic{
-    display:flex;align-items:center;gap:10px;width:100%;margin-bottom:6px;padding:9px 11px;text-align:left;
-    border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.06);color:#eafffb;
-    font-size:13.5px;cursor:pointer;transition:.18s;
-  }
-  .topic .ic{font-size:18px;width:28px;text-align:center}
-  .topic:hover{background:rgba(255,255,255,.14);transform:translateX(3px)}
-  .topic.active{background:linear-gradient(90deg,var(--amber),#fbbf24);color:#3b2400;border-color:transparent;font-weight:700;box-shadow:0 4px 14px rgba(245,158,11,.35)}
-
-  .forms{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-  .form-btn{
-    padding:10px 4px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);
-    color:#eafffb;font-size:12.5px;cursor:pointer;text-align:center;transition:.18s;line-height:1.3
-  }
-  .form-btn b{display:block;font-size:18px;margin-bottom:2px}
-  .form-btn:hover{background:rgba(255,255,255,.16)}
-  .form-btn.active{background:linear-gradient(135deg,var(--teal2),#22d3ee);color:#022c33;font-weight:700;border-color:transparent}
-
-  .acts{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-  .act{
-    padding:10px;border-radius:12px;border:1px dashed rgba(255,255,255,.3);background:transparent;color:#eafffb;
-    font-size:13px;cursor:pointer;transition:.18s;text-align:left
-  }
-  .act:hover{background:rgba(255,255,255,.12);border-style:solid}
-  .act.primary{grid-column:1/-1;background:linear-gradient(90deg,var(--rose),#fb7185);border:0;font-weight:700;color:#fff;text-align:center}
-
-  /* ===== THỐNG KÊ TRUY CẬP ===== */
-  .stats-box{
-    margin-top: 4px;
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.14);
-    border-radius: 14px;
-    padding: 12px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    backdrop-filter: blur(4px);
-  }
-  .stat-main{display:flex;align-items:center;gap:12px}
-  .stat-icon-wrap{
-    width: 38px; height: 38px; border-radius: 10px;
-    background: linear-gradient(135deg, var(--teal2), var(--teal));
-    display: grid; place-items: center; font-size: 18px;
-    box-shadow: 0 4px 12px rgba(8,145,178,.3);
-  }
-  .stat-text{display:flex;flex-direction:column}
-  .stat-label{font-size: 11px; color: #a7f3d0; text-transform: uppercase; letter-spacing: .5px; font-weight: 600}
-  .stat-number{font-size: 20px; font-weight: 800; color: #fff; letter-spacing: .5px; line-height: 1.2}
-  .stat-row{
-    display: flex; align-items: center; justify-content: space-between;
-    border-top: 1px solid rgba(255,255,255,.1);
-    padding-top: 8px; font-size: 12px; color: #e6fffb;
-  }
-  .stat-col{display:flex;align-items:center;gap:6px}
-  .live-dot{
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #10b981;
-    box-shadow: 0 0 0 2px rgba(16,185,129,.35);
-    animation: livePulse 1.8s infinite;
-  }
-  @keyframes livePulse{
-    0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}
-    70%{box-shadow:0 0 0 7px rgba(16,185,129,0)}
-    100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}
-  }
-  .stat-sub-text b{color: var(--amber); font-weight: 700}
-
-  .side-foot{padding:12px 16px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#99d5d0;background:#062c33;flex-shrink:0;z-index:5;box-shadow:0 -4px 14px rgba(0,0,0,.25)}
-  .reset{border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:10px;padding:7px 12px;cursor:pointer;font-size:12.5px}
-  .reset:hover{background:rgba(255,255,255,.14)}
-
-  /* ===== CỘT PHẢI: HỎI – ĐÁP ===== */
-  main{flex:1;display:flex;flex-direction:column;min-width:0;background:#fff;position:relative}
-  .topbar{display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--line);background:#fff}
-  .menu-btn{display:none;border:0;background:var(--teal);color:#fff;border-radius:10px;padding:8px 12px;font-size:16px;cursor:pointer}
-  .topbar .title{font-weight:700;font-size:16px}
-  .topbar .sub{font-size:12.5px;color:var(--muted)}
-  .status{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-  .pill{font-size:12px;padding:6px 12px;border-radius:999px;background:#ecfdf5;color:var(--teal);border:1px solid #a7f3d0;white-space:nowrap}
-  .pill.warn{background:#fffbeb;color:#b45309;border-color:#fde68a}
-
-  .dropdown-wrap{position:relative}
-  .pill.pill-btn{cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-weight:600;transition:.18s;font-family:inherit}
-  .pill.pill-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.08)}
-  .pill.pill-btn.active{background:#ecfdf5;color:var(--teal);border-color:#a7f3d0}
-  .dropdown-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.15);z-index:100;min-width:240px;padding:6px;animation:pop .15s ease}
-  .dropdown-menu.show{display:block}
-  .dropdown-header{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:6px 10px 4px;letter-spacing:.5px}
-  .dropdown-item{width:100%;text-align:left;background:none;border:0;padding:9px 12px;border-radius:10px;font-size:13.5px;color:var(--ink);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:8px;font-family:inherit}
-  .dropdown-item:hover{background:#f0fdfa;color:var(--teal)}
-  .dropdown-item.active{background:linear-gradient(135deg,var(--teal2),#22d3ee);color:#022c33;font-weight:700}
-
-  .form-chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
-  .form-chip{border:1px solid var(--teal2);background:#f0fdfa;color:var(--teal);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
-  .form-chip:hover{background:var(--teal2);color:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(8,145,178,.25)}
-  .form-chip.active{background:linear-gradient(135deg,var(--amber),#fbbf24);color:#3b2400;border-color:transparent;box-shadow:0 3px 10px rgba(245,158,11,.35)}
-
-  #chat{
-    flex:1;overflow-y:auto;padding:22px 26px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth;
-    background:
-      radial-gradient(circle at 90% 8%,rgba(8,145,178,.07),transparent 35%),
-      radial-gradient(circle at 5% 95%,rgba(245,158,11,.08),transparent 35%),
-      #f8fafc;
-  }
-  .row{display:flex;gap:11px;align-items:flex-start;animation:pop .25s ease}
-  .row.user{flex-direction:row-reverse}
-  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .av{flex:0 0 38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:19px;color:#fff;font-weight:700}
-  .row.bot .av{background:linear-gradient(135deg,var(--teal),var(--teal2));box-shadow:0 4px 12px rgba(15,118,110,.3)}
-  .row.user .av{background:linear-gradient(135deg,var(--amber),var(--rose))}
-  .bubble{max-width:78%;padding:12px 16px;border-radius:16px;line-height:1.65;font-size:15.5px;word-wrap:break-word}
-  .row.bot .bubble{background:#fff;border:1px solid var(--line);border-top-left-radius:4px;box-shadow:0 2px 8px rgba(15,23,42,.05)}
-  .row.user .bubble{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border-top-right-radius:4px;box-shadow:0 4px 12px rgba(8,145,178,.25)}
-  .bubble b{color:var(--teal)}
-  .row.user .bubble b{color:#fff}
-  .bubble .katex-display{margin:8px 0;overflow-x:auto;overflow-y:hidden;padding:4px 0}
-  .bubble .katex{font-size:1.06em}
-  .bubble blockquote{border-left:3px solid var(--teal2);margin:8px 0;padding:6px 12px;background:#f0fdfa;border-radius:6px;color:var(--deep);font-style:normal}
-  .row.user .bubble blockquote{background:rgba(255,255,255,.15);border-color:#fff;color:#fff}
-  .sys{align-self:center;font-size:12.5px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:7px 14px;max-width:90%;text-align:center}
-  .dots span{display:inline-block;width:8px;height:8px;margin:0 2px;border-radius:50%;background:var(--teal2);animation:b 1s infinite}
-  .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
-  @keyframes b{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
-
-  .input-wrap{background:#fff;border-top:1px solid var(--line);position:relative}
-  .img-preview{display:flex;align-items:center;gap:12px;padding:10px 22px 0;background:#fff;animation:pop .2s ease}
-  .img-preview img{width:56px;height:56px;object-fit:cover;border-radius:10px;border:2px solid var(--teal2);box-shadow:0 2px 8px rgba(8,145,178,.2)}
-  .preview-tag{display:flex;align-items:center;gap:8px;background:#f0fdfa;padding:5px 12px;border-radius:20px;border:1px solid #ccfbf1}
-  .preview-name{font-size:12.5px;color:var(--teal);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
-  .remove-img-btn{background:#fee2e2;color:#ef4444;border:0;border-radius:50%;width:20px;height:20px;font-size:13px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:.15s}
-  .remove-img-btn:hover{background:#fecaca}
-
-  form{display:flex;gap:10px;padding:12px 22px 16px;background:#fff}
-  .attach-btn{border:2px solid var(--line);border-radius:16px;width:52px;font-size:22px;background:#f8fafc;cursor:pointer;display:grid;place-items:center;transition:.15s;color:var(--teal)}
-  .attach-btn:hover{border-color:var(--teal2);background:#f0fdfa;transform:scale(1.04)}
-  .attach-btn.has-img{background:#ccfbf1;border-color:var(--teal2);color:var(--teal);box-shadow:0 0 0 3px rgba(8,145,178,.2)}
-
-  input{flex:1;padding:14px 18px;border:2px solid var(--line);border-radius:16px;font-size:15.5px;outline:none;transition:.15s;background:#f8fafc}
-  input:focus{border-color:var(--teal2);background:#fff;box-shadow:0 0 0 4px rgba(8,145,178,.12)}
-  .send{border:0;border-radius:16px;padding:0 24px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;
-    background:linear-gradient(135deg,var(--teal),var(--teal2));box-shadow:0 6px 16px rgba(8,145,178,.3);transition:.15s}
-  .send:hover{transform:translateY(-1px)}
-  .send:disabled{opacity:.55;cursor:wait;transform:none}
-
-  /* Chat image thumbnail */
-  .chat-img{display:block;max-width:240px;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:8px;cursor:zoom-in;border:2px solid rgba(255,255,255,.5);box-shadow:0 4px 14px rgba(0,0,0,.15);transition:.2s}
-  .chat-img:hover{transform:scale(1.02);box-shadow:0 6px 18px rgba(0,0,0,.25)}
-  .row.bot .chat-img{border-color:var(--line)}
-
-  /* Lightbox */
-  .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;place-items:center;padding:20px;backdrop-filter:blur(5px);cursor:zoom-out}
-  .lightbox.active{display:grid}
-  .lightbox img{max-width:92vw;max-height:88vh;object-fit:contain;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-  .close-lightbox{position:absolute;top:20px;right:24px;color:#fff;background:rgba(255,255,255,.2);padding:6px 14px;border-radius:20px;font-size:13.5px;font-weight:600;pointer-events:none}
-
-  /* ===== DI ĐỘNG ===== */
-  @media(max-width:860px){
-    aside{position:fixed;z-index:20;left:0;top:0;bottom:0;transform:translateX(-102%);transition:.25s;width:310px;box-shadow:8px 0 30px rgba(0,0,0,.3)}
-    aside.open{transform:none}
-    .menu-btn{display:block}
-    .status{display:none}
-    .bubble{max-width:88%}
-    #chat{padding:16px 12px}
-    .backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:15}
-    .backdrop.show{display:block}
-  }
+  .nav-item { white-space: nowrap; width: auto; padding: 8px 12px; }
+  .nav-arrow { display: none; }
+  .main-wrapper { padding: 14px; }
+  .metrics-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
-<div class="backdrop" id="backdrop"></div>
-<div class="layout">
 
-  <!-- ========== TRÁI: KHUNG YÊU CẦU ========== -->
-  <aside id="side">
-    <div class="brand">
-      <div class="logo">
-        <div class="badge">Y</div>
-        <h1>YEN<span>TRAN</span> AI</h1>
+<div class="app-container">
+  <!-- CỘT TRÁI: SIDEBAR XANH ĐẬM VỚI AVATAR VÀ MENU -->
+  <aside class="sidebar">
+    <!-- LOGO TRÊN CÙNG -->
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <span>+</span><span>−</span>
+        <span>×</span><span>÷</span>
       </div>
-      <p class="slogan">Hiểu Toán – Tự Tư Duy – Vững Tương Lai</p>
-      <p class="author">Học & Ôn tập Toán THCS (Cô Trần Thị Hải Yến)</p>
-    </div>
-
-    <div class="panel">
-      <div class="step-title"><i>1</i> Chọn khối lớp & chủ đề</div>
-      <div class="grade-tabs" id="gradeTabs">
-        <button type="button" class="grade-btn" data-grade="6">Lớp 6</button>
-        <button type="button" class="grade-btn" data-grade="7">Lớp 7</button>
-        <button type="button" class="grade-btn" data-grade="8">Lớp 8</button>
-        <button type="button" class="grade-btn active" data-grade="thcs">Ôn THCS</button>
-      </div>
-      <div id="topics"></div>
-
-      <div class="step-title"><i>2</i> Chọn hình thức</div>
-      <div class="forms" id="forms"></div>
-
-      <div class="step-title"><i>3</i> Hỗ trợ học tập</div>
-      <div class="acts" id="acts"></div>
-
-      <div class="step-title"><i>📊</i> Thống kê truy cập</div>
-      <div class="stats-box">
-        <div class="stat-main">
-          <div class="stat-icon-wrap">🌐</div>
-          <div class="stat-text">
-            <span class="stat-label">Tổng lượt truy cập</span>
-            <span class="stat-number" id="statTotal">--</span>
-          </div>
-        </div>
-        <div class="stat-row">
-          <div class="stat-col">
-            <span class="live-dot"></span>
-            <span class="stat-sub-text">Đang học: <b id="statOnline">--</b></span>
-          </div>
-          <div class="stat-col">
-            <span class="stat-sub-text">Hôm nay: <b id="statToday">--</b></span>
-          </div>
-        </div>
+      <div class="sidebar-logo-text">
+        <h3>Cô Trần Thị Hải Yến</h3>
+        <span>Trợ lý học Toán THCS</span>
       </div>
     </div>
 
-    <div class="side-foot">
-      <span>🌱 Học Toán thật vui</span>
-      <button class="reset" id="resetBtn" type="button">↺ Làm lại từ đầu</button>
+    <!-- PROFILE VÒNG LÁ VÀ AVATAR CÔ YẾN -->
+    <div class="sidebar-profile">
+      <div class="avatar-wreath-wrap">
+        <!-- Vòng lá bên trái -->
+        <svg class="wreath-left" viewBox="0 0 40 100" fill="none">
+          <path d="M30 95 C 10 70, 5 30, 25 5" stroke="#9ed7be" stroke-width="2.5" fill="none"/>
+          <path d="M22 20 C 10 15, 8 8, 20 12" fill="#88ccaec7"/>
+          <path d="M15 40 C 2 36, 0 28, 12 32" fill="#88ccaec7"/>
+          <path d="M12 60 C 0 57, -2 49, 10 53" fill="#88ccaec7"/>
+          <path d="M16 80 C 4 78, 3 70, 15 74" fill="#88ccaec7"/>
+        </svg>
+
+        <img src="avatar_co_yen.jpg" alt="Ảnh Cô Trần Thị Hải Yến">
+
+        <!-- Vòng lá bên phải -->
+        <svg class="wreath-right" viewBox="0 0 40 100" fill="none">
+          <path d="M30 95 C 10 70, 5 30, 25 5" stroke="#9ed7be" stroke-width="2.5" fill="none"/>
+          <path d="M22 20 C 10 15, 8 8, 20 12" fill="#88ccaec7"/>
+          <path d="M15 40 C 2 36, 0 28, 12 32" fill="#88ccaec7"/>
+          <path d="M12 60 C 0 57, -2 49, 10 53" fill="#88ccaec7"/>
+          <path d="M16 80 C 4 78, 3 70, 15 74" fill="#88ccaec7"/>
+        </svg>
+      </div>
+
+      <!-- BADGE TÊN CÔ -->
+      <div class="profile-badge">
+        <strong>Cô Trần Thị Hải Yến</strong>
+        <span>Trợ lý học Toán THCS</span>
+      </div>
+
+      <!-- SLOGAN -->
+      <p class="profile-slogan">Đồng hành cùng em học tốt môn Toán cấp THCS ♡</p>
+    </div>
+
+    <!-- DANH SÁCH MENU ĐIỀU HƯỚNG -->
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+
+    <!-- HÌNH VẼ SÁCH TOÁN & THƯỚC KẺ DƯỚI CÙNG SIDEBAR -->
+    <div class="sidebar-footer">
+      <svg class="sidebar-book-illustration" viewBox="0 0 180 85" fill="none">
+        <!-- Chồng sách -->
+        <path d="M25 65 L 145 65 L 155 76 L 35 76 Z" fill="#2d7a60"/>
+        <path d="M35 76 L 155 76 L 150 82 L 30 82 Z" fill="#fff" stroke="#d5ebd9"/>
+        <path d="M22 50 L 142 50 L 152 62 L 32 62 Z" fill="#3c8e73"/>
+        <path d="M32 62 L 152 62 L 148 68 L 28 68 Z" fill="#fff" stroke="#d5ebd9"/>
+        <path d="M18 32 L 138 32 L 150 48 L 30 48 Z" fill="#4ea589"/>
+        <path d="M30 48 L 150 48 L 145 54 L 25 54 Z" fill="#fff" stroke="#d5ebd9"/>
+        <!-- Nhãn chữ TOÁN -->
+        <text x="68" y="44" fill="#ffffff" font-size="11" font-weight="900" letter-spacing="2">TOÁN</text>
+        <!-- Bút chì & Com-pa -->
+        <line x1="130" y1="20" x2="165" y2="70" stroke="#f1cf68" stroke-width="4" stroke-linecap="round"/>
+        <line x1="145" y1="25" x2="168" y2="72" stroke="#e07a5f" stroke-width="3" stroke-linecap="round"/>
+      </svg>
     </div>
   </aside>
 
-  <!-- ========== PHẢI: HỎI – ĐÁP ========== -->
-  <main>
-    <div class="topbar">
-      <button class="menu-btn" id="menuBtn" type="button">☰</button>
-      <div>
-        <div class="title">Phòng học Toán THCS – Hỏi để hiểu</div>
-        <div class="sub">Không giải chi tiết – Đặt câu hỏi gợi mở để em tự hiểu và giải bài</div>
+  <!-- KHU VỰC NỘI DUNG CHÍNH (RIGHT) -->
+  <main class="main-wrapper">
+    <!-- TOP HEADER BAR -->
+    <header class="top-header">
+      <div class="top-header-left">
+        <div class="header-grad-icon">🎓</div>
+        <div class="header-titles">
+          <h1>Cô Trần Thị Hải Yến – Trợ lý học Toán THCS</h1>
+          <p>Hỏi – Hiểu – Luyện tập – Nắm vững Toán THCS (Lớp 6, 7, 8, 9)</p>
+        </div>
       </div>
-      <div class="status">
-        <span class="pill" id="pillTopic">Chưa chọn chủ đề</span>
-        <div class="dropdown-wrap">
-          <button type="button" class="pill pill-btn warn" id="pillForm" title="Bấm để chọn hình thức câu hỏi">
-            📋 Chọn hình thức ▾
+
+      <div class="top-header-right">
+        <button class="pill-btn pill-btn-mint" onclick="go('review')">
+          <span>📖</span> Ôn tập Toán THCS
+        </button>
+
+        <div style="position:relative">
+          <button class="pill-btn pill-btn-sand" onclick="toggleModeDropdown()">
+            <span>📋</span> Chọn hình thức ▾
           </button>
-          <div class="dropdown-menu" id="formDropdown">
-            <div class="dropdown-header">Chọn hình thức ôn luyện:</div>
-            <button type="button" class="dropdown-item" onclick="selectForm(0)">🔘 Trắc nghiệm 4 lựa chọn</button>
-            <button type="button" class="dropdown-item" onclick="selectForm(1)">✅ Trắc nghiệm Đúng – Sai</button>
-            <button type="button" class="dropdown-item" onclick="selectForm(2)">✍️ Trả lời ngắn</button>
+          <div class="mode-dropdown" id="modeDropdown">
+            <button onclick="go('chat');toggleModeDropdown()">💬 Hỏi bài Toán trực tiếp</button>
+            <button onclick="go('knowledge');toggleModeDropdown()">📖 Lý thuyết theo lớp</button>
+            <button onclick="go('quiz');toggleModeDropdown()">📝 Bài tập tương tác</button>
+            <button onclick="go('resources');toggleModeDropdown()">📁 Tài liệu & đề thi</button>
+            <button onclick="go('progress');toggleModeDropdown()">📊 Theo dõi tiến bộ</button>
           </div>
         </div>
       </div>
-    </div>
+    </header>
 
-    <div id="chat"></div>
+    <!-- CONTENT CONTAINER NƠI RENDER CÁC TAB -->
+    <div id="content"></div>
 
-    <div class="input-wrap">
-      <div id="imagePreview" class="img-preview" style="display:none;">
-        <img id="previewImg" src="" alt="Ảnh chụp/tải lên">
-        <div class="preview-tag">
-          <span class="preview-name" id="previewName">anh_toan.jpg</span>
-          <button type="button" class="remove-img-btn" id="removeImgBtn" title="Gỡ ảnh">✕</button>
-        </div>
-      </div>
-      <form id="form" autocomplete="off">
-        <button type="button" class="attach-btn" id="attachBtn" title="Chụp ảnh hoặc tải file ảnh bài toán / bài giải">📷</button>
-        <input type="file" id="fileInput" accept="image/*" style="display:none">
-        <input id="input" maxlength="1000" placeholder="Hỏi bài hoặc trả lời câu hỏi gợi mở của cô (hoặc bấm 📷 gửi ảnh bài tập)..." />
-        <button class="send" id="sendBtn" type="submit">Gửi ➤</button>
-      </form>
-    </div>
+    <!-- WATERMARK CÔNG THỨC TOÁN DƯỚI CÙNG -->
+    <footer class="bottom-math-doodles">
+      <span>📐 Com-pa & Thước đo góc</span>
+      <span>$S = \frac{1}{2}ab$</span>
+      <span>$a^2 + b^2 = c^2$</span>
+      <span>$\alpha$ Góc nhọn</span>
+      <span>$\pi \approx 3,14$</span>
+    </footer>
   </main>
 </div>
 
-<div id="lightbox" class="lightbox" onclick="this.classList.remove('active')">
-  <img id="lightboxImg" src="" alt="Ảnh phóng to">
-  <span class="close-lightbox">✕ Bấm vào màn hình để đóng</span>
-</div>
+<!-- ẨN CÁC INPUT CHỌN ẢNH VÀ CAMERA -->
+<input class="hidden" type="file" id="globalFileInput" accept="image/*" onchange="handleImageSelection(event)">
+<input class="hidden" type="file" id="globalCameraInput" accept="image/*" capture="environment" onchange="handleImageSelection(event)">
 
 <script>
-/* Giao diện gọi /api/chat (máy chủ Vercel giữ API key + system prompt). Không có khóa nào trong file này. */
-const TOPICS_BY_GRADE = {
-  "6": {
-    name: "Toán Lớp 6",
-    topics: [
-      {ic:"🔢", name:"Số tự nhiên & Tính chia hết (Ước, Bội)"},
-      {ic:"➖", name:"Số nguyên & Quy tắc dấu (Cộng, trừ, nhân, chia)"},
-      {ic:"🍕", name:"Phân số & Số thập phân thực tế"},
-      {ic:"📐", name:"Hình học trực quan (Chu vi, diện tích)"},
-      {ic:"📏", name:"Hình học phẳng (Đoạn thẳng, góc)"},
-      {ic:"📊", name:"Thống kê & Xác suất thực nghiệm"}
-    ]
-  },
-  "7": {
-    name: "Toán Lớp 7",
-    topics: [
-      {ic:"🧮", name:"Số hữu tỉ & Luỹ thừa, thứ tự tính"},
-      {ic:"√",  name:"Số thực & Căn bậc hai số học"},
-      {ic:"📐", name:"Góc & Hai đường thẳng song song"},
-      {ic:"🔺", name:"Tam giác bằng nhau & Định lý Pytago"},
-      {ic:"✏️", name:"Biểu thức đại số & Đa thức 1 biến"},
-      {ic:"📈", name:"Thống kê biểu đồ & Xác suất biến cố"},
-      {ic:"📦", name:"Hình khối thực tiễn (Hộp, lăng trụ)"}
-    ]
-  },
-  "8": {
-    name: "Toán Lớp 8",
-    topics: [
-      {ic:"✨", name:"Đa thức & 7 hằng đẳng thức đáng nhớ"},
-      {ic:"🧩", name:"Phân thức đại số & Các phép tính"},
-      {ic:"📉", name:"Hàm số bậc nhất y = ax + b & đồ thị"},
-      {ic:"⚖️", name:"Phương trình bậc nhất & giải bài toán"},
-      {ic:"🔷", name:"Tứ giác (Bình hành, chữ nhật, thoi, vuông)"},
-      {ic:"📐", name:"Định lý Thalès & Tam giác đồng dạng"},
-      {ic:"🏛️", name:"Hình chóp tam giác đều & chóp tứ giác"},
-      {ic:"🎯", name:"Dữ liệu bảng biểu & Xác suất biến cố"}
-    ]
-  },
-  "thcs": {
-    name: "Ôn tập Toán THCS",
-    topics: [
-      {ic:"√",  name:"Căn thức & Rút gọn biểu thức chứa căn"},
-      {ic:"⚖️", name:"Hệ phương trình & Giải toán bằng lập PT, Hệ PT"},
-      {ic:"📉", name:"Hàm số bậc nhất & Parabol y = ax²"},
-      {ic:"🎯", name:"Phương trình bậc hai & Định lý Vi-ét"},
-      {ic:"📐", name:"Hệ thức lượng trong tam giác vuông & Lượng giác"},
-      {ic:"⭕", name:"Đường tròn & Tứ giác nội tiếp"},
-      {ic:"🏛️", name:"Hình học không gian thực tế THCS (Trụ, nón, cầu)"},
-      {ic:"🌟", name:"Toán thực tế & Bất đẳng thức Min – Max THCS"}
-    ]
+'use strict';
+
+// 1. Quản lý phiên làm việc & Trạng thái
+const API_BASE = '/api';
+
+function getSessionId() {
+  let sid = localStorage.getItem('coYen_session_id');
+  if (!sid) {
+    sid = 'ses_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+    localStorage.setItem('coYen_session_id', sid);
   }
-};
-let curGrade = "thcs";
-const FORMS = [
-  {ic:"🔘", name:"Trắc nghiệm", full:"trắc nghiệm 4 lựa chọn"},
-  {ic:"✅", name:"Đúng – Sai",  full:"đúng – sai"},
-  {ic:"✍️", name:"Trả lời ngắn", full:"trả lời ngắn"}
-];
-const ACTIONS = [
-  {label:"🤔 Hỏi để hiểu", msg:"Hãy hỏi một câu gợi mở để tôi tự hiểu bài toán này, đừng đưa lời giải chi tiết"},
-  {label:"💡 Gợi ý bước tiếp", msg:"Hãy gợi ý bước tư duy tiếp theo để tôi tự giải tiếp"},
-  {label:"🔁 Bài tương tự", msg:"Cho tôi một câu hỏi tương tự để tôi tự luyện tập"},
-  {label:"🎯 Chấm bài & chỉ lỗi", msg:"Hãy nhận xét bài làm của tôi và chỉ ra chỗ tôi cần xem lại", primary:true}
+  return sid;
+}
+
+// 9 tabs tương ứng với menu thiết kế mới
+const navTabs = [
+  { id: 'home', icon: '🏠', name: 'Trang chủ', hasArrow: false },
+  { id: 'chat', icon: '💬', name: 'Hỏi bài Toán', hasArrow: false },
+  { id: 'knowledge', icon: '📖', name: 'Kiến thức theo lớp', hasArrow: true },
+  { id: 'quiz', icon: '📝', name: 'Bài tập tương tác', hasArrow: false },
+  { id: 'resources', icon: '📁', name: 'Tài liệu học tập', hasArrow: false },
+  { id: 'review', icon: '🎯', name: 'Ôn tập & Kiểm tra', hasArrow: false },
+  { id: 'progress', icon: '📊', name: 'Theo dõi tiến bộ', hasArrow: false },
+  { id: 'tips', icon: '⭐', name: 'Gợi ý học tập', hasArrow: false },
+  { id: 'admin', icon: '⚙️', name: 'Cài đặt', hasArrow: false }
 ];
 
-const $ = id => document.getElementById(id);
-const chat=$("chat"), form=$("form"), input=$("input"), sendBtn=$("sendBtn");
-const side=$("side"), backdrop=$("backdrop");
-const attachBtn=$("attachBtn"), fileInput=$("fileInput");
-const imagePreview=$("imagePreview"), previewImg=$("previewImg"), previewName=$("previewName"), removeImgBtn=$("removeImgBtn");
-const lightbox=$("lightbox"), lightboxImg=$("lightboxImg");
-
-let history=[];
-let curTopic=null, curForm=null;
-let currentImage = null; // { image: base64, mimeType: "image/jpeg", name: "..." }
-
-function openLightbox(src) {
-  lightboxImg.src = src;
-  lightbox.classList.add("active");
-}
-
-function clearImage() {
-  currentImage = null;
-  fileInput.value = "";
-  previewImg.src = "";
-  imagePreview.style.display = "none";
-  attachBtn.classList.remove("has-img");
-}
-
-function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.82) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = e => {
-      const img = new Image();
-      img.src = e.target.result;
-      img.onload = () => {
-        let w = img.width, h = img.height;
-        if (w > maxWidth || h > maxHeight) {
-          if (w / h > maxWidth / maxHeight) {
-            h = Math.round(h * (maxWidth / w));
-            w = maxWidth;
-          } else {
-            w = Math.round(w * (maxHeight / h));
-            h = maxHeight;
-          }
-        }
-        const canvas = document.createElement("canvas");
-        canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, w, h);
-        const dataUrl = canvas.toDataURL("image/jpeg", quality);
-        resolve(dataUrl);
-      };
-      img.onerror = reject;
-    };
-    reader.onerror = reject;
-  });
-}
-
-async function handleFileSelect(file) {
-  if (!file || !file.type.startsWith("image/")) {
-    addSys("Vui lòng chọn hoặc chụp một file hình ảnh (JPG, PNG, WEBP).");
-    return;
-  }
-  try {
-    const base64Data = await compressImage(file);
-    currentImage = {
-      image: base64Data,
-      mimeType: "image/jpeg",
-      name: file.name || "anh_bai_toan.jpg"
-    };
-    previewImg.src = base64Data;
-    previewName.textContent = currentImage.name;
-    imagePreview.style.display = "flex";
-    attachBtn.classList.add("has-img");
-    input.focus();
-  } catch (err) {
-    addSys("Lỗi khi xử lý ảnh, em vui lòng thử lại nhé.");
-  }
-}
-
-attachBtn.onclick = () => fileInput.click();
-fileInput.onchange = e => {
-  if (e.target.files && e.target.files[0]) {
-    handleFileSelect(e.target.files[0]);
-  }
+let page = 'home';
+let currentGrade = '6';
+let appData = {
+  teacher: { name: 'Cô Trần Thị Hải Yến', motto: 'HỎI ĐỂ HIỂU – KHÔNG LỜI GIẢI CHI TIẾT' },
+  prompts: {},
+  tips: [],
+  metrics: { totalVisits: 0, totalAttempts: 0, accuracyRate: 0 }
 };
-removeImgBtn.onclick = clearImage;
 
-// Hỗ trợ dán ảnh trực tiếp từ clipboard (Ctrl + V)
-window.addEventListener("paste", e => {
-  const items = (e.clipboardData || e.originalEvent.clipboardData)?.items;
-  if (!items) return;
-  for (const item of items) {
-    if (item.type.indexOf("image") !== -1) {
-      const file = item.getAsFile();
-      if (file) handleFileSelect(file);
-      break;
-    }
+let currentUser = null;
+let authToken = localStorage.getItem('coYen_auth_token') || null;
+
+// Chat & Ảnh bài tập
+let chatHistory = [];
+let pendingImage = null;
+let pendingImageBase64 = null;
+let pendingImageURL = null;
+
+// Quiz state
+let quizList = [];
+let quizIndex = 0;
+let quizSelected = -1;
+let quizResultMsg = '';
+
+const esc = s => String(s || '').replace(/[&<>"']/g, x => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[x]));
+const el = id => document.getElementById(id);
+
+function toggleModeDropdown() {
+  const dd = el('modeDropdown');
+  if (dd) dd.classList.toggle('show');
+}
+window.addEventListener('click', e => {
+  if (!e.target.closest('.pill-btn-sand') && !e.target.closest('.mode-dropdown')) {
+    const dd = el('modeDropdown');
+    if (dd) dd.classList.remove('show');
   }
 });
 
-// Hỗ trợ kéo thả ảnh vào khu vực chat
-window.addEventListener("dragover", e => e.preventDefault());
-window.addEventListener("drop", e => {
-  e.preventDefault();
-  if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
-    handleFileSelect(e.dataTransfer.files[0]);
-  }
-});
-
-function formatMessage(raw) {
-  if (!raw) return "";
-  const mathPlaceholders = [];
-
-  // Tự động tách dòng cho các phương án trắc nghiệm A, B, C, D và Đúng - Sai nếu bị dính dòng
-  let text = String(raw).replace(/([^\n])\s+([A-D]\.\s)/g, "$1\n$2");
-  text = text.replace(/([^\n])\s+([a-d]\)\s)/g, "$1\n$2");
-  text = text.replace(/(D\.\s[^\n]+?)\s+(Em hãy|Hãy|Bạn hãy|Bước\s*\d|Cô luôn)/gi, "$1\n\n$2");
-  
-  // 1. Tách display math $$...$$
-  text = text.replace(/\$\$([\s\S]+?)\$\$/g, (match) => {
-    const id = `@@MATH_DISP_${mathPlaceholders.length}@@`;
-    mathPlaceholders.push({ id, code: match });
-    return id;
-  });
-
-  // 2. Tách inline math $...$
-  text = text.replace(/\$([^\$\n]+?)\$/g, (match) => {
-    const id = `@@MATH_INLINE_${mathPlaceholders.length}@@`;
-    mathPlaceholders.push({ id, code: match });
-    return id;
-  });
-
-  // 3. Escape HTML thông thường
-  text = text.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
-
-  // 4. Markdown format: **in đậm**, *nghiêng*, blockquote, xuống dòng
-  text = text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-  text = text.replace(/\*(.+?)\*/g, '<i>$1</i>');
-  text = text.replace(/^>\s*(.+)$/gm, '<blockquote>$1</blockquote>');
-  text = text.replace(/\n/g, '<br>');
-
-  // 5. Khôi phục lại math (và sửa lỗi \mtext thành \text)
-  for (const item of mathPlaceholders) {
-    let cleanCode = item.code.replace(/\\mtext\{?/g, "\\text{");
-    if (cleanCode.includes("\\text{") && !cleanCode.endsWith("}")) {
-      cleanCode = cleanCode.replace(/\\text\{([a-zA-Z]+)(?!\})/, "\\text{$1}");
-    }
-    text = text.replace(item.id, () => cleanCode);
-  }
-
-  return text;
-}
-
-function renderMath(element) {
+// Render công thức KaTeX
+function renderMath() {
   if (window.renderMathInElement) {
-    try {
-      renderMathInElement(element, {
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '$', right: '$', display: false },
-          { left: '\\[', right: '\\]', display: true },
-          { left: '\\(', right: '\\)', display: false }
-        ],
-        throwOnError: false
-      });
-    } catch (err) {
-      console.warn("KaTeX render:", err);
-    }
+    window.renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false }
+      ],
+      throwOnError: false
+    });
   }
 }
 
-function addRow(kind, rawText, imgSrc, showFormChips = false){
-  const r=document.createElement("div"); r.className="row "+kind;
-  const bubble=document.createElement("div"); bubble.className="bubble";
-  
-  let html = "";
-  if (imgSrc) {
-    html += `<img src="${imgSrc}" class="chat-img" alt="Ảnh tải lên" onclick="openLightbox(this.src)" title="Bấm để xem ảnh phóng to">`;
+// 2. Khởi tạo ứng dụng
+async function init() {
+  // Ghi nhận lượt truy cập
+  try {
+    await fetch(`${API_BASE}/public/visit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: getSessionId(), path: window.location.pathname })
+    });
+  } catch (e) {}
+
+  // Kiểm tra phiên giáo viên
+  if (authToken) {
+    try {
+      const res = await fetch(`${API_BASE}/auth/me`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (res.ok) {
+        const d = await res.json();
+        if (d.success) currentUser = d.user;
+      } else {
+        authToken = null;
+        localStorage.removeItem('coYen_auth_token');
+      }
+    } catch (e) {
+      authToken = null;
+    }
   }
-  if (rawText) {
-    html += formatMessage(rawText);
+
+  // Tải bootstrap từ server
+  try {
+    const res = await fetch(`${API_BASE}/public/bootstrap`);
+    const d = await res.json();
+    if (d.success) appData = d;
+  } catch (e) {
+    console.warn('Lỗi bootstrap:', e);
   }
-  if (showFormChips) {
-    html += `
-      <div class="form-chips">
-        <button type="button" class="form-chip" onclick="selectForm(0)">🔘 Trắc nghiệm 4 lựa chọn</button>
-        <button type="button" class="form-chip" onclick="selectForm(1)">✅ Trắc nghiệm Đúng – Sai</button>
-        <button type="button" class="form-chip" onclick="selectForm(2)">✍️ Trả lời ngắn</button>
+
+  renderSidebarNav();
+  renderView();
+}
+
+function renderSidebarNav() {
+  const nav = el('sidebarNav');
+  if (!nav) return;
+  nav.innerHTML = navTabs.map(t => `
+    <button class="nav-item ${page === t.id ? 'active' : ''}" onclick="go('${t.id}')">
+      <span class="nav-icon">${t.icon}</span>
+      <span class="nav-text">${t.name}</span>
+      ${t.hasArrow ? '<span class="nav-arrow">›</span>' : ''}
+    </button>
+  `).join('');
+}
+
+function go(p) {
+  page = p;
+  renderSidebarNav();
+  renderView();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 3. Render các view màn hình
+async function renderView() {
+  const container = el('content');
+  if (!container) return;
+
+  // TAB 1: TRANG CHỦ (KHỚP HOÀN TOÀN MOCKUP MỚI)
+  if (page === 'home') {
+    container.innerHTML = `
+      <!-- HERO BANNER VỚI LỜI CHÀO & HÌNH CÔ YẾN ĐỨNG -->
+      <section class="hero-card">
+        <div class="hero-left-content">
+          <h2 class="greeting-title">Xin chào em! 👋</h2>
+          <h3 class="intro-subtitle">Mình là Cô Trần Thị Hải Yến<br>– Trợ lý học Toán THCS.</h3>
+          <p class="intro-desc">
+            Cô sẽ đồng hành cùng em trong hành trình học Toán: giải đáp thắc mắc, hướng dẫn kiến thức, luyện tập và ôn tập hiệu quả. Em cứ mạnh dạn hỏi bài, gửi hình bài tập hoặc chọn nội dung em muốn học nhé! 💚
+          </p>
+        </div>
+
+        <div class="hero-right-stage">
+          <!-- Công thức toán trang trí xung quanh ảnh cô Yến -->
+          <span class="hero-doodle doodle-top-left">$ax^2 + bx + c = 0$</span>
+          <span class="hero-doodle doodle-mid-left">$S = \\pi r^2$</span>
+          <span class="hero-doodle doodle-bot-left">$\\begin{cases} y = 2x+1 \\\\ y = x-3 \\end{cases}$</span>
+          <span class="hero-doodle doodle-top-right">$\\triangle ABC$ vuông</span>
+          <span class="hero-doodle doodle-mid-right">Hình hộp lập phương</span>
+          <span class="hero-doodle doodle-bot-right">Toán 6, 7, 8, 9 📚</span>
+
+          <div class="standing-photo-wrap">
+            <img src="co_yen_standing.jpg" alt="Cô Trần Thị Hải Yến" class="co-yen-img">
+          </div>
+        </div>
+      </section>
+
+      <!-- BONG BÓNG LỜI GỢI MỞ CỦA CÔ YẾN -->
+      <div class="teacher-bubble-row">
+        <img src="avatar_co_yen.jpg" alt="Cô Yến" class="bubble-avatar">
+        <div class="speech-bubble">
+          Em muốn học hay giải bài Toán nào hôm nay? Hãy nhập câu hỏi, hoặc chụp/tải ảnh bài tập để cô cùng em tìm lời giải nhé! ✨
+        </div>
       </div>
+
+      <!-- CARD TƯƠNG TÁC HỎI BÀI TOÁN TRỰC TIẾP TRÊN TRANG CHỦ -->
+      <section class="question-card">
+        <div class="question-card-header">
+          <div class="card-header-left">
+            <div class="q-circle-icon">?</div>
+            <div class="q-title">Hỏi bài Toán</div>
+          </div>
+          <div class="q-grade-badge">
+            <span>📖</span> Toán THCS (Lớp 6 – 9)
+          </div>
+        </div>
+
+        <!-- KHUNG XEM TRƯỚC ẢNH NẾU ĐÃ CHỌN -->
+        <div id="homeImagePreview" class="hidden"></div>
+
+        <!-- Ô NHẬP NỘI DUNG CÂU HỎI -->
+        <form onsubmit="handleSendHomeChat(event)">
+          <div class="prompt-input-box">
+            <textarea id="homeChatInput" rows="2" placeholder="Nhập câu hỏi về môn Toán (ví dụ: giải bài, hỏi lý thuyết, cách làm, ...)"></textarea>
+            <button class="send-circle-btn" type="submit" id="homeSendBtn" title="Gửi câu hỏi cho cô">➤</button>
+          </div>
+        </form>
+
+        <!-- HÀNG NÚT HÀNH ĐỘNG TẢI ẢNH / CHỤP ẢNH -->
+        <div class="question-actions-row">
+          <button type="button" class="btn-action-pill" onclick="el('globalFileInput').click()">
+            <span>🖼️</span> Tải ảnh bài tập
+          </button>
+          <span class="action-divider">|</span>
+          <button type="button" class="btn-action-pill" onclick="el('globalCameraInput').click()">
+            <span>📷</span> Chụp ảnh bài tập
+          </button>
+          <div class="action-limit-note">
+            <span>ⓘ</span> Kích thước ảnh không vượt quá <b>10MB</b>.
+          </div>
+        </div>
+
+        <!-- KHUNG HỘI THOẠI TRẢ LỜI NGAY TRÊN TRANG CHỦ KHI ĐẶT CÂU HỎI -->
+        <div id="homeChatlog" class="home-chatlog"></div>
+      </section>
+
+      <!-- 3 FEATURE CARDS DƯỚI CÙNG -->
+      <section class="feature-cards-grid">
+        <!-- CARD 1: KIẾN THỨC THEO LỚP -->
+        <div class="feat-card" onclick="go('knowledge')">
+          <div class="feat-card-header">
+            <div class="feat-card-title">
+              <span class="feat-card-icon">📚</span>
+              <span>Kiến thức theo lớp</span>
+            </div>
+            <span class="feat-card-arrow">❯</span>
+          </div>
+          <p class="feat-card-desc">
+            Hệ thống lý thuyết, công thức, phương pháp giải theo từng lớp.
+          </p>
+          <div class="feat-grade-pills">
+            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('6')">Lớp 6</button>
+            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('7')">Lớp 7</button>
+            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('8')">Lớp 8</button>
+            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('9')">Lớp 9</button>
+          </div>
+        </div>
+
+        <!-- CARD 2: BÀI TẬP TƯƠNG TÁC -->
+        <div class="feat-card" onclick="go('quiz')">
+          <div class="feat-card-header">
+            <div class="feat-card-title">
+              <span class="feat-card-icon">🎯</span>
+              <span>Bài tập tương tác</span>
+            </div>
+            <span class="feat-card-arrow">❯</span>
+          </div>
+          <p class="feat-card-desc">
+            Luyện tập theo chủ đề, có gợi ý và lời giải chi tiết.
+          </p>
+          <div class="feat-doodle-box">
+            <svg width="45" height="45" viewBox="0 0 45 45" fill="none">
+              <rect x="5" y="5" width="30" height="35" rx="4" fill="#f4faf6" stroke="#bce5d0" stroke-width="2"/>
+              <path d="M12 15 L 16 19 L 24 11" stroke="#1f7d62" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M12 25 L 16 29 L 24 21" stroke="#1f7d62" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="28" y1="15" x2="33" y2="15" stroke="#bce5d0" stroke-width="2"/>
+              <line x1="28" y1="25" x2="33" y2="25" stroke="#bce5d0" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- CARD 3: TÀI LIỆU HỌC TẬP -->
+        <div class="feat-card" onclick="go('resources')">
+          <div class="feat-card-header">
+            <div class="feat-card-title">
+              <span class="feat-card-icon">📁</span>
+              <span>Tài liệu học tập</span>
+            </div>
+            <span class="feat-card-arrow">❯</span>
+          </div>
+          <p class="feat-card-desc">
+            Đề cương, công thức, bài tập chọn lọc, đề kiểm tra và đề thi.
+          </p>
+          <div class="feat-doodle-box">
+            <svg width="45" height="45" viewBox="0 0 45 45" fill="none">
+              <rect x="8" y="4" width="28" height="36" rx="3" fill="#ffffff" stroke="#c8e6d6" stroke-width="2"/>
+              <text x="14" y="22" fill="#e5881e" font-size="14" font-weight="900">A+</text>
+              <line x1="14" y1="28" x2="30" y2="28" stroke="#d5ebd9" stroke-width="2"/>
+              <line x1="14" y1="33" x2="26" y2="33" stroke="#d5ebd9" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+    `;
+    renderMath();
+  }
+
+  // TAB 2: HỎI BÀI TOÁN (DEDICATED FULL VIEW)
+  else if (page === 'chat') {
+    container.innerHTML = `
+      <section class="panel">
+        <h2>💬 Hỏi bài Toán cùng Cô Trần Thị Hải Yến</h2>
+        <p class="sub">Hỏi để hiểu – Không lời giải chi tiết. Cô sẽ đặt câu hỏi gợi ý từng bước để em tự tìm ra đáp án!</p>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <label style="font-weight:700;color:var(--primary);font-size:13.5px">Khối lớp của em:</label>
+          <select id="chatGradeSelect" onchange="currentGrade=this.value" style="padding:6px 12px;border-radius:10px;border:1px solid var(--card-border)">
+            <option value="6" ${currentGrade==='6'?'selected':''}>Toán Lớp 6</option>
+            <option value="7" ${currentGrade==='7'?'selected':''}>Toán Lớp 7</option>
+            <option value="8" ${currentGrade==='8'?'selected':''}>Toán Lớp 8</option>
+            <option value="9" ${currentGrade==='9'?'selected':''}>Toán Lớp 9</option>
+          </select>
+        </div>
+
+        <div id="fullChatlog" class="home-chatlog show" style="max-height:480px;min-height:220px">
+          ${chatHistory.length ? chatHistory.map(m => `
+            <div class="bubble ${m.role}">
+              ${m.text ? `<div>${esc(m.text)}</div>` : ''}
+              ${m.image ? `<img class="chatpic" src="${m.image}" alt="Ảnh bài toán">` : ''}
+            </div>
+          `).join('') : `
+            <div class="bubble bot">
+              Chào em! 🌷 Cô rất vui được đồng hành cùng em. Em đang vướng ở bài toán nào? Hãy nhập đề bài hoặc gửi ảnh bài tập nhé!
+            </div>
+          `}
+        </div>
+
+        <div id="fullImagePreview" class="hidden"></div>
+
+        <form onsubmit="handleSendDedicatedChat(event)" style="margin-top:14px">
+          <div class="prompt-input-box">
+            <textarea id="dedicatedChatInput" rows="2" placeholder="Nhập câu hỏi hoặc nói cho cô biết em đang vướng ở bước nào..."></textarea>
+            <button class="send-circle-btn" type="submit" id="dedicatedSendBtn">➤</button>
+          </div>
+        </form>
+
+        <div class="question-actions-row">
+          <button type="button" class="btn-action-pill" onclick="el('globalFileInput').click()">
+            <span>🖼️</span> Tải ảnh bài tập
+          </button>
+          <span class="action-divider">|</span>
+          <button type="button" class="btn-action-pill" onclick="el('globalCameraInput').click()">
+            <span>📷</span> Chụp ảnh bài tập
+          </button>
+          <div class="action-limit-note">
+            <span>ⓘ</span> Tối đa 10MB/ảnh · Phản hồi sư phạm tức thì.
+          </div>
+        </div>
+      </section>
+    `;
+    renderMath();
+    const l = el('fullChatlog');
+    if (l) l.scrollTop = l.scrollHeight;
+  }
+
+  // TAB 3: KIẾN THỨC THEO LỚP
+  else if (page === 'knowledge') {
+    container.innerHTML = `<div class="panel">Đang tải danh sách bài học Toán Lớp ${currentGrade}...</div>`;
+    try {
+      const res = await fetch(`${API_BASE}/public/lessons?grade=${currentGrade}`);
+      const d = await res.json();
+      const lessons = d.lessons || [];
+
+      container.innerHTML = `
+        <section class="panel">
+          <h2>📖 Kiến thức theo lớp – Chương trình Toán THCS</h2>
+          <p class="sub">Hệ thống hóa lý thuyết cốt lõi, công thức then chốt và các câu hỏi tự kiểm tra theo chuẩn GDPT.</p>
+
+          <div class="grade-pills-bar">
+            ${['6','7','8','9'].map(g => `
+              <button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>
+            `).join('')}
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:16px">
+            ${lessons.length ? lessons.map(l => `
+              <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
+                <span style="background:#eaf6ef;color:#18614a;font-weight:700;font-size:11.5px;padding:3px 9px;border-radius:6px">Toán ${l.grade_id}</span>
+                <h3 style="color:#144e3c;font-size:17px;margin:8px 0 10px">${esc(l.title)}</h3>
+                <div style="font-size:14px;line-height:1.75;color:#2a453c">${esc(l.content)}</div>
+                ${l.sample_example ? `
+                  <div class="notice-box success">
+                    <b>Ví dụ minh họa:</b><br>${esc(l.sample_example)}
+                  </div>
+                ` : ''}
+                ${l.self_check_question ? `
+                  <div class="notice-box warn">
+                    <b>❓ Câu hỏi tự kiểm tra:</b> ${esc(l.self_check_question)}
+                  </div>
+                ` : ''}
+              </div>
+            `).join('') : '<div class="notice-box warn">Chưa có bài học nào được cập nhật cho khối lớp này.</div>'}
+          </div>
+        </section>
+      `;
+      renderMath();
+    } catch (e) {
+      container.innerHTML = `<div class="panel"><div class="notice-box error">Lỗi tải dữ liệu: ${e.message}</div></div>`;
+    }
+  }
+
+  // TAB 4: BÀI TẬP TƯƠNG TÁC
+  else if (page === 'quiz') {
+    container.innerHTML = `<div class="panel">Đang tải bộ câu hỏi luyện tập...</div>`;
+    try {
+      const res = await fetch(`${API_BASE}/public/quizzes?grade=${currentGrade}`);
+      const d = await res.json();
+      quizList = d.questions || [];
+
+      if (!quizList.length) {
+        container.innerHTML = `
+          <section class="panel">
+            <h2>📝 Bài tập tương tác – Khối ${currentGrade}</h2>
+            <div class="grade-pills-bar">
+              ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
+            </div>
+            <div class="notice-box warn">Chưa có câu hỏi nào trong ngân hàng đề Toán lớp ${currentGrade}.</div>
+          </section>
+        `;
+        return;
+      }
+
+      const q = quizList[quizIndex % quizList.length];
+
+      container.innerHTML = `
+        <section class="panel">
+          <h2>📝 Bài tập tương tác</h2>
+          <p class="sub">Luyện tập theo chủ đề, ghi nhận kết quả thực tế trên hệ thống máy chủ và xem gợi ý tư duy.</p>
+
+          <div class="grade-pills-bar">
+            ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
+          </div>
+
+          <div style="border:1px solid var(--card-border);border-radius:18px;padding:22px;background:#ffffff">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <span style="background:#eaf6ef;color:#18614a;font-weight:700;font-size:12px;padding:4px 10px;border-radius:8px">${esc(q.topic)}</span>
+              <span style="font-size:12.5px;color:var(--text-muted);font-weight:600">Câu ${(quizIndex % quizList.length) + 1} / ${quizList.length}</span>
+            </div>
+
+            <h3 style="font-size:17px;color:#144e3c;line-height:1.5;margin-bottom:16px">${esc(q.text)}</h3>
+
+            <div id="quizOptionsContainer">
+              ${q.options.map((opt, i) => `
+                <button type="button" class="quiz-opt-btn ${quizSelected === i ? 'selected' : ''}" onclick="onSelectQuizOption(${i})">
+                  <b>${String.fromCharCode(65 + i)}.</b> ${esc(opt)}
+                </button>
+              `).join('')}
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:18px">
+              <button class="btn-primary" onclick="submitQuiz()">Nộp bài</button>
+              <button class="btn-secondary" onclick="nextQuiz()">Câu tiếp theo ❯</button>
+            </div>
+
+            <div id="quizFeedbackBox">${quizResultMsg}</div>
+          </div>
+        </section>
+      `;
+      renderMath();
+    } catch (e) {
+      container.innerHTML = `<div class="panel"><div class="notice-box error">Lỗi tải câu hỏi: ${e.message}</div></div>`;
+    }
+  }
+
+  // TAB 5: TÀI LIỆU HỌC TẬP
+  else if (page === 'resources') {
+    container.innerHTML = `<div class="panel">Đang tải danh mục tài liệu...</div>`;
+    try {
+      const res = await fetch(`${API_BASE}/public/resources?grade=${currentGrade}`);
+      const d = await res.json();
+      const resources = d.resources || [];
+
+      container.innerHTML = `
+        <section class="panel">
+          <h2>📁 Tài liệu & Đề thi chọn lọc</h2>
+          <p class="sub">Đề cương ôn tập, tóm tắt công thức và đề kiểm tra học kỳ do Cô Yến biên soạn.</p>
+
+          <div class="grade-pills-bar">
+            ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px">
+            ${resources.length ? resources.map(r => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border:1px solid var(--card-border);border-radius:14px;background:#ffffff">
+                <div>
+                  <h4 style="font-size:15px;color:#144e3c;margin-bottom:4px">${esc(r.title)}</h4>
+                  <span style="font-size:12.5px;color:var(--text-muted)">Chủ đề: <b>${esc(r.topic)}</b> · Định dạng: <b>${esc(r.file_type)}</b> · ${esc(r.description)}</span>
+                </div>
+                <a href="${esc(r.file_url)}" class="btn-secondary" target="_blank">Tải về ⬇</a>
+              </div>
+            `).join('') : '<div class="notice-box warn">Chưa có tài liệu nào cho khối lớp này.</div>'}
+          </div>
+        </section>
+      `;
+    } catch (e) {
+      container.innerHTML = `<div class="panel"><div class="notice-box error">Lỗi: ${e.message}</div></div>`;
+    }
+  }
+
+  // TAB 6: ÔN TẬP & KIỂM TRA
+  else if (page === 'review') {
+    container.innerHTML = `
+      <section class="panel">
+        <h2>🎯 Ôn tập & Kiểm tra – Nắm vững Toán THCS</h2>
+        <p class="sub">Kế hoạch ôn tập theo 4 khối lớp 6, 7, 8, 9 nhằm củng cố kiến thức trước các bài kiểm tra định kỳ và thi tuyển sinh.</p>
+
+        <div class="grade-pills-bar">
+          ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+          <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
+            <h3 style="color:#144e3c;margin-bottom:8px">📝 Checklist Ôn tập Khối ${currentGrade}</h3>
+            <ul style="padding-left:20px;font-size:14px;line-height:1.8;color:#2d5044">
+              <li>Nắm chắc các định nghĩa và điều kiện xác định.</li>
+              <li>Học thuộc bảng công thức biến đổi cơ bản.</li>
+              <li>Luyện tập 15–20 câu trắc nghiệm tương tác mỗi tuần.</li>
+              <li>Tự giải lại các bài toán mẫu mà không nhìn đáp án.</li>
+            </ul>
+            <button class="btn-primary" style="margin-top:14px" onclick="go('quiz')">Bắt đầu làm bài tương tác ❯</button>
+          </div>
+
+          <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
+            <h3 style="color:#144e3c;margin-bottom:8px">💡 Trọng tâm kiến thức Lớp ${currentGrade}</h3>
+            <p style="font-size:14px;line-height:1.7;color:#3b5f52">
+              Chương trình Toán THCS kết hợp nhuần nhuyễn giữa tư duy Đại số và Hình học trực quan. Khi gặp bài toán hình học, em hãy luôn vẽ hình chính xác và ghi rõ giả thiết – kết luận nhé!
+            </p>
+            <button class="btn-secondary" style="margin-top:14px" onclick="go('knowledge')">Xem bài giảng theo lớp ❯</button>
+          </div>
+        </div>
+      </section>
     `;
   }
-  bubble.innerHTML = html;
 
-  r.innerHTML = `<div class="av">${kind==="bot"?"Y":"🧑‍🎓"}</div>`;
-  r.appendChild(bubble);
-  chat.appendChild(r);
-  renderMath(bubble);
-  chat.scrollTop=chat.scrollHeight;
-  return r;
-}
+  // TAB 7: THEO DÕI TIẾN BỘ
+  else if (page === 'progress') {
+    container.innerHTML = `<div class="panel">Đang đồng bộ số liệu học tập từ máy chủ...</div>`;
+    try {
+      const res = await fetch(`${API_BASE}/public/bootstrap`);
+      const d = await res.json();
+      const metrics = d.metrics || { totalVisits: 0, totalAttempts: 0, accuracyRate: 0 };
 
-function addSys(text){
-  const d=document.createElement("div"); d.className="sys"; d.textContent=text;
-  chat.appendChild(d); chat.scrollTop=chat.scrollHeight;
-}
-function closeSide(){ side.classList.remove("open"); backdrop.classList.remove("show"); }
+      container.innerHTML = `
+        <section class="panel">
+          <h2>📊 Theo dõi tiến bộ & Số liệu hệ thống</h2>
+          <p class="sub">Số liệu thực tế được ghi nhận và tổng hợp trực tiếp từ máy chủ (Server-side deduplicated).</p>
 
-async function callApi(){
-  const res = await fetch("/api/chat",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({messages:history.slice(-16)})
-  });
-  const data = await res.json().catch(()=>({}));
-  if(!res.ok) throw new Error(data.error || ("Lỗi " + res.status));
-  return data.reply;
-}
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <strong>${metrics.totalVisits}</strong>
+              <span>Lượt truy cập người dùng thực</span>
+            </div>
+            <div class="metric-box">
+              <strong>${metrics.totalAttempts}</strong>
+              <span>Lượt nộp bài tương tác</span>
+            </div>
+            <div class="metric-box">
+              <strong>${metrics.accuracyRate}%</strong>
+              <span>Tỷ lệ làm đúng trung bình</span>
+            </div>
+          </div>
 
-async function send(text){
-  text=text.trim();
-  const imgPayload = currentImage; // lấy ảnh đang chọn (nếu có)
-  if (!text && !imgPayload) return;
-  if (sendBtn.disabled) return;
-
-  closeSide();
-  clearImage(); // xóa thanh preview
-
-  // Hiển thị tin nhắn người dùng kèm ảnh nếu có
-  addRow("user", text, imgPayload ? imgPayload.image : null);
-
-  const userMsg = { role: "user", text };
-  if (imgPayload) {
-    userMsg.image = imgPayload.image;
-    userMsg.mimeType = imgPayload.mimeType;
+          <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff;margin-top:20px">
+            <h3 style="color:#144e3c;margin-bottom:8px">🌱 Lời khuyên rèn luyện từ Cô Yến</h3>
+            <p style="font-size:14px;line-height:1.7;color:#3b5f52">
+              Học Toán không phải là học thuộc lòng lời giải, mà là rèn luyện thói quen tư duy độc lập và kiên trì trước mỗi bài toán khó. Hãy đặt mục tiêu duy trì tỷ lệ đúng trên <b>80%</b> và đừng ngại hỏi cô khi chưa hiểu bước nào nhé!
+            </p>
+          </div>
+        </section>
+      `;
+    } catch (e) {
+      container.innerHTML = `<div class="panel"><div class="notice-box error">Lỗi: ${e.message}</div></div>`;
+    }
   }
-  history.push(userMsg);
 
-  input.value=""; sendBtn.disabled=true;
-  
-  const typing=document.createElement("div");
-  typing.className="row bot";
-  typing.innerHTML='<div class="av">Y</div><div class="bubble"><span class="dots"><span></span><span></span><span></span></span></div>';
-  chat.appendChild(typing);
-  chat.scrollTop=chat.scrollHeight;
+  // TAB 8: GỢI Ý HỌC TẬP (MẸO HỌC TOÁN)
+  else if (page === 'tips') {
+    container.innerHTML = `
+      <section class="panel">
+        <h2>⭐ Gợi ý & Mẹo học Toán hiệu quả</h2>
+        <p class="sub">Phương pháp rèn luyện tư duy và thói quen giải toán tích cực do Cô Yến chia sẻ.</p>
 
-  try{
-    const reply=await callApi();
-    typing.remove();
-    const shouldShowChips = !curForm && curTopic;
-    addRow("bot", reply, null, shouldShowChips);
-    history.push({role:"model",text:reply});
-  }catch(e){
-    typing.remove(); history.pop();
-    addSys(e.message || "Có lỗi xảy ra, em thử lại nhé.");
-  }finally{ sendBtn.disabled=false; input.focus(); }
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+          ${appData.tips && appData.tips.length ? appData.tips.map(t => `
+            <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
+              <h3 style="color:#196653;font-size:16px;margin-bottom:8px">✨ ${esc(t.title)}</h3>
+              <p style="font-size:14px;line-height:1.75;color:#2a453c">${esc(t.content)}</p>
+            </div>
+          `).join('') : `
+            <div class="notice-box">Đang cập nhật các gợi ý học tập...</div>
+          `}
+        </div>
+      </section>
+    `;
+  }
+
+  // TAB 9: CÀI ĐẶT / QUẢN TRỊ GIÁO VIÊN
+  else if (page === 'admin') {
+    if (!currentUser || currentUser.role !== 'teacher') {
+      container.innerHTML = `
+        <section class="panel" style="max-width:440px;margin:30px auto">
+          <h2>🔐 Đăng nhập Quản trị Giáo viên</h2>
+          <p class="sub">Khu vực bảo mật dành riêng cho Cô Trần Thị Hải Yến.</p>
+
+          <form onsubmit="handleTeacherLogin(event)">
+            <div class="form-field">
+              <label>Tên đăng nhập</label>
+              <input type="text" id="adminUser" required placeholder="coyen" autocomplete="username">
+            </div>
+            <div class="form-field">
+              <label>Mật khẩu</label>
+              <input type="password" id="adminPass" required placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <div id="loginFeedback"></div>
+            <button class="btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:10px">Đăng nhập Quản trị ❯</button>
+          </form>
+          <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:14px">Tài khoản mặc định: <code>coyen</code> / <code>coYen@2026</code></p>
+        </section>
+      `;
+    } else {
+      renderAdminDashboard();
+    }
+  }
 }
 
-window.selectForm = function(idx) {
-  const f = FORMS[idx];
-  if (!f) return;
-  curForm = f;
-  refreshState();
-  const fd = $("formDropdown");
-  if (fd) fd.classList.remove("show");
-  if (!curTopic) {
-    addSys("Em hãy chọn một chủ đề trước khi chọn hình thức câu hỏi nhé!");
+// 4. Quản trị giáo viên Dashboard
+async function renderAdminDashboard() {
+  const container = el('content');
+  container.innerHTML = `<div class="panel">Đang nạp bảng điều khiển giáo viên...</div>`;
+
+  try {
+    const [statsRes, promptsRes] = await Promise.all([
+      fetch(`${API_BASE}/admin/stats?range=all`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
+      fetch(`${API_BASE}/admin/prompts`, { headers: { 'Authorization': `Bearer ${authToken}` } })
+    ]);
+
+    const statsData = await statsRes.json();
+    const promptsData = await promptsRes.json();
+    const stats = statsData.stats || { visits: {}, quizzes: {}, recentLogs: [] };
+    const allPrompts = promptsData.prompts || [];
+
+    container.innerHTML = `
+      <section class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <div>
+            <h2>⚙️ Quản trị Giáo viên – Cô ${currentUser.full_name}</h2>
+            <p class="sub" style="margin:0">Quản lý nội dung, cập nhật System Prompt AI và xuất báo cáo thống kê.</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-secondary" onclick="exportDataBackup()">⬇ Xuất sao lưu DB</button>
+            <button class="btn-secondary" style="color:#b91c1c;border-color:#fecaca;background:#fef2f2" onclick="handleTeacherLogout()">Đăng xuất ⎋</button>
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <strong>${stats.visits.total || 0}</strong>
+            <span>Lượt truy cập người dùng thực</span>
+            <small style="display:block;color:var(--text-muted);font-size:11.5px;margin-top:4px">(${stats.visits.botBlocked || 0} lượt bot bị lọc)</small>
+          </div>
+          <div class="metric-box">
+            <strong>${stats.quizzes.totalAttempts || 0}</strong>
+            <span>Lượt làm bài tương tác</span>
+            <small style="display:block;color:var(--text-muted);font-size:11.5px;margin-top:4px">(${stats.quizzes.correctAttempts || 0} câu trả lời đúng)</small>
+          </div>
+          <div class="metric-box">
+            <strong>${stats.quizzes.accuracyRate || 0}%</strong>
+            <span>Tỷ lệ làm đúng toàn hệ thống</span>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">
+          <!-- CẬP NHẬT SYSTEM PROMPTS -->
+          <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
+            <h3 style="color:#144e3c;margin-bottom:12px">📝 Cập nhật System Prompt theo Tab</h3>
+            <div class="form-field">
+              <label>Chọn Tab nghiệp vụ</label>
+              <select id="adminPromptTab" onchange="onSelectAdminPromptTab(this.value)">
+                ${navTabs.map(t => `<option value="${t.id}">${t.name} (${t.id})</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Nội dung Prompt Sư phạm</label>
+              <textarea id="adminPromptText" rows="6"></textarea>
+            </div>
+            <div class="form-field">
+              <label>Ghi chú phiên bản (Version Notes)</label>
+              <input id="adminPromptNotes" placeholder="VD: Tăng cường câu hỏi gợi mở cho môn Toán 8">
+            </div>
+            <button class="btn-primary" onclick="savePromptVersion()">Lưu phiên bản mới ❯</button>
+          </div>
+
+          <!-- THÊM CÂU HỎI TRẮC NGHIỆM -->
+          <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
+            <h3 style="color:#144e3c;margin-bottom:12px">➕ Thêm câu hỏi tương tác mới</h3>
+            <div class="form-field">
+              <label>Khối lớp & Chủ đề</label>
+              <div style="display:flex;gap:8px">
+                <select id="newQGrade" style="width:110px">
+                  <option value="6">Toán 6</option>
+                  <option value="7">Toán 7</option>
+                  <option value="8">Toán 8</option>
+                  <option value="9">Toán 9</option>
+                </select>
+                <input id="newQTopic" placeholder="Chủ đề (VD: Hằng đẳng thức)" style="flex:1">
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Nội dung câu hỏi</label>
+              <textarea id="newQText" rows="2" placeholder="Ví dụ: Rút gọn biểu thức $(a+b)^2$"></textarea>
+            </div>
+            <div class="form-field">
+              <label>4 Phương án (cách nhau bởi dấu phẩy)</label>
+              <input id="newQOptions" placeholder="a^2+2ab+b^2, a^2+b^2, 2a+2b, a^2-2ab+b^2">
+            </div>
+            <div class="form-field">
+              <label>Đáp án đúng & Gợi ý</label>
+              <div style="display:flex;gap:8px">
+                <select id="newQRight" style="width:120px">
+                  <option value="0">Phương án A</option>
+                  <option value="1">Phương án B</option>
+                  <option value="2">Phương án C</option>
+                  <option value="3">Phương án D</option>
+                </select>
+                <input id="newQHint" placeholder="Gợi ý sư phạm..." style="flex:1">
+              </div>
+            </div>
+            <button class="btn-secondary" onclick="saveNewQuestion()">Lưu câu hỏi vào DB ❯</button>
+          </div>
+        </div>
+      </section>
+    `;
+    onSelectAdminPromptTab('home');
+  } catch (e) {
+    container.innerHTML = `<div class="panel"><div class="notice-box error">Lỗi tải dữ liệu quản trị: ${e.message}</div></div>`;
+  }
+}
+
+// 5. Xử lý câu hỏi và chat (Cả trên Trang chủ và Tab riêng)
+function switchGradeAndGo(g) {
+  currentGrade = g;
+  go('knowledge');
+}
+
+function handleImageSelection(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    alert('Vui lòng chọn tệp hình ảnh.');
     return;
   }
-  const gName = TOPICS_BY_GRADE[curGrade] ? TOPICS_BY_GRADE[curGrade].name : "";
-  send(`Tôi chọn hình thức ${f.full} cho chủ đề "${curTopic.name}" (${gName})`);
-};
-
-/* ----- Dựng khối lớp & chủ đề cột trái ----- */
-const topicsBox = $("topics");
-function renderTopics() {
-  topicsBox.innerHTML = "";
-  const currentGradeData = TOPICS_BY_GRADE[curGrade];
-  const list = currentGradeData ? currentGradeData.topics : [];
-  list.forEach((t, i) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "topic" + (curTopic === t ? " active" : "");
-    b.innerHTML = `<span class="ic">${t.ic}</span><span>${i + 1}. ${t.name}</span>`;
-    b.onclick = () => {
-      curTopic = t;
-      curForm = null;
-      refreshState();
-      send(`Tôi là học sinh ${currentGradeData.name}, tôi chọn chủ đề: ${t.name}`);
-      if (formsBox) formsBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    };
-    b.dataset.i = i;
-    topicsBox.appendChild(b);
-  });
-}
-
-// Bắt sự kiện chuyển tab khối lớp
-const gradeBtns = document.querySelectorAll(".grade-btn");
-gradeBtns.forEach(btn => {
-  btn.onclick = () => {
-    gradeBtns.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    curGrade = btn.dataset.grade;
-    curTopic = null;
-    curForm = null;
-    renderTopics();
-    refreshState();
-    const gName = TOPICS_BY_GRADE[curGrade].name;
-    addSys(`Đã chuyển sang **${gName}**. Em hãy chọn 1 chủ đề bên dưới nhé! 🌱`);
-  };
-});
-
-const formsBox=$("forms");
-FORMS.forEach((f,i)=>{
-  const b=document.createElement("button"); b.type="button"; b.className="form-btn";
-  b.innerHTML=`<b>${f.ic}</b>${f.name}`;
-  b.onclick=()=>selectForm(i);
-  b.dataset.i=i; formsBox.appendChild(b);
-});
-
-const actsBox=$("acts");
-ACTIONS.forEach(a=>{
-  const b=document.createElement("button"); b.type="button"; b.className="act"+(a.primary?" primary":"");
-  b.textContent=a.label; b.onclick=()=>send(a.msg); actsBox.appendChild(b);
-});
-
-function refreshState(){
-  const currentGradeData = TOPICS_BY_GRADE[curGrade];
-  const currentTopics = currentGradeData ? currentGradeData.topics : [];
-  [...topicsBox.children].forEach(b => b.classList.toggle("active", curTopic === currentTopics[b.dataset.i]));
-  [...formsBox.children].forEach(b => b.classList.toggle("active", curForm === FORMS[b.dataset.i]));
-  $("pillTopic").textContent = curTopic ? `${curTopic.ic} [${currentGradeData.name}] ${curTopic.name}` : `[${currentGradeData.name}] Chưa chọn chủ đề`;
-  
-  const pf = $("pillForm");
-  if (curForm) {
-    pf.innerHTML = curForm.ic + " " + curForm.name + ' <span style="font-size:10px">▾</span>';
-    pf.classList.remove("warn");
-    pf.classList.add("active");
-  } else {
-    pf.innerHTML = '📋 Chọn hình thức <span style="font-size:10px">▾</span>';
-    pf.classList.add("warn");
-    pf.classList.remove("active");
+  if (file.size > 10 * 1024 * 1024) {
+    alert('Ảnh vượt quá dung lượng 10MB cho phép.');
+    return;
   }
 
-  const dropdownItems = document.querySelectorAll(".dropdown-item");
-  dropdownItems.forEach((item, idx) => {
-    item.classList.toggle("active", curForm === FORMS[idx]);
-  });
-}
+  if (pendingImageURL) URL.revokeObjectURL(pendingImageURL);
+  pendingImage = file;
+  pendingImageURL = URL.createObjectURL(file);
 
-const pfBtn = $("pillForm");
-if (pfBtn) {
-  pfBtn.onclick = (e) => {
-    e.stopPropagation();
-    const fd = $("formDropdown");
-    if (fd) fd.classList.toggle("show");
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingImageBase64 = e.target.result;
+    renderImagePreviews();
   };
+  reader.readAsDataURL(file);
 }
-document.addEventListener("click", () => {
-  const fd = $("formDropdown");
-  if (fd) fd.classList.remove("show");
-});
 
-/* ----- Chào mở đầu (không tốn lượt API) ----- */
-function start(){
-  history=[]; curTopic=null; curForm=null; chat.innerHTML=""; 
-  renderTopics();
-  refreshState();
-  const greeting="Xin chào em! Mình là **YENTRAN AI** (Cô Trần Thị Hải Yến) – Trợ lý học tập và ôn tập Toán THCS. 🌱\n\nPhương châm dạy học của cô là **\"HỎI ĐỂ HIỂU – KHÔNG LỜI GIẢI CHI TIẾT\"**: Cô sẽ không giải hộ từ đầu đến cuối, mà sẽ đặt câu hỏi gợi mở từng bước nhỏ để em tự suy nghĩ, tự phát hiện vấn đề và tự tìm ra lời giải.\n\nEm hãy chọn **Khối lớp** (Lớp 6, 7, 8 hoặc Ôn THCS) và **Chuyên đề** ở khung bên trái, hoặc bấm 📷 chụp/gửi ảnh bài tập để cô đồng hành cùng em nhé!";
-  addRow("bot", greeting);
-  history.push({role:"user",text:"Xin chào"},{role:"model",text:"Xin chào em! Mình là YENTRAN AI (Cô Trần Thị Hải Yến). Phương châm của cô là Hỏi để hiểu, không lời giải chi tiết. Em hãy chọn Khối lớp và Chủ đề để bắt đầu nhé!"});
-}
-start();
+function renderImagePreviews() {
+  const previewHtml = pendingImage && pendingImageURL ? `
+    <div class="image-preview-bar">
+      <img src="${pendingImageURL}" alt="Ảnh đính kèm">
+      <div class="meta">
+        <b>${esc(pendingImage.name)}</b> (${(pendingImage.size / 1048576).toFixed(2)} MB)<br>
+        <span>Đã sẵn sàng gửi cho Cô Yến</span>
+      </div>
+      <button type="button" class="btn-remove-img" onclick="clearSelectedImage()">✕ Bỏ ảnh</button>
+    </div>
+  ` : '';
 
-/* ----- Nạp số liệu thống kê truy cập ----- */
-async function loadStats(isNewVisit = false) {
-  try {
-    const url = isNewVisit ? "/api/stats?hit=1" : "/api/stats";
-    const res = await fetch(url);
-    if (res.ok) {
-      const data = await res.json();
-      if ($("statTotal") && data.total !== undefined) {
-        $("statTotal").textContent = Number(data.total).toLocaleString("vi-VN");
-      }
-      if ($("statOnline") && data.online !== undefined) {
-        $("statOnline").textContent = data.online;
-      }
-      if ($("statToday") && data.today !== undefined) {
-        $("statToday").textContent = Number(data.today).toLocaleString("vi-VN");
+  for (const id of ['homeImagePreview', 'fullImagePreview']) {
+    const elBox = el(id);
+    if (elBox) {
+      if (previewHtml) {
+        elBox.classList.remove('hidden');
+        elBox.innerHTML = previewHtml;
+      } else {
+        elBox.classList.add('hidden');
+        elBox.innerHTML = '';
       }
     }
-  } catch (e) {
-    // Bỏ qua lỗi ngầm để không ảnh hưởng học tập
   }
 }
-loadStats(true);
-setInterval(() => loadStats(false), 45000);
 
-form.addEventListener("submit",e=>{e.preventDefault();send(input.value);});
-$("resetBtn").onclick=start;
-$("menuBtn").onclick=()=>{side.classList.add("open");backdrop.classList.add("show");};
-backdrop.onclick=closeSide;
+function clearSelectedImage() {
+  pendingImage = null;
+  pendingImageBase64 = null;
+  if (pendingImageURL) {
+    URL.revokeObjectURL(pendingImageURL);
+    pendingImageURL = null;
+  }
+  for (const id of ['globalFileInput', 'globalCameraInput']) {
+    if (el(id)) el(id).value = '';
+  }
+  renderImagePreviews();
+}
+
+async function handleSendHomeChat(e) {
+  e.preventDefault();
+  const input = el('homeChatInput');
+  const text = input ? input.value.trim() : '';
+  if (!text && !pendingImageBase64) {
+    alert('Em hãy nhập câu hỏi hoặc chọn ảnh bài tập nhé!');
+    return;
+  }
+
+  const log = el('homeChatlog');
+  if (log) log.classList.add('show');
+
+  await executeChatRequest(text, log, el('homeSendBtn'), input);
+}
+
+async function handleSendDedicatedChat(e) {
+  e.preventDefault();
+  const input = el('dedicatedChatInput');
+  const text = input ? input.value.trim() : '';
+  if (!text && !pendingImageBase64) {
+    alert('Em hãy nhập câu hỏi hoặc chọn ảnh bài tập nhé!');
+    return;
+  }
+
+  const log = el('fullChatlog');
+  await executeChatRequest(text, log, el('dedicatedSendBtn'), input);
+}
+
+async function executeChatRequest(text, logElement, sendBtn, inputElement) {
+  const currentImgURL = pendingImageURL;
+  const currentImgBase64 = pendingImageBase64;
+
+  chatHistory.push({ role: 'user', text, image: currentImgURL });
+
+  if (logElement) {
+    logElement.innerHTML += `
+      <div class="bubble user">
+        ${text ? `<div>${esc(text)}</div>` : ''}
+        ${currentImgURL ? `<img class="chatpic" src="${currentImgURL}" alt="Ảnh bài tập">` : ''}
+      </div>
+    `;
+    logElement.scrollTop = logElement.scrollHeight;
+  }
+
+  if (inputElement) inputElement.value = '';
+  clearSelectedImage();
+  if (sendBtn) sendBtn.disabled = true;
+
+  const typing = document.createElement('div');
+  typing.className = 'bubble bot';
+  typing.innerHTML = '<i>Cô đang đọc bài và suy nghĩ câu hỏi gợi ý cho em nhé... 🌱</i>';
+  if (logElement) {
+    logElement.appendChild(typing);
+    logElement.scrollTop = logElement.scrollHeight;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/public/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: text,
+        imageBase64: currentImgBase64,
+        tabKey: 'chat',
+        gradeId: currentGrade
+      })
+    });
+
+    const d = await res.json();
+    typing.remove();
+
+    if (d.success) {
+      chatHistory.push({ role: 'bot', text: d.reply });
+      if (logElement) {
+        logElement.innerHTML += `<div class="bubble bot">${esc(d.reply)}</div>`;
+      }
+    } else {
+      if (logElement) {
+        logElement.innerHTML += `<div class="bubble bot">${esc(d.message || 'Cô đang bận một chút, em gửi lại sau ít phút nhé.')}</div>`;
+      }
+    }
+  } catch (err) {
+    typing.remove();
+    if (logElement) {
+      logElement.innerHTML += `<div class="bubble bot">Có chút gián đoạn kết nối, em hãy thử lại nhé! 🌿</div>`;
+    }
+  } finally {
+    if (sendBtn) sendBtn.disabled = false;
+    if (logElement) logElement.scrollTop = logElement.scrollHeight;
+    renderMath();
+  }
+}
+
+// 6. Xử lý trắc nghiệm
+function onSelectQuizOption(idx) {
+  quizSelected = idx;
+  const btns = document.querySelectorAll('.quiz-opt-btn');
+  btns.forEach((b, i) => b.classList.toggle('selected', i === idx));
+}
+
+function nextQuiz() {
+  quizIndex++;
+  quizSelected = -1;
+  quizResultMsg = '';
+  renderView();
+}
+
+async function submitQuiz() {
+  if (quizSelected < 0) {
+    alert('Em hãy chọn một phương án trước khi nộp bài nhé!');
+    return;
+  }
+  const q = quizList[quizIndex % quizList.length];
+  try {
+    const res = await fetch(`${API_BASE}/public/quiz-attempt`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        questionId: q.id,
+        selectedIndex: quizSelected,
+        anonymousSessionId: getSessionId()
+      })
+    });
+    const d = await res.json();
+    if (d.success) {
+      quizResultMsg = `
+        <div class="notice-box ${d.isCorrect ? 'success' : 'warn'}">
+          <b>${d.isCorrect ? '🌱 Hoan hô! Em đã chọn đáp án chính xác!' : '🌼 Chưa chính xác rồi, em cùng xem lại gợi ý nhé!'}</b><br>
+          <b>Gợi ý:</b> ${esc(d.hint)}<br>
+          ${d.explanation ? `<b>Lời giải tóm tắt:</b> ${esc(d.explanation)}<br>` : ''}
+          <b>Đáp án đúng:</b> ${String.fromCharCode(65 + Number(d.correctAnswer))}. ${esc(q.options[d.correctAnswer])}
+        </div>
+      `;
+      el('quizFeedbackBox').innerHTML = quizResultMsg;
+      renderMath();
+    }
+  } catch (e) {
+    el('quizFeedbackBox').innerHTML = `<div class="notice-box error">Lỗi nộp bài: ${e.message}</div>`;
+  }
+}
+
+// 7. Xử lý tài khoản giáo viên
+async function handleTeacherLogin(e) {
+  e.preventDefault();
+  const u = el('adminUser').value.trim();
+  const p = el('adminPass').value.trim();
+  const fb = el('loginFeedback');
+  fb.innerHTML = '<span style="font-size:12px;color:var(--primary)">Đang xác thực bảo mật...</span>';
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, password: p })
+    });
+    const d = await res.json();
+    if (d.success) {
+      authToken = d.token;
+      currentUser = d.user;
+      localStorage.setItem('coYen_auth_token', authToken);
+      renderAdminDashboard();
+    } else {
+      fb.innerHTML = `<div class="notice-box error">${esc(d.message)}</div>`;
+    }
+  } catch (err) {
+    fb.innerHTML = `<div class="notice-box error">Lỗi kết nối máy chủ: ${err.message}</div>`;
+  }
+}
+
+function handleTeacherLogout() {
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem('coYen_auth_token');
+  go('home');
+}
+
+function onSelectAdminPromptTab(tabKey) {
+  const p = appData.prompts[tabKey] || '';
+  const area = el('adminPromptText');
+  if (area) area.value = p;
+}
+
+async function savePromptVersion() {
+  const tabKey = el('adminPromptTab').value;
+  const promptText = el('adminPromptText').value.trim();
+  const notes = el('adminPromptNotes').value.trim();
+
+  if (!promptText) {
+    alert('Vui lòng nhập nội dung prompt!');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/admin/prompts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ tab_key: tabKey, prompt_text: promptText, notes })
+    });
+    const d = await res.json();
+    if (d.success) {
+      appData.prompts[tabKey] = promptText;
+      alert(`Đã lưu phiên bản prompt cho [${tabKey}] thành công!`);
+    } else {
+      alert(`Lỗi: ${d.message}`);
+    }
+  } catch (e) {
+    alert(`Lỗi: ${e.message}`);
+  }
+}
+
+async function saveNewQuestion() {
+  const grade_id = el('newQGrade').value;
+  const topic = el('newQTopic').value.trim();
+  const text = el('newQText').value.trim();
+  const optsRaw = el('newQOptions').value.trim();
+  const correct_answer = el('newQRight').value;
+  const hint = el('newQHint').value.trim();
+
+  if (!text || !optsRaw) {
+    alert('Vui lòng điền đủ câu hỏi và các phương án!');
+    return;
+  }
+  const options = optsRaw.split(',').map(s => s.trim()).filter(Boolean);
+  if (options.length < 2) {
+    alert('Cần ít nhất 2 phương án (ngăn cách bởi dấu phẩy)!');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/admin/questions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ grade_id, topic, text, options, correct_answer, hint })
+    });
+    const d = await res.json();
+    if (d.success) {
+      alert('Đã thêm câu hỏi vào ngân hàng đề thành công!');
+      el('newQText').value = '';
+      el('newQOptions').value = '';
+      el('newQHint').value = '';
+    } else {
+      alert(`Lỗi: ${d.message}`);
+    }
+  } catch (e) {
+    alert(`Lỗi: ${e.message}`);
+  }
+}
+
+async function exportDataBackup() {
+  try {
+    const res = await fetch(`${API_BASE}/admin/export`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `coyen_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert('Lỗi xuất dữ liệu: ' + e.message);
+  }
+}
+
+// Bắt đầu
+window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
