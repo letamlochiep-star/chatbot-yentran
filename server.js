@@ -522,7 +522,7 @@ if (require.main === module) {
     console.log(`=======================================================`);
     console.log(`🌸 YENTRAN AI - TRỢ LÝ HỌC TOÁN THCS (CÔ TRẦN THỊ HẢI YẾN)`);
     console.log(`🚀 Máy chủ đang chạy tại: http://localhost:${PORT}`);
-    console.log(`🔑 Tài khoản Quản trị giáo viên: coyen / coYen@2026`);
+    console.log(`🔑 Tài khoản Quản trị giáo viên: yentran`);
     console.log(`=======================================================`);
   });
 }
