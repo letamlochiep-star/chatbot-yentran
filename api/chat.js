@@ -15,7 +15,7 @@ const MODELS = process.env.GEMINI_MODEL
   ? [process.env.GEMINI_MODEL, ...DEFAULT_MODELS.filter(m => m !== process.env.GEMINI_MODEL)]
   : DEFAULT_MODELS;
 
-const MAX_OUTPUT_TOKENS = 3000;
+const MAX_OUTPUT_TOKENS = 1800;
 const MAX_HISTORY = 16;
 const MAX_CHARS = 2500;
 
@@ -192,7 +192,7 @@ module.exports = async (req, res) => {
 
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 35000);
+        const timeout = setTimeout(() => controller.abort(), 9500);
 
         const r = await fetch(url, {
           method: "POST",
