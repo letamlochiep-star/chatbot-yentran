@@ -357,6 +357,12 @@ app.get('/api/admin/questions', requireTeacher, (req, res) => {
   }
 });
 
+// AI Tự động trích xuất bài tập tương tác theo tiêu đề bài học
+app.post('/api/admin/generate-quiz', (req, res) => {
+  const handler = require('./api/admin/generate-quiz.js');
+  return handler(req, res);
+});
+
 app.post('/api/admin/questions', requireTeacher, (req, res) => {
   try {
     const { grade_id, topic, text, options, correct_answer, hint, explanation } = req.body;

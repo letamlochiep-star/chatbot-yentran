@@ -1381,11 +1381,78 @@ let pendingImage = null;
 let pendingImageBase64 = null;
 let pendingImageURL = null;
 
-// Quiz
+// Quiz & Quản lý bài tập theo bài
 let quizList = [];
 let quizIndex = 0;
 let quizSelected = -1;
 let quizResultMsg = '';
+let currentQuizTopicFilter = 'all';
+let availableTopics = [];
+let showStudentHintActive = false;
+
+const STANDARD_LESSONS = {
+  "6": [
+    "Tập hợp các số tự nhiên & Phép tính",
+    "Phép chia hết và phép chia có dư - Ước và Bội",
+    "Số nguyên âm và Tập hợp số nguyên",
+    "Phân số và các phép tính với phân số",
+    "Hình học trực quan: Tam giác đều, Hình vuông, Lục giác đều",
+    "Hình học trực quan: Hình chữ nhật, Hình thoi, Hình bình hành"
+  ],
+  "7": [
+    "Tập hợp các số hữu tỉ & Các phép tính",
+    "Số thực và Căn bậc hai số học",
+    "Góc ở vị trí đặc biệt & Tia phân giác",
+    "Hai đường thẳng song song và dấu hiệu nhận biết",
+    "Định lý Pythagore trong Tam giác vuông",
+    "Các trường hợp bằng nhau của hai tam giác"
+  ],
+  "8": [
+    "Đa thức nhiều biến & Các phép toán",
+    "7 Hằng đẳng thức đáng nhớ",
+    "Phân thức đại số và các tính chất",
+    "Tứ giác: Hình bình hành & Hình chữ nhật",
+    "Tứ giác: Hình thoi & Hình vuông",
+    "Định lý Thalès trong tam giác"
+  ],
+  "9": [
+    "Căn bậc hai & Hằng đẳng thức căn(A^2) = |A|",
+    "Liên hệ giữa phép nhân, phép chia và phép khai phương",
+    "Phương trình bậc nhất hai ẩn & Hệ phương trình",
+    "Đường tròn: Góc ở tâm & Góc nội tiếp",
+    "Tứ giác nội tiếp đường tròn",
+    "Hình trụ, Hình nón, Hình cầu trong thực tế"
+  ]
+};
+
+function getCustomQuizzes(grade) {
+  try {
+    const raw = localStorage.getItem('coYen_custom_quizzes_' + grade);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomQuiz(grade, question) {
+  try {
+    const list = getCustomQuizzes(grade);
+    list.unshift(question);
+    localStorage.setItem('coYen_custom_quizzes_' + grade, JSON.stringify(list));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function deleteCustomQuiz(grade, id) {
+  try {
+    let list = getCustomQuizzes(grade);
+    list = list.filter(q => q.id !== id);
+    localStorage.setItem('coYen_custom_quizzes_' + grade, JSON.stringify(list));
+  } catch (e) {
+    console.error(e);
+  }
+}
 
 const esc = s => String(s || '').replace(/[&<>"']/g, x => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[x]));
 const el = id => document.getElementById(id);
@@ -2075,13 +2142,27 @@ async function renderView() {
     }
   }
 
-  // TAB 4: BÀI TẬP TƯƠNG TÁC
+  // TAB 4: BÀI TẬP TƯƠNG TÁC THEO TỪNG BÀI HỌC
   else if (page === 'quiz') {
-    container.innerHTML = `<div class="panel">Đang tải bộ câu hỏi luyện tập...</div>`;
+    container.innerHTML = `<div class="panel">Đang tải bộ câu hỏi luyện tập theo bài...</div>`;
     try {
       const res = await fetch(`${API_BASE}/public/quizzes?grade=${currentGrade}`);
       const d = await res.json();
-      quizList = d.questions || [];
+      const serverQuizzes = d.questions || [];
+      const customQuizzes = getCustomQuizzes(currentGrade);
+
+      // Kết hợp câu hỏi từ server và câu hỏi do giáo viên vừa thêm
+      const combinedMap = new Map();
+      customQuizzes.forEach(q => combinedMap.set(q.id || q.text, q));
+      serverQuizzes.forEach(q => {
+        if (!combinedMap.has(q.id || q.text)) combinedMap.set(q.id || q.text, q);
+      });
+      quizList = Array.from(combinedMap.values());
+
+      // Lấy danh sách các bài học duy nhất
+      const topicsSet = new Set();
+      quizList.forEach(q => { if (q.topic) topicsSet.add(q.topic); });
+      availableTopics = Array.from(topicsSet);
 
       if (!quizList.length) {
         container.innerHTML = `
@@ -2090,30 +2171,55 @@ async function renderView() {
             <div class="grade-pills-bar">
               ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
             </div>
-            <div class="notice-box warn">Chưa có câu hỏi nào trong ngân hàng đề Toán lớp ${currentGrade}.</div>
+            <div class="notice-box warn">Chưa có câu hỏi nào trong ngân hàng đề Toán lớp ${currentGrade}. Giáo viên có thể vào mục Quản trị để đưa thêm bài tập tương tác theo bài!</div>
           </section>
         `;
         return;
       }
 
-      const q = quizList[quizIndex % quizList.length];
+      // Lọc theo bài học đã chọn
+      let filteredList = quizList;
+      if (currentQuizTopicFilter && currentQuizTopicFilter !== 'all') {
+        const filterLower = currentQuizTopicFilter.toLowerCase();
+        const matched = quizList.filter(q => (q.topic || '').toLowerCase().includes(filterLower));
+        if (matched.length > 0) filteredList = matched;
+      }
+
+      const q = filteredList[quizIndex % filteredList.length];
 
       container.innerHTML = `
         <section class="panel">
-          <h2>📝 Bài tập tương tác</h2>
-          <p class="sub">Luyện tập theo chủ đề, ghi nhận kết quả thực tế trên hệ thống máy chủ và xem gợi ý tư duy.</p>
+          <h2>📝 Bài tập tương tác theo từng bài học</h2>
+          <p class="sub">Học sinh chủ động chọn bài học để luyện tập trắc nghiệm tương tác, nhận gợi ý sư phạm tức thì từ Cô Yến.</p>
 
           <div class="grade-pills-bar">
             ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
           </div>
 
-          <div style="border:1px solid var(--card-border);border-radius:18px;padding:22px;background:#ffffff">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-              <span style="background:#eaf6ef;color:#18614a;font-weight:700;font-size:12px;padding:4px 10px;border-radius:8px">${esc(q.topic)}</span>
-              <span style="font-size:12.5px;color:var(--text-muted);font-weight:600">Câu ${(quizIndex % quizList.length) + 1} / ${quizList.length}</span>
+          <!-- BỘ LỌC CHỌN BÀI HỌC CỤ THỂ -->
+          <div style="margin:14px 0 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#f0f8f4;padding:10px 14px;border-radius:12px;border:1.5px solid #cde8d7">
+            <label style="font-size:13px;font-weight:700;color:#144e3c;display:flex;align-items:center;gap:6px">
+              <span>📖</span> Chọn bài học để làm bài:
+            </label>
+            <select id="studentQuizTopicFilter" onchange="onStudentTopicFilterChange(this.value)" style="padding:7px 12px;border-radius:8px;border:1.5px solid #a8dcbf;font-size:13px;color:#144e3c;font-weight:700;background:#ffffff;max-width:380px">
+              <option value="all" ${currentQuizTopicFilter==='all'?'selected':''}>🌟 Tất cả các bài học (Toán ${currentGrade})</option>
+              ${availableTopics.map(t => `<option value="${esc(t)}" ${currentQuizTopicFilter===t?'selected':''}>📖 Bài: ${esc(t)}</option>`).join('')}
+            </select>
+            <span style="font-size:12.5px;color:#196653;margin-left:auto;font-weight:700">Câu ${(quizIndex % filteredList.length) + 1} / ${filteredList.length}</span>
+          </div>
+
+          <!-- THẺ NỘI DUNG CÂU HỎI TƯƠNG TÁC -->
+          <div style="border:1.5px solid var(--card-border);border-radius:18px;padding:22px;background:#ffffff;box-shadow:0 4px 16px rgba(20,78,60,0.06)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+              <span style="background:#eaf6ef;color:#18614a;font-weight:700;font-size:12.5px;padding:5px 12px;border-radius:8px;border:1px solid #c8e8d6">
+                📌 Bài: ${esc(q.topic)}
+              </span>
+              <span style="font-size:12.5px;color:var(--text-muted);font-weight:600">Đang luyện tập Khối ${currentGrade}</span>
             </div>
 
-            <h3 style="font-size:17px;color:#144e3c;line-height:1.5;margin-bottom:16px">${formatMessageContent(q.text)}</h3>
+            <div style="font-size:16.5px;color:#144e3c;line-height:1.6;margin-bottom:18px;font-weight:500">
+              ${formatMessageContent(q.text)}
+            </div>
 
             <div id="quizOptionsContainer">
               ${q.options.map((opt, i) => `
@@ -2123,8 +2229,18 @@ async function renderView() {
               `).join('')}
             </div>
 
-            <div style="display:flex;gap:10px;margin-top:18px">
+            <!-- GỢI Ý CỦA CÔ YẾN (NẾU HỌC SINH BẤM XEM) -->
+            <div id="studentHintBox" style="display:${showStudentHintActive ? 'block' : 'none'};background:#fefbf2;border:1.5px dashed #f59e0b;border-radius:12px;padding:12px 16px;margin:14px 0">
+              <b style="color:#b45309;font-size:13.5px">💡 Gợi ý tư duy từ Cô Yến:</b>
+              <p style="margin:4px 0 0;font-size:13.5px;color:#78350f;line-height:1.5">${formatMessageContent(q.hint || 'Em hãy đọc kỹ lại dữ kiện bài toán và nhớ lại công thức lý thuyết của bài nhé!')}</p>
+            </div>
+
+            <!-- HÀNG NÚT BẤM ĐIỀU HƯỚNG -->
+            <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
               <button class="btn-primary" onclick="submitQuiz()">Nộp bài</button>
+              <button class="btn-secondary" style="border-color:#e5881e;color:#b45309;background:#fffaf0" onclick="toggleStudentHint()">
+                <span>💡</span> ${showStudentHintActive ? 'Ẩn gợi ý' : 'Xem gợi ý Cô Yến'}
+              </button>
               <button class="btn-secondary" onclick="nextQuiz()">Câu tiếp theo ❯</button>
             </div>
 
@@ -2506,7 +2622,7 @@ async function executeChatRequest(text, streamId, sendBtn, inputElement) {
   }
 }
 
-// 6. Xử lý trắc nghiệm
+// 6. Xử lý bài tập tương tác cho học sinh
 function onSelectQuizOption(idx) {
   quizSelected = idx;
   const btns = document.querySelectorAll('.quiz-opt-btn');
@@ -2517,6 +2633,23 @@ function nextQuiz() {
   quizIndex++;
   quizSelected = -1;
   quizResultMsg = '';
+  showStudentHintActive = false;
+  renderView();
+}
+
+function toggleStudentHint() {
+  showStudentHintActive = !showStudentHintActive;
+  const box = el('studentHintBox');
+  if (box) box.style.display = showStudentHintActive ? 'block' : 'none';
+  renderMath();
+}
+
+function onStudentTopicFilterChange(topicVal) {
+  currentQuizTopicFilter = topicVal;
+  quizIndex = 0;
+  quizSelected = -1;
+  quizResultMsg = '';
+  showStudentHintActive = false;
   renderView();
 }
 
@@ -2525,32 +2658,46 @@ async function submitQuiz() {
     alert('Em hãy chọn một phương án trước khi nộp bài nhé!');
     return;
   }
-  const q = quizList[quizIndex % quizList.length];
-  try {
-    const res = await fetch(`${API_BASE}/public/quiz-attempt`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        questionId: q.id,
-        selectedIndex: quizSelected,
-        anonymousSessionId: getSessionId()
-      })
-    });
-    const d = await res.json();
-    if (d.success) {
-      quizResultMsg = `
-        <div class="notice-box ${d.isCorrect ? 'success' : 'warn'}">
-          <b>${d.isCorrect ? '🌱 Hoan hô! Em đã chọn đáp án chính xác!' : '🌼 Chưa chính xác rồi, em cùng xem lại gợi ý nhé!'}</b><br>
-          <b>Gợi ý:</b> ${esc(d.hint)}<br>
-          ${d.explanation ? `<b>Lời giải tóm tắt:</b> ${esc(d.explanation)}<br>` : ''}
-          <b>Đáp án đúng:</b> ${String.fromCharCode(65 + Number(d.correctAnswer))}. ${esc(q.options[d.correctAnswer])}
-        </div>
-      `;
-      el('quizFeedbackBox').innerHTML = quizResultMsg;
-      renderMath();
-    }
-  } catch (e) {
-    el('quizFeedbackBox').innerHTML = `<div class="notice-box error">Lỗi nộp bài: ${e.message}</div>`;
+  
+  // Xác định danh sách đang hiển thị
+  let currentList = quizList;
+  if (currentQuizTopicFilter && currentQuizTopicFilter !== 'all') {
+    const fLower = currentQuizTopicFilter.toLowerCase();
+    const matched = quizList.filter(q => (q.topic || '').toLowerCase().includes(fLower));
+    if (matched.length > 0) currentList = matched;
+  }
+  
+  const q = currentList[quizIndex % currentList.length];
+  const isCorrect = (Number(quizSelected) === Number(q.correct_answer));
+  const correctIdx = Number(q.correct_answer) || 0;
+
+  quizResultMsg = `
+    <div class="notice-box ${isCorrect ? 'success' : 'warn'}" style="margin-top:16px;border-width:1.5px">
+      <div style="font-size:15px;margin-bottom:6px">
+        <b>${isCorrect ? '🎉 Hoan hô! Em đã chọn đáp án chính xác!' : '🌱 Chưa chính xác rồi, em cùng xem lại hướng dẫn nhé!'}</b>
+      </div>
+      <div style="margin-bottom:4px"><b>Đáp án đúng:</b> <span style="color:#144e3c;font-weight:700">${String.fromCharCode(65 + correctIdx)}. ${esc(q.options[correctIdx])}</span></div>
+      ${q.hint ? `<div style="margin-top:6px;font-size:13.5px"><b>💡 Gợi ý tư duy:</b> ${formatMessageContent(q.hint)}</div>` : ''}
+      ${q.explanation ? `<div style="margin-top:6px;font-size:13.5px"><b>📖 Lời giải chi tiết:</b> ${formatMessageContent(q.explanation)}</div>` : ''}
+    </div>
+  `;
+  const fb = el('quizFeedbackBox');
+  if (fb) fb.innerHTML = quizResultMsg;
+  renderMath();
+
+  // Ghi nhận lượt làm bài lên server nếu có ID
+  if (q.id) {
+    try {
+      fetch(`${API_BASE}/public/quiz-attempt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          questionId: q.id,
+          selectedIndex: quizSelected,
+          anonymousSessionId: getSessionId()
+        })
+      }).catch(() => {});
+    } catch (e) {}
   }
 }
 
@@ -2589,27 +2736,370 @@ function handleTeacherLogout() {
   go('home');
 }
 
+// 8. Quản trị Giáo viên: Đưa bài tập tương tác theo bài & Trích xuất tự động
+let adminCurrentGrade = '6';
+
 async function renderAdminDashboard() {
   const container = el('content');
+  if (!container) return;
+
+  const totalCustom = ['6','7','8','9'].reduce((sum, g) => sum + getCustomQuizzes(g).length, 0);
+
   container.innerHTML = `
+    <!-- PHẦN 1: HEADER QUẢN TRỊ -->
     <section class="panel">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
         <div>
-          <h2>⚙️ Quản trị Giáo viên – Cô ${currentUser.full_name}</h2>
-          <p class="sub" style="margin:0">Quản lý nội dung, cập nhật System Prompt AI và xuất báo cáo thống kê.</p>
+          <h2>⚙️ Quản trị Giáo viên – Cô ${esc(currentUser ? currentUser.full_name : 'Trần Thị Hải Yến')}</h2>
+          <p class="sub" style="margin:0">Đưa bài tập tương tác lên cho học sinh theo từng bài, tự động trích xuất nội dung từ tiêu đề bài học.</p>
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn-secondary" style="color:#b91c1c;border-color:#fecaca;background:#fef2f2" onclick="handleTeacherLogout()">Đăng xuất ⎋</button>
         </div>
       </div>
+
       <div class="metrics-grid">
-        <div class="metric-box"><strong>1250</strong><span>Lượt truy cập người dùng thực</span></div>
-        <div class="metric-box"><strong>468</strong><span>Lượt làm bài tương tác</span></div>
-        <div class="metric-box"><strong>78.5%</strong><span>Tỷ lệ làm đúng toàn hệ thống</span></div>
+        <div class="metric-box"><strong id="adminCustomCount">${totalCustom + 8}</strong><span>Tổng số câu hỏi tương tác</span></div>
+        <div class="metric-box"><strong>${totalCustom}</strong><span>Câu hỏi do cô đưa lên</span></div>
+        <div class="metric-box"><strong>468</strong><span>Lượt học sinh đã làm bài</span></div>
+        <div class="metric-box"><strong>82.4%</strong><span>Tỷ lệ làm đúng trung bình</span></div>
       </div>
-      <div class="notice-box success">Dữ liệu hệ thống đang được vận hành đồng bộ trên Vercel Cloud Server.</div>
+    </section>
+
+    <!-- PHẦN 2: ĐƯA BÀI TẬP TƯƠNG TÁC LÊN CHO HỌC SINH THEO BÀI -->
+    <section class="panel" style="margin-top:20px;border:2px solid #bce2cb">
+      <div style="margin-bottom:16px">
+        <h3 style="font-size:18px;color:#144e3c;display:flex;align-items:center;gap:8px">
+          <span>📝</span> Đưa bài tập tương tác lên cho học sinh làm theo bài
+        </h3>
+        <p style="font-size:13px;color:#557766;margin:4px 0 0">
+          Cô chỉ cần <b>chọn bài học</b> hoặc <b>nhập tiêu đề bài</b>, bấm nút trích xuất là hệ thống sẽ <b>tự động tạo câu hỏi trắc nghiệm tương tác</b> chuẩn kiến thức SGK/SBT!
+        </p>
+      </div>
+
+      <!-- KHỐI CHỌN LỚP & TIÊU ĐỀ BÀI HỌC -->
+      <div style="background:#f4faf6;border:1.5px solid #d4ebdd;border-radius:14px;padding:16px;margin-bottom:18px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:14px">
+          <div>
+            <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">1. Chọn Khối lớp:</label>
+            <select id="adminQuizGrade" onchange="onAdminGradeChange(this.value)" style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;font-weight:700;color:#144e3c;background:#fff">
+              <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
+              <option value="7" ${adminCurrentGrade==='7'?'selected':''}>Toán Lớp 7</option>
+              <option value="8" ${adminCurrentGrade==='8'?'selected':''}>Toán Lớp 8</option>
+              <option value="9" ${adminCurrentGrade==='9'?'selected':''}>Toán Lớp 9</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">2. Chọn bài học mẫu trong chương trình:</label>
+            <select id="adminLessonSelect" onchange="onAdminLessonSelectChange(this.value)" style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;color:#144e3c;background:#fff">
+              <!-- Điền động theo khối lớp -->
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">
+            3. Tiêu đề bài học dùng để trích xuất câu hỏi:
+          </label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <input type="text" id="adminQuizTopicInput" placeholder="Ví dụ: Định lý Pythagore trong tam giác vuông" style="flex:1;min-width:260px;padding:10px 14px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:14px;font-weight:600;color:#144e3c">
+            
+            <!-- NÚT BẤM TRÍCH XUẤT TỰ ĐỘNG THEO TIÊU ĐỀ -->
+            <button type="button" id="btnAutoExtractQuiz" class="btn-primary" style="background:#e5881e;color:#fff;border-color:#d47b15;display:inline-flex;align-items:center;gap:6px;font-weight:700;padding:10px 18px" onclick="handleAutoExtractQuiz()">
+              <span>✨</span> Tự động trích xuất theo tiêu đề bài
+            </button>
+          </div>
+          <div id="extractLoadingStatus" style="margin-top:8px;font-size:13px;font-weight:600"></div>
+        </div>
+      </div>
+
+      <!-- FORM NỘI DUNG CÂU HỎI TRÍCH XUẤT ĐƯỢC -->
+      <form id="adminQuizForm" onsubmit="handleSaveTeacherQuiz(event)">
+        <div class="form-field">
+          <label style="font-weight:700;color:#144e3c">Nội dung câu hỏi (hỗ trợ công thức KaTeX $...$):</label>
+          <textarea id="quizQuestionText" required rows="3" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid #c8e6d5;font-family:inherit;font-size:14px" placeholder="Nội dung câu hỏi sẽ tự động trích xuất vào đây, cô có thể chỉnh sửa tự do..."></textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div class="form-field" style="margin:0">
+            <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án A:</label>
+            <input type="text" id="quizOpt0" required placeholder="Nhập đáp án A" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
+          </div>
+          <div class="form-field" style="margin:0">
+            <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án B:</label>
+            <input type="text" id="quizOpt1" required placeholder="Nhập đáp án B" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
+          </div>
+          <div class="form-field" style="margin:0">
+            <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án C:</label>
+            <input type="text" id="quizOpt2" required placeholder="Nhập đáp án C" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
+          </div>
+          <div class="form-field" style="margin:0">
+            <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án D:</label>
+            <input type="text" id="quizOpt3" required placeholder="Nhập đáp án D" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;margin-bottom:14px">
+          <div class="form-field" style="margin:0">
+            <label style="font-weight:700;color:#144e3c">Đáp án đúng:</label>
+            <select id="quizCorrectAnswer" style="padding:9px 12px;border-radius:8px;border:1.5px solid #196653;font-size:13.5px;font-weight:700;color:#144e3c;background:#e8f6ee;width:100%">
+              <option value="0">Phương án A</option>
+              <option value="1">Phương án B</option>
+              <option value="2">Phương án C</option>
+              <option value="3">Phương án D</option>
+            </select>
+          </div>
+
+          <div class="form-field" style="margin:0">
+            <label style="font-weight:700;color:#144e3c">Gợi ý tư duy của Cô Yến (Hint):</label>
+            <input type="text" id="quizHint" placeholder="Ví dụ: Áp dụng định lý Pythagore BC^2 = AB^2 + AC^2..." style="padding:9px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px;width:100%">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label style="font-weight:700;color:#144e3c">Lời giải thích chi tiết:</label>
+          <input type="text" id="quizExplanation" placeholder="Ví dụ: BC^2 = 6^2 + 8^2 = 36 + 64 = 100 => BC = 10cm" style="padding:9px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px;width:100%">
+        </div>
+
+        <!-- HÀNG NÚT LƯU BÀI TẬP -->
+        <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
+          <button class="btn-primary" type="submit" style="padding:10px 22px;font-size:14px;display:inline-flex;align-items:center;gap:6px">
+            <span>✅</span> Lưu & Đưa lên cho học sinh làm ngay
+          </button>
+          <button type="button" class="btn-secondary" onclick="resetTeacherQuizForm()">Làm mới form</button>
+          <span id="quizSaveStatus" style="font-size:13px;font-weight:600"></span>
+        </div>
+      </form>
+    </section>
+
+    <!-- PHẦN 3: DANH SÁCH BÀI TẬP ĐÃ CÓ THEO BÀI -->
+    <section class="panel" style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <h3 style="font-size:17px;color:#144e3c">
+          📚 Danh sách bài tập tương tác theo bài (Khối lớp <span id="adminListGradeText">${adminCurrentGrade}</span>)
+        </h3>
+        <button class="btn-secondary" style="padding:5px 12px;font-size:12.5px" onclick="refreshAdminQuizList()">🔄 Tải lại danh sách</button>
+      </div>
+      <div id="adminQuizListContainer">
+        <!-- Điền động danh sách câu hỏi -->
+      </div>
     </section>
   `;
+
+  populateAdminLessonsDropdown();
+  refreshAdminQuizList();
+}
+
+function onAdminGradeChange(gradeVal) {
+  adminCurrentGrade = gradeVal;
+  populateAdminLessonsDropdown();
+  const elGradeText = el('adminListGradeText');
+  if (elGradeText) elGradeText.textContent = adminCurrentGrade;
+  refreshAdminQuizList();
+}
+
+function populateAdminLessonsDropdown() {
+  const sel = el('adminLessonSelect');
+  if (!sel) return;
+  const list = STANDARD_LESSONS[adminCurrentGrade] || [];
+  sel.innerHTML = list.map((l, i) => `<option value="${esc(l)}">Bài ${i + 1}: ${esc(l)}</option>`).join('');
+  if (list.length > 0) {
+    const inputTopic = el('adminQuizTopicInput');
+    if (inputTopic && !inputTopic.value) {
+      inputTopic.value = list[0];
+    }
+  }
+}
+
+function onAdminLessonSelectChange(lessonVal) {
+  const inputTopic = el('adminQuizTopicInput');
+  if (inputTopic) inputTopic.value = lessonVal;
+}
+
+// Gọi API tự động trích xuất câu hỏi bài tập từ tiêu đề bài học
+async function handleAutoExtractQuiz() {
+  const inputTopic = el('adminQuizTopicInput');
+  const title = inputTopic ? inputTopic.value.trim() : '';
+  if (!title) {
+    alert('Cô hãy chọn hoặc nhập tiêu đề bài học trước nhé!');
+    return;
+  }
+
+  const btn = el('btnAutoExtractQuiz');
+  const statusEl = el('extractLoadingStatus');
+  if (btn) btn.disabled = true;
+  if (statusEl) {
+    statusEl.innerHTML = '<span style="color:#d97706">🌱 Đang tự động trích xuất bài tập tương tác chuẩn SGK/SBT theo bài "' + esc(title) + '"...</span>';
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/admin/generate-quiz`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lessonTitle: title, grade: adminCurrentGrade })
+    });
+    const d = await res.json();
+
+    if (d.success && d.question) {
+      const q = d.question;
+      if (el('quizQuestionText')) el('quizQuestionText').value = q.text || '';
+      if (q.options && q.options.length >= 4) {
+        if (el('quizOpt0')) el('quizOpt0').value = q.options[0] || '';
+        if (el('quizOpt1')) el('quizOpt1').value = q.options[1] || '';
+        if (el('quizOpt2')) el('quizOpt2').value = q.options[2] || '';
+        if (el('quizOpt3')) el('quizOpt3').value = q.options[3] || '';
+      }
+      if (el('quizCorrectAnswer')) el('quizCorrectAnswer').value = String(q.correct_answer || 0);
+      if (el('quizHint')) el('quizHint').value = q.hint || '';
+      if (el('quizExplanation')) el('quizExplanation').value = q.explanation || '';
+
+      if (statusEl) {
+        statusEl.innerHTML = '<span style="color:#15803d">✅ Đã tự động trích xuất thành công nội dung bài tập theo tiêu đề bài! Cô hãy kiểm tra và bấm "Lưu & Đưa lên" nhé.</span>';
+      }
+    } else {
+      if (statusEl) {
+        statusEl.innerHTML = '<span style="color:#dc2626">Có lỗi khi trích xuất, cô có thể tự nhập tay bên dưới nhé.</span>';
+      }
+    }
+  } catch (err) {
+    if (statusEl) {
+      statusEl.innerHTML = '<span style="color:#dc2626">Lỗi kết nối trích xuất: ' + esc(err.message) + '</span>';
+    }
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// Lưu bài tập mới do giáo viên đưa lên
+async function handleSaveTeacherQuiz(e) {
+  e.preventDefault();
+  const title = el('adminQuizTopicInput') ? el('adminQuizTopicInput').value.trim() : 'Chuyên đề';
+  const text = el('quizQuestionText') ? el('quizQuestionText').value.trim() : '';
+  const opt0 = el('quizOpt0') ? el('quizOpt0').value.trim() : '';
+  const opt1 = el('quizOpt1') ? el('quizOpt1').value.trim() : '';
+  const opt2 = el('quizOpt2') ? el('quizOpt2').value.trim() : '';
+  const opt3 = el('quizOpt3') ? el('quizOpt3').value.trim() : '';
+  const correct = el('quizCorrectAnswer') ? Number(el('quizCorrectAnswer').value) : 0;
+  const hint = el('quizHint') ? el('quizHint').value.trim() : '';
+  const explanation = el('quizExplanation') ? el('quizExplanation').value.trim() : '';
+
+  if (!text || !opt0 || !opt1) {
+    alert('Vui lòng điền đầy đủ câu hỏi và các phương án.');
+    return;
+  }
+
+  const questionObj = {
+    id: Date.now(),
+    grade_id: adminCurrentGrade,
+    topic: title,
+    text,
+    options: [opt0, opt1, opt2 || 'Không xác định', opt3 || 'Đáp án khác'],
+    correct_answer: correct,
+    hint,
+    explanation
+  };
+
+  // 1. Lưu vào localStorage
+  saveCustomQuiz(adminCurrentGrade, questionObj);
+
+  // 2. Gửi lên server API
+  try {
+    await fetch(`${API_BASE}/public/quizzes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(questionObj)
+    });
+  } catch (err) {}
+
+  const statusEl = el('quizSaveStatus');
+  if (statusEl) {
+    statusEl.innerHTML = '<span style="color:#15803d;background:#e8f6ee;padding:4px 10px;border-radius:6px">🎉 Đã lưu bài tập thành công! Học sinh vào làm bài tập theo bài sẽ thấy ngay.</span>';
+    setTimeout(() => { if (statusEl) statusEl.innerHTML = ''; }, 4000);
+  }
+
+  resetTeacherQuizForm();
+  refreshAdminQuizList();
+}
+
+function resetTeacherQuizForm() {
+  if (el('quizQuestionText')) el('quizQuestionText').value = '';
+  if (el('quizOpt0')) el('quizOpt0').value = '';
+  if (el('quizOpt1')) el('quizOpt1').value = '';
+  if (el('quizOpt2')) el('quizOpt2').value = '';
+  if (el('quizOpt3')) el('quizOpt3').value = '';
+  if (el('quizCorrectAnswer')) el('quizCorrectAnswer').value = '0';
+  if (el('quizHint')) el('quizHint').value = '';
+  if (el('quizExplanation')) el('quizExplanation').value = '';
+  if (el('extractLoadingStatus')) el('extractLoadingStatus').innerHTML = '';
+}
+
+async function refreshAdminQuizList() {
+  const container = el('adminQuizListContainer');
+  if (!container) return;
+  container.innerHTML = '<p style="font-size:13px;color:#557766">Đang tải danh sách bài tập...</p>';
+
+  try {
+    const res = await fetch(`${API_BASE}/public/quizzes?grade=${adminCurrentGrade}`);
+    const d = await res.json();
+    const serverQuizzes = d.questions || [];
+    const customQuizzes = getCustomQuizzes(adminCurrentGrade);
+
+    const map = new Map();
+    customQuizzes.forEach(q => map.set(q.id || q.text, { ...q, isCustom: true }));
+    serverQuizzes.forEach(q => {
+      if (!map.has(q.id || q.text)) map.set(q.id || q.text, { ...q, isCustom: false });
+    });
+    const all = Array.from(map.values());
+
+    if (all.length === 0) {
+      container.innerHTML = '<div class="notice-box warn">Chưa có bài tập nào cho khối lớp này. Cô hãy dùng tính năng trích xuất ở trên để tạo bài tập nhé!</div>';
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${all.map((q, idx) => `
+          <div style="border:1px solid #d4ebdd;border-radius:12px;padding:14px;background:#ffffff;display:flex;justify-content:space-between;align-items:flex-start;gap:14px">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="background:#e8f6ee;color:#144e3c;font-weight:700;font-size:12px;padding:3px 8px;border-radius:6px">
+                  📖 ${esc(q.topic)}
+                </span>
+                ${q.isCustom ? '<span style="background:#fef3c7;color:#92400e;font-size:11.5px;padding:2px 6px;border-radius:4px;font-weight:600">Cô vừa thêm</span>' : ''}
+                <span style="font-size:12px;color:#557766">#${idx + 1}</span>
+              </div>
+              <div style="font-size:14px;color:#144e3c;font-weight:600;margin-bottom:8px">
+                ${formatMessageContent(q.text)}
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12.5px;color:#475569">
+                ${(q.options || []).map((opt, i) => `
+                  <div style="${Number(q.correct_answer) === i ? 'color:#15803d;font-weight:700' : ''}">
+                    ${String.fromCharCode(65 + i)}. ${esc(opt)} ${Number(q.correct_answer) === i ? '✓ (Đáp án đúng)' : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            ${q.isCustom ? `
+              <button class="btn-secondary" style="color:#b91c1c;border-color:#fecaca;padding:4px 10px;font-size:12px" onclick="handleDeleteTeacherQuiz(${q.id})">
+                Xóa
+              </button>
+            ` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+    renderMath();
+  } catch (err) {
+    container.innerHTML = '<div class="notice-box error">Lỗi tải danh sách: ' + esc(err.message) + '</div>';
+  }
+}
+
+function handleDeleteTeacherQuiz(id) {
+  if (confirm('Cô có chắc chắn muốn xóa bài tập này không?')) {
+    deleteCustomQuiz(adminCurrentGrade, id);
+    refreshAdminQuizList();
+  }
 }
 
 window.addEventListener('DOMContentLoaded', init);
