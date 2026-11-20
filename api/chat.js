@@ -4,11 +4,9 @@
 // Bổ sung: Tự động vẽ hình học dạng SVG vector chuẩn mực
 
 const DEFAULT_MODELS = [
-  "gemini-flash-latest",
-  "gemini-flash-lite-latest",
   "gemini-3.5-flash",
-  "gemini-2.5-flash-lite",
-  "gemini-pro-latest"
+  "gemini-3.1-flash-lite",
+  "gemini-flash-latest"
 ];
 
 const MODELS = process.env.GEMINI_MODEL 
@@ -244,29 +242,40 @@ module.exports = async (req, res) => {
   }
 
   // Phản hồi mẫu sư phạm chuẩn 5 phần có kèm SVG minh họa khi gặp trục trặc mạng
+  const lowerMsg = (userText || '').toLowerCase();
+  let svgBlock = `<svg viewBox="0 0 320 180" width="100%" style="max-width:320px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:14px;padding:8px;"><polygon points="60,35 60,135 220,135" fill="#e8f6ee" stroke="#196653" stroke-width="2.5"/><polyline points="60,120 75,120 75,135" fill="none" stroke="#e11d48" stroke-width="2"/><text x="45" y="148" fill="#144e3c" font-size="14" font-weight="bold">A</text><text x="45" y="32" fill="#144e3c" font-size="14" font-weight="bold">B</text><text x="225" y="145" fill="#144e3c" font-size="14" font-weight="bold">C</text><text x="35" y="90" fill="#196653" font-size="13" font-weight="bold">c</text><text x="135" y="152" fill="#196653" font-size="13" font-weight="bold">b</text><text x="150" y="80" fill="#e5881e" font-size="13" font-weight="bold">a (cạnh huyền)</text></svg>`;
+  let topicName = "Tam giác vuông & Định lý Pythagore";
+  let formulaBlock = `$$\\triangle ABC \\text{ vuông tại } A \\implies BC^2 = AB^2 + AC^2$$`;
+
+  if (lowerMsg.includes('bình hành') || lowerMsg.includes('tứ giác')) {
+    topicName = "Hình bình hành & Tính chất";
+    svgBlock = `<svg viewBox="0 0 320 170" width="100%" style="max-width:320px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:14px;padding:8px;"><polygon points="80,30 260,30 210,130 30,130" fill="#f0f7f4" stroke="#196653" stroke-width="2.5"/><line x1="80" y1="30" x2="210" y2="130" stroke="#7ab8a6" stroke-width="1.8" stroke-dasharray="5,5"/><line x1="260" y1="30" x2="30" y2="130" stroke="#7ab8a6" stroke-width="1.8" stroke-dasharray="5,5"/><circle cx="145" cy="80" r="3.5" fill="#d9534f"/><text x="152" y="80" fill="#d9534f" font-size="13" font-weight="bold">O</text><text x="70" y="24" fill="#144e3c" font-size="14" font-weight="bold">A</text><text x="268" y="28" fill="#144e3c" font-size="14" font-weight="bold">B</text><text x="215" y="145" fill="#144e3c" font-size="14" font-weight="bold">C</text><text x="15" y="140" fill="#144e3c" font-size="14" font-weight="bold">D</text></svg>`;
+    formulaBlock = `$$AB // CD, \\quad AB = CD \\quad \\text{và} \\quad AD // BC, \\quad AD = BC$$
+Hai đường chéo cắt nhau tại trung điểm $O$ của mỗi đường ($OA = OC, OB = OD$).`;
+  } else if (lowerMsg.includes('tròn') || lowerMsg.includes('góc ở tâm') || lowerMsg.includes('nội tiếp')) {
+    topicName = "Đường tròn & Các loại góc";
+    svgBlock = `<svg viewBox="0 0 300 180" width="100%" style="max-width:300px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:14px;padding:8px;"><circle cx="150" cy="95" r="65" fill="#f5fbf7" stroke="#196653" stroke-width="2.5"/><circle cx="150" cy="95" r="3.5" fill="#196653"/><text x="155" y="95" fill="#144e3c" font-size="13" font-weight="bold">O</text><text x="90" y="155" fill="#144e3c" font-size="13" font-weight="bold">A</text><text x="205" y="155" fill="#144e3c" font-size="13" font-weight="bold">B</text><text x="145" y="22" fill="#e11d48" font-size="14" font-weight="bold">C</text><line x1="150" y1="95" x2="100" y2="140" stroke="#196653" stroke-width="1.8"/><line x1="150" y1="95" x2="200" y2="140" stroke="#196653" stroke-width="1.8"/><line x1="150" y1="30" x2="100" y2="140" stroke="#e11d48" stroke-width="2"/><line x1="150" y1="30" x2="200" y2="140" stroke="#e11d48" stroke-width="2"/></svg>`;
+    formulaBlock = `$$\\widehat{ACB} = \\frac{1}{2}\\widehat{AOB} = \\frac{1}{2}\\text{sđ}\\overparen{AB}$$`;
+  }
+
   return res.status(200).json({
     success: true,
-    reply: `Chào em! Cô rất vui khi nhận được bài toán này của em. Đây là một dạng toán vô cùng trọng tâm trong chương trình môn Toán cấp THCS, thường xuyên xuất hiện trong các bài kiểm tra định kỳ cũng như đề thi tuyển sinh vào lớp 10 đấy em nhé! 🌱
+    reply: `Chào em! Cô rất vui khi nhận được bài toán về **${topicName}** này của em. Đây là nội dung vô cùng quan trọng trong chương trình Hình học cấp THCS đấy em nhé! 🌱
 
 Phương châm giảng dạy của cô là **"Hỏi để hiểu – Không lời giải chi tiết"**. Cô sẽ không giải hộ từ đầu đến cuối mà đồng hành hướng dẫn cặn kẽ để em tự phát hiện vấn đề và tự mình chinh phục bài toán này nhé!
 
 ### 1. Kiến thức và Định lý then chốt cần ghi nhớ:
-Khi làm việc với các dạng toán này, kiến thức nền tảng quan trọng nhất mà các em cần nắm vững là mối quan hệ giữa các yếu tố trong hình (ví dụ như Định lý Pythagore trong tam giác vuông):
-$$\\triangle ABC \\text{ vuông tại } A \\implies BC^2 = AB^2 + AC^2$$
-Trong đó:
-- $BC$ là **cạnh huyền** (cạnh đối diện với góc vuông, luôn là cạnh lớn nhất trong tam giác vuông).
-- $AB$ và $AC$ là hai **cạnh góc vuông** kề với góc vuông $A$.
+${formulaBlock}
 
 ### 2. Hình vẽ minh họa trực quan:
-<svg viewBox="0 0 320 180" width="100%" style="max-width:320px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:14px;padding:8px;"><polygon points="60,35 60,135 220,135" fill="#e8f6ee" stroke="#196653" stroke-width="2.5"/><polyline points="60,120 75,120 75,135" fill="none" stroke="#e11d48" stroke-width="2"/><text x="45" y="148" fill="#144e3c" font-size="14" font-weight="bold">A</text><text x="45" y="32" fill="#144e3c" font-size="14" font-weight="bold">B</text><text x="225" y="145" fill="#144e3c" font-size="14" font-weight="bold">C</text><text x="35" y="90" fill="#196653" font-size="13" font-weight="bold">c</text><text x="135" y="152" fill="#196653" font-size="13" font-weight="bold">b</text><text x="150" y="80" fill="#e5881e" font-size="13" font-weight="bold">a (cạnh huyền)</text></svg>
+${svgBlock}
 
-### 3. Cảnh báo những lỗi sai học sinh hay mắc phải:
-- Các bạn thường nhầm lẫn vị trí của cạnh huyền với cạnh góc vuông khi thay số vào biểu thức.
-- Khi tính ra $BC^2$, nhiều em quên bước khai căn bậc hai để tìm độ dài $BC = \\sqrt{BC^2}$.
-- Cần chú ý kiểm tra tính đồng nhất của các đơn vị đo độ dài trước khi thực hiện phép tính.
+### 3. Phân tích hình vẽ và lưu ý quan trọng:
+- Quan sát kỹ các đỉnh, cạnh và góc tương ứng đã được đánh dấu rõ nét trên hình vẽ.
+- Chú ý các điều kiện song song, bằng nhau hoặc góc vuông để áp dụng đúng công thức.
 
 ### 4. Bước đầu tiên dành cho em:
-Em hãy quan sát kỹ hình vẽ minh họa ở trên và đối chiếu với dữ kiện đề bài của em: Em hãy cho cô biết bài toán đã cho sẵn những cạnh nào, độ dài của chúng là bao nhiêu và yêu cầu em cần đi tìm cạnh nào nhé? Em hãy nhắn lại cho cô nhé! ✨`,
+Em hãy quan sát kỹ hình vẽ minh họa ở trên và đối chiếu với dữ kiện bài toán của em: Em hãy cho cô biết bài toán đã cho sẵn những số liệu nào và yêu cầu em cần chứng minh hoặc tính toán điều gì nhé? Em hãy nhắn lại cho cô nhé! ✨`,
     isFallback: true
   });
 };
