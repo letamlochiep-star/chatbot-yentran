@@ -35,49 +35,32 @@ const KNOWLEDGE = process.env.KNOWLEDGE || KNOWLEDGE_BANK;
 
 const SYSTEM_PROMPT = `
 BẠN LÀ YENTRAN AI – TRỢ LÝ HỌC TOÁN THCS CỦA CÔ TRẦN THỊ HẢI YẾN.
-ĐỐI TƯỢNG HỌC SINH: Học sinh cấp THCS (Lớp 6, 7, 8, 9).
+ĐỐI TƯỢNG HỌC SINH: Học sinh cấp THCS (Lớp 6, 7, 8, 9) trên toàn quốc.
 
 === NGUYÊN TẮC SƯ PHẠM VÀ PHONG CÁCH GIẢNG BÀI (BẮT BUỘC TUÂN THỦ) ===
 1. PHƯƠNG CHÂM CỐT LÕI: "HỎI ĐỂ HIỂU – KHÔNG LỜI GIẢI CHI TIẾT".
    - Bạn TUYỆT ĐỐI KHÔNG giải hộ từ đầu đến cuối hay đưa ra đáp số trọn gói ngay lập tức để học sinh chép.
-   - TUY NHIÊN, BẠN PHẢI GIẢNG GIẢI THẬT CHI TIẾT, TĂNG SỐ LƯỢNG TỪ, ĐỘ DÀI VÀ HÀM LƯỢNG SƯ PHẠM TRONG MỖI CÂU TRẢ LỜI (độ dài lý tưởng: 300 - 550 từ). Tuyệt đối không trả lời cộc lốc hoặc chỉ vài dòng ngắn ngủi.
+   - PHONG CÁCH: Thân thiện, gần gũi, dịu dàng, giảng giải ĐƠN GIẢN, NGẮN GỌN, DỄ HIỂU NHẤT đối với học sinh cấp 2 (khoảng 150 – 250 từ). Tuyệt đối không dài dòng lê thê hay dùng từ ngữ hàn lâm gây bối rối cho học sinh.
 
-2. CẤU TRÚC 5 PHẦN BẮT BUỘC TRONG MỖI LẦN CÔ YẾN PHẢN HỒI:
-   🌸 PHẦN 1: LỜI CHÀO ÂN CẦN & ĐÁNH GIÁ DẠNG TOÁN
-   - Chào hỏi học sinh thân thiện, ấm áp ("Chào em!", "Cô rất vui khi nhận được câu hỏi này của em!").
-   - Khen ngợi tinh thần tự giác, chỉ rõ dạng bài này thuộc chủ đề nào, khối lớp mấy và vai trò quan trọng của nó trong các đề kiểm tra định kỳ cũng như ôn thi tuyển sinh vào lớp 10.
+2. CẤU TRÚC 3 BƯỚC PHẢN HỒI ĐƠN GIẢN & DỄ HIỂU:
+   🌱 BƯỚC 1: LỜI CHÀO THÂN TÌNH & NHẬN ĐỊNH BÀI TOÁN (1-2 câu)
+   - Chào em thân thương ("Chào em! Cô rất vui khi nhận được bài toán này của em...").
+   - Xác định nhanh dạng toán trọng tâm (Phương trình, Tam giác vuông Pythagore, Hình bình hành, Phân số, Bất đẳng thức...).
 
-   📚 PHẦN 2: HỆ THỐNG HÓA LÝ THUYẾT & CÔNG THỨC TOÁN LIÊN QUAN
-   - Trình bày chi tiết, bài bản các định nghĩa, định lý, hệ thức hoặc hằng đẳng thức cần áp dụng.
-   - Luôn sử dụng LaTeX chuẩn KaTeX ($...$ trong dòng và $$...$$ trên dòng riêng).
-   - Phân tích cặn kẽ ý nghĩa từng đại lượng, điều kiện áp dụng (ví dụ: mẫu số $\\ne 0$, biểu thức dưới dấu căn $\\ge 0$, cạnh tam giác $> 0$, các góc tương ứng...).
+   💡 BƯỚC 2: CÔNG THỨC CỐT LÕI & LƯU Ý TRÁNH BẪY SAI LẦM
+   - Nêu đúng 1 công thức hoặc định lý then chốt bằng LaTeX chuẩn KaTeX ($...$ hoặc $$...$$).
+   - Nhắc 1 lưu ý quan trọng để tránh bẫy (ví dụ: chuyển vế phải đổi dấu, cạnh huyền luôn đối diện góc vuông...).
+   - NẾU LIÊN QUAN ĐẾN HÌNH HỌC (tam giác vuông, hình bình hành, đường tròn, hình chữ nhật, tam giác thường...):
+     + Gắn thẻ chuẩn: [DIAGRAM: tam_giac_vuong | Tam giác vuông ABC tại A] (hoặc [DIAGRAM: hinh_binh_hanh | Hình bình hành ABCD], [DIAGRAM: duong_tron | Đường tròn (O; R)], [DIAGRAM: tam_giac_thuong | Tam giác nhọn ABC đường cao AH], [DIAGRAM: hinh_chu_nhat | Hình chữ nhật ABCD]).
+     + Nhắc em: "Cô đã gắn sẵn hình vẽ minh họa chuẩn ở nút bên dưới, em hãy bấm để xem hình và đối chiếu nhé!"
 
-   📐 PHẦN 3: MINH HỌA TRỰC QUAN (BẮT BUỘC VẼ ẢNH SVG NẾU LÀ HÌNH HỌC)
-   - NẾU LIÊN QUAN ĐẾN HÌNH HỌC (tam giác, tứ giác, đường tròn, góc, diện tích, hình chóp, trụ, nón, cầu, hình chữ nhật, hình bình hành, đường thẳng song song, định lý Pythagore...):
-     + BẮT BUỘC VẼ HÌNH MINH HỌA DƯỚI DẠNG ẢNH SVG INLINE (<svg viewBox="0 0 320 200" width="100%" ...>...</svg>) sắc nét, nền trắng viền xanh mint, nét vẽ stroke="#196653" dày 2.5px, đánh dấu to rõ các đỉnh (A, B, C, D, O...) bằng thẻ <text font-size="14" font-weight="bold" fill="#144e3c">, có góc vuông màu đỏ.
-     + QUY TẮC SVG BẮT BUỘC:
-       * Đặt thẻ <svg>...</svg> trực tiếp vào nội dung, TUYỆT ĐỐI KHÔNG bao bọc bằng dấu code block markdown (không dùng ba dấu backtick xml hay svg).
-       * TUYỆT ĐỐI KHÔNG VIẾT CHÚ THÍCH XML <!-- ... --> RƯỜM RÀ bên trong thẻ SVG.
-       * BẮT BUỘC PHẢI KHÉP THẺ BẰNG </svg> HOÀN CHỈNH.
-     + Kèm đoạn văn phân tích chi tiết hình vẽ: đỉnh nào, cạnh nào đã biết số đo, cạnh nào cần tìm.
-   - NẾU LÀ ĐẠI SỐ / SỐ HỌC: Bóc tách rõ ràng các thành phần của biểu thức, giả thiết đã cho và mục tiêu cần chứng minh hay tính toán.
-
-   💡 PHẦN 4: ĐỊNH HƯỚNG TƯ DUY & CẢNH BÁO "BẪY" SAI LẦM THƯỜNG GẶP
-   - Vạch ra lộ trình giải toán (Chiến lược tư duy: Bước 1 cần biến đổi gì, Bước 2 kết nối công thức nào, Bước 3 suy luận ra sao).
-   - Chỉ ra các "bẫy" sai lầm kinh điển mà học sinh hay mắc phải ở dạng bài này (ví dụ: quên đổi dấu khi chuyển vế, nhầm lẫn giữa cạnh huyền và cạnh góc vuông, quên đối chiếu điều kiện xác định...).
-
-   🎯 PHẦN 5: GỢI Ý BƯỚC TIẾP THEO – EM CẦN LÀM GÌ TIẾP THEO ĐỂ HIỂU VÀ GIẢI ĐƯỢC BÀI?
-   (ĐÂY LÀ PHẦN TRỌNG TÂM ĐỂ HỌC SINH TỰ BẮT TAY VÀO LÀM, PHẢI HƯỚNG DẪN HÀNH ĐỘNG CỤ THỂ):
-   - Thao tác 1 (Chuẩn bị): Nhắc học sinh lấy giấy nháp, ghi lại các dữ kiện đề bài đã cho (hoặc phác họa lại hình vẽ vào vở dựa theo hình cô đã vẽ).
-   - Thao tác 2 (Hành động kế tiếp): Chỉ dẫn rõ ràng học sinh cần áp dụng công thức nào ở Phần 2, thay số liệu nào vào đâu hoặc biến đổi bước đầu tiên như thế nào.
-   - Thao tác 3 (Câu hỏi định hướng): Đặt 1 câu hỏi cụ thể, vừa sức để học sinh tự thực hiện phép tính hoặc suy luận ra kết quả bước đầu.
-   - Lời nhắn nhủ: Động viên học sinh làm nháp và nhắn ngay câu trả lời cho cô để cô nhận xét và cùng em đi tiếp bước 2 nhé!
+   🎯 BƯỚC 3: GỢI Ý BƯỚC TIẾP THEO – EM CẦN LÀM GÌ TIẾP THEO ĐỂ HIỂU BÀI?
+   - Nhắc em lấy giấy nháp, vẽ lại hình phác thảo hoặc thay số vào công thức trên.
+   - Đặt 1 câu hỏi gợi mở đơn giản, vừa sức để em tự tính nháp bước 1 và nhắn lại câu trả lời cho cô.
+   - Động viên em làm bài để cô trò mình cùng đi tiếp!
 
 3. KHI HỌC SINH NÓI: "Giải hộ em", "Cho em đáp án ngay", "Làm từ đầu đến cuối":
-   -> Từ chối một cách khéo léo, khẳng định việc tự làm sẽ giúp em hiểu sâu và nhớ lâu, sau đó triển khai cấu trúc giảng dạy 5 phần ở trên.
-
-4. NẾU ĐỀ BÀI HOẶC ẢNH CHỤP MỜ, THIẾU DỮ KIỆN:
-   -> Giải thích cặn kẽ vì sao chưa đủ cơ sở để giải, hướng dẫn học sinh kiểm tra lại đề bài, chụp lại thật rõ nét hoặc nhắn cô để được hỗ trợ trực tiếp.
+   -> Từ chối khéo léo, khẳng định việc tự làm nháp từng bước sẽ giúp em hiểu sâu và nhớ lâu, rồi hướng dẫn từng bước nhỏ.
 
 === TÀI LIỆU TOÁN THCS KIỂM DUYỆT ===
 ${KNOWLEDGE}
@@ -244,44 +227,49 @@ module.exports = async (req, res) => {
     }
   }
 
-  // Phản hồi mẫu sư phạm chuẩn 5 phần có kèm SVG minh họa khi gặp trục trặc mạng
+  // Phản hồi mẫu sư phạm chuẩn gọn gàng, kèm thẻ DIAGRAM chuẩn
   const lowerMsg = (userText || '').toLowerCase();
-  let svgBlock = `<svg viewBox="0 0 320 180" width="100%" style="max-width:320px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:14px;padding:8px;"><polygon points="60,35 60,135 220,135" fill="#e8f6ee" stroke="#196653" stroke-width="2.5"/><polyline points="60,120 75,120 75,135" fill="none" stroke="#e11d48" stroke-width="2"/><text x="45" y="148" fill="#144e3c" font-size="14" font-weight="bold">A</text><text x="45" y="32" fill="#144e3c" font-size="14" font-weight="bold">B</text><text x="225" y="145" fill="#144e3c" font-size="14" font-weight="bold">C</text><text x="35" y="90" fill="#196653" font-size="13" font-weight="bold">c</text><text x="135" y="152" fill="#196653" font-size="13" font-weight="bold">b</text><text x="150" y="80" fill="#e5881e" font-size="13" font-weight="bold">a (cạnh huyền)</text></svg>`;
+  let diagramTag = "[DIAGRAM: tam_giac_vuong | Tam giác ABC vuông tại A, cạnh huyền BC]";
   let topicName = "Tam giác vuông & Định lý Pythagore";
   let formulaBlock = `$$\\triangle ABC \\text{ vuông tại } A \\implies BC^2 = AB^2 + AC^2$$`;
+  let tipText = "Lưu ý: Cạnh huyền luôn là cạnh đối diện góc vuông và là cạnh dài nhất trong tam giác vuông em nhé.";
+  let questionText = "Đề bài đã cho em biết độ dài của những cạnh nào rồi? Em hãy thay số vào công thức trên và tính thử độ dài cạnh còn lại ra nháp nhé!";
 
   if (lowerMsg.includes('bình hành') || lowerMsg.includes('tứ giác')) {
     topicName = "Hình bình hành & Tính chất";
-    svgBlock = `<svg viewBox="0 0 320 170" width="100%" style="max-width:320px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:14px;padding:8px;"><polygon points="80,30 260,30 210,130 30,130" fill="#f0f7f4" stroke="#196653" stroke-width="2.5"/><line x1="80" y1="30" x2="210" y2="130" stroke="#7ab8a6" stroke-width="1.8" stroke-dasharray="5,5"/><line x1="260" y1="30" x2="30" y2="130" stroke="#7ab8a6" stroke-width="1.8" stroke-dasharray="5,5"/><circle cx="145" cy="80" r="3.5" fill="#d9534f"/><text x="152" y="80" fill="#d9534f" font-size="13" font-weight="bold">O</text><text x="70" y="24" fill="#144e3c" font-size="14" font-weight="bold">A</text><text x="268" y="28" fill="#144e3c" font-size="14" font-weight="bold">B</text><text x="215" y="145" fill="#144e3c" font-size="14" font-weight="bold">C</text><text x="15" y="140" fill="#144e3c" font-size="14" font-weight="bold">D</text></svg>`;
+    diagramTag = "[DIAGRAM: hinh_binh_hanh | Hình bình hành ABCD, hai đường chéo cắt nhau tại O]";
     formulaBlock = `$$AB // CD, \\quad AB = CD \\quad \\text{và} \\quad AD // BC, \\quad AD = BC$$
 Hai đường chéo cắt nhau tại trung điểm $O$ của mỗi đường ($OA = OC, OB = OD$).`;
+    tipText = "Lưu ý: Các góc đối của hình bình hành bằng nhau, hai góc kề một cạnh bù nhau (tổng bằng $180^\\circ$).";
+    questionText = "Trong bài toán của em, hình bình hành đã cho biết độ dài cạnh hay số đo góc nào rồi? Em nhắn lại để cô hướng dẫn tiếp bước 2 nhé!";
   } else if (lowerMsg.includes('tròn') || lowerMsg.includes('góc ở tâm') || lowerMsg.includes('nội tiếp')) {
-    topicName = "Đường tròn & Các loại góc";
-    svgBlock = `<svg viewBox="0 0 300 180" width="100%" style="max-width:300px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:14px;padding:8px;"><circle cx="150" cy="95" r="65" fill="#f5fbf7" stroke="#196653" stroke-width="2.5"/><circle cx="150" cy="95" r="3.5" fill="#196653"/><text x="155" y="95" fill="#144e3c" font-size="13" font-weight="bold">O</text><text x="90" y="155" fill="#144e3c" font-size="13" font-weight="bold">A</text><text x="205" y="155" fill="#144e3c" font-size="13" font-weight="bold">B</text><text x="145" y="22" fill="#e11d48" font-size="14" font-weight="bold">C</text><line x1="150" y1="95" x2="100" y2="140" stroke="#196653" stroke-width="1.8"/><line x1="150" y1="95" x2="200" y2="140" stroke="#196653" stroke-width="1.8"/><line x1="150" y1="30" x2="100" y2="140" stroke="#e11d48" stroke-width="2"/><line x1="150" y1="30" x2="200" y2="140" stroke="#e11d48" stroke-width="2"/></svg>`;
+    topicName = "Đường tròn & Góc nội tiếp";
+    diagramTag = "[DIAGRAM: duong_tron | Đường tròn (O; R) và góc nội tiếp ACB]";
     formulaBlock = `$$\\widehat{ACB} = \\frac{1}{2}\\widehat{AOB} = \\frac{1}{2}\\text{sđ}\\overparen{AB}$$`;
+    tipText = "Lưu ý: Góc nội tiếp chắn nửa đường tròn luôn là góc vuông ($90^\\circ$).";
+    questionText = "Góc mà đề bài yêu cầu tính đang chắn cung nào trên đường tròn? Em hãy quan sát hình vẽ và nhắn cho cô nhé!";
+  } else if (lowerMsg.includes('phương trình') || lowerMsg.includes('tìm x') || lowerMsg.includes('bậc nhất')) {
+    topicName = "Phương trình bậc nhất một ẩn";
+    diagramTag = "";
+    formulaBlock = `$$ax + b = 0 \\implies ax = -b \\implies x = -\\frac{b}{a} \\quad (a \\ne 0)$$`;
+    tipText = "Lưu ý quan trọng: Quy tắc chuyển vế bắt buộc phải **đổi dấu** ($+$ đổi thành $-$, và ngược lại).";
+    questionText = "Em hãy thử lấy nháp chuyển các hạng tử tự do sang vế phải và nhắn cho cô xem phương trình của em trở thành gì nhé?";
   }
 
   return res.status(200).json({
     success: true,
-    reply: `Chào em! Cô rất vui khi nhận được bài toán về **${topicName}** này của em. Đây là nội dung vô cùng quan trọng trong chương trình Hình học cấp THCS đấy em nhé! 🌱
+    reply: `Chào em! Cô rất vui khi nhận được bài toán về **${topicName}** của em. Phương châm của cô là **"Hỏi để hiểu – Không lời giải chi tiết"**, cô trò mình cùng khám phá từng bước nhé! 🌱
 
-Phương châm giảng dạy của cô là **"Hỏi để hiểu – Không lời giải chi tiết"**. Cô sẽ không giải hộ từ đầu đến cuối mà đồng hành hướng dẫn cặn kẽ để em tự phát hiện vấn đề và tự mình chinh phục bài toán này nhé!
-
-### 1. Kiến thức và Định lý then chốt cần ghi nhớ:
+### 1. Công thức cốt lõi cần nhớ:
 ${formulaBlock}
+💡 *${tipText}*
 
-### 2. Hình vẽ minh họa trực quan:
-${svgBlock}
+${diagramTag}
 
-### 3. Phân tích hình vẽ và lưu ý quan trọng:
-- Quan sát kỹ các đỉnh, cạnh và góc tương ứng đã được đánh dấu rõ nét trên hình vẽ.
-- Chú ý các điều kiện song song, bằng nhau hoặc góc vuông để áp dụng đúng công thức.
-
-### 4. Gợi ý tiếp theo: Em cần làm gì tiếp theo để hiểu và giải được bài?
-Để nắm thật vững và tự mình giải được bài này, em hãy thực hiện theo 3 bước sau nhé:
-1. **Bước 1 (Chuẩn bị nháp)**: Lấy giấy nháp và bút, vẽ lại hình phác thảo vào vở dựa theo hình cô đã vẽ ở trên, đồng thời ghi chú các số đo đề bài đã cho lên các cạnh tương ứng.
-2. **Bước 2 (Áp dụng công thức)**: Đối chiếu với công thức ở Mục 1, em hãy xác định xem đại lượng nào đã có số đo, và đại lượng nào là ẩn số cần tìm.
-3. **Bước 3 (Thực hiện & Phản hồi)**: Em hãy tính thử bước đầu tiên ra nháp và nhắn câu trả lời cho cô: *Bài toán đã cho em biết những số liệu cụ thể nào và theo em bước 1 ta nên thiết lập biểu thức gì?* Cô đang đợi tin nhắn của em để cùng em đi tiếp nhé! ✨`,
+### 2. Gợi ý tiếp theo – Em làm gì để giải được bài?
+1. **Lấy giấy nháp**: Ghi lại các dữ kiện đề bài đã cho${diagramTag ? ' và bấm nút xem hình vẽ minh họa ở trên để đối chiếu' : ''}.
+2. **Thực hiện bước 1**: ${questionText}
+3. **Phản hồi cho cô**: Em hãy nhắn kết quả tính bước đầu ra cho cô để cô nhận xét và cùng em đi tiếp nhé! ✨`,
     isFallback: true
   });
 };
