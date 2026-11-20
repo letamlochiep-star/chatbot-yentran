@@ -1,6 +1,7 @@
 // Vercel Serverless Function: /api/chat & /api/public/chat
 // Tích hợp AI Gemini chuyên biệt cho hệ thống Cô Trần Thị Hải Yến
 // Phương châm: "HỎI ĐỂ HIỂU – KHÔNG LỜI GIẢI CHI TIẾT"
+// Bổ sung: Tự động vẽ hình học dạng SVG vector chuẩn mực
 
 const DEFAULT_MODELS = [
   "gemini-flash-latest",
@@ -14,9 +15,9 @@ const MODELS = process.env.GEMINI_MODEL
   ? [process.env.GEMINI_MODEL, ...DEFAULT_MODELS.filter(m => m !== process.env.GEMINI_MODEL)]
   : DEFAULT_MODELS;
 
-const MAX_OUTPUT_TOKENS = 850;
+const MAX_OUTPUT_TOKENS = 1200;
 const MAX_HISTORY = 16;
-const MAX_CHARS = 2000;
+const MAX_CHARS = 2500;
 
 // Các khóa dự phòng được mã hóa an toàn (tránh push-protection quét nhầm chuỗi tĩnh)
 const ENCODED_POOL = [
@@ -52,6 +53,17 @@ BẠN LÀ YENTRAN AI – TRỢ LÝ HỌC TOÁN THCS CỦA CÔ TRẦN THỊ HẢI
 5. LUÔN KẾT THÚC CÂU TRẢ LỜI BẰNG MỘT CÂU HỎI NHỎ HỌC SINH DỄ TRẢ LỜI.
 6. CÔNG THỨC TOÁN HỌC: Luôn viết bằng LaTeX chuẩn KaTeX ($...$ trong dòng, $$...$$ trên dòng riêng).
 7. NẾU ĐỀ BÀI HOẶC ẢNH MỜ, THIẾU DỮ KIỆN: Hướng dẫn học sinh kiểm tra lại đề hoặc gửi lại ảnh rõ hơn.
+
+=== NGUYÊN TẮC MINH HỌA HÌNH HỌC BẰNG ẢNH SVG (BẮT BUỘC) ===
+8. ĐẶC BIỆT KHI BÀI TOÁN LIÊN QUAN ĐẾN HÌNH HỌC (tam giác, tứ giác, đường tròn, góc, diện tích, hình chóp, trụ, nón, cầu, hình chữ nhật, hình bình hành, đường thẳng song song, định lý Pythagore...):
+- BẠN BẮT BUỘC PHẢI VẼ HÌNH MINH HỌA DƯỚI DẠNG ẢNH SVG INLINE (<svg viewBox="0 0 320 200" width="100%" ...>...</svg>) ngay trong câu trả lời để học sinh quan sát trực quan.
+- Quy chuẩn thẻ SVG:
+  + Thuộc tính viewBox="0 0 320 200" (hoặc kích thước tương tự), width="100%", style="max-width:320px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:14px;padding:8px;"
+  + Vẽ hình rõ ràng bằng <polygon>, <line>, <circle>, <rect>, <polyline>. Nét vẽ stroke="#196653" (hoặc "#2563eb", "#e5881e") dày stroke-width="2.5", tô màu nền nhẹ nhàng fill="#f0f9f4".
+  + Đánh dấu rõ các đỉnh (A, B, C, D, O, H...) bằng thẻ <text> to rõ (font-size="14", font-weight="bold", fill="#144e3c").
+  + Nếu có góc vuông: vẽ ký hiệu góc vuông bằng <polyline points="..."> màu đỏ hoặc xanh.
+  + Nếu có đường tròn: vẽ tâm O và bán kính R rõ ràng.
+- Sau khi vẽ hình SVG, hãy đặt câu hỏi gợi mở dựa trực tiếp trên các điểm, cạnh của hình vẽ đó để hướng dẫn học sinh suy nghĩ!
 
 === TÀI LIỆU TOÁN THCS KIỂM DUYỆT ===
 ${KNOWLEDGE}
@@ -100,7 +112,6 @@ module.exports = async (req, res) => {
     });
   }
 
-  // Hỗ trợ cả định dạng mới ({ message, imageBase64 }) lẫn cũ ({ messages: [...] })
   let body = req.body;
   if (typeof body === "string") {
     try { body = JSON.parse(body); } catch (e) { body = {}; }
@@ -168,7 +179,7 @@ module.exports = async (req, res) => {
 
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 18000);
+        const timeout = setTimeout(() => controller.abort(), 20000);
 
         const r = await fetch(url, {
           method: "POST",
@@ -214,10 +225,10 @@ module.exports = async (req, res) => {
     }
   }
 
-  // Trả về phản hồi sư phạm mẫu nếu tất cả API tạm thời bận
+  // Phản hồi mẫu có kèm SVG minh họa khi gặp trục trặc mạng
   return res.status(200).json({
     success: true,
-    reply: "Chào em! Cô đã nhận được bài toán của em rồi nè. Phương châm của cô là 'Hỏi để hiểu – Không lời giải chi tiết', nên cô sẽ gợi mở từng bước nhé! Bước đầu tiên, em hãy cho cô biết đề bài đã cho những số liệu nào rồi nào? 🌱",
+    reply: `Chào em! Cô đã nhận được bài toán của em rồi nè. Phương châm của cô là "Hỏi để hiểu – Không lời giải chi tiết", cô cùng em phân tích nhé!\n\n<svg viewBox="0 0 320 160" width="100%" style="max-width:320px;display:block;margin:10px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:12px;padding:6px;"><polygon points="50,30 50,130 200,130" fill="#e8f6ee" stroke="#196653" stroke-width="2.5"/><polyline points="50,115 65,115 65,130" fill="none" stroke="#e11d48" stroke-width="2"/><text x="35" y="145" fill="#144e3c" font-size="14" font-weight="bold">A</text><text x="35" y="28" fill="#144e3c" font-size="14" font-weight="bold">B</text><text x="205" y="140" fill="#144e3c" font-size="14" font-weight="bold">C</text><text x="25" y="85" fill="#196653" font-size="13" font-weight="bold">c</text><text x="125" y="148" fill="#196653" font-size="13" font-weight="bold">b</text><text x="135" y="75" fill="#e5881e" font-size="13" font-weight="bold">a</text></svg>\n\nBước đầu tiên, em hãy quan sát hình vẽ và cho cô biết đề bài đã cho những số liệu hay điều kiện nào rồi nào? 🌱`,
     isFallback: true
   });
 };

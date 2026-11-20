@@ -665,6 +665,26 @@ button { cursor: pointer; border: none; outline: none; }
   border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
+/* KHUNG HIỂN THỊ HÌNH HỌC SVG */
+.svg-geometry-card {
+  margin: 12px auto;
+  max-width: 330px;
+  background: #ffffff;
+  border: 1.5px solid #d4ebdd;
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0 4px 14px rgba(20, 78, 60, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.svg-geometry-card svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* KHUNG NHẬP LIỆU GHIM Ở ĐÁY (BOTTOM DOCK - NHƯ ANTIGRAVITY) */
 .chat-bottom-dock {
   background: #ffffff;
@@ -1255,6 +1275,34 @@ let quizResultMsg = '';
 const esc = s => String(s || '').replace(/[&<>"']/g, x => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[x]));
 const el = id => document.getElementById(id);
 
+// Định dạng tin nhắn & bảo toàn các hình học dạng ảnh SVG an toàn
+function formatMessageContent(rawText) {
+  if (!rawText) return '';
+  const svgBlocks = [];
+  // Trích xuất thẻ SVG an toàn
+  let processed = String(rawText).replace(/<svg[\s\S]*?<\/svg>/gi, (match) => {
+    if (/<script/i.test(match) || /on\w+\s*=/i.test(match)) {
+      return '';
+    }
+    const token = `___SVG_GEOM_BLOCK_${svgBlocks.length}___`;
+    svgBlocks.push(match);
+    return token;
+  });
+
+  // Escape HTML phần văn bản còn lại để chống XSS
+  processed = esc(processed);
+
+  // Phục hồi lại thẻ ảnh SVG nguyên vẹn
+  svgBlocks.forEach((svg, idx) => {
+    const token = `___SVG_GEOM_BLOCK_${idx}___`;
+    processed = processed.replace(token, `<div class="svg-geometry-card">${svg}</div>`);
+  });
+
+  // Chuyển xuống dòng
+  processed = processed.replace(/\n/g, '<br>');
+  return processed;
+}
+
 function toggleModeDropdown() {
   const dd = el('modeDropdown');
   if (dd) dd.classList.toggle('show');
@@ -1364,7 +1412,7 @@ function generateMessagesHtml() {
         <div class="chat-msg-row user">
           <div class="chat-msg-avatar user-avatar">👤</div>
           <div class="chat-msg-content">
-            ${m.text ? `<div>${esc(m.text)}</div>` : ''}
+            ${m.text ? `<div>${formatMessageContent(m.text)}</div>` : ''}
             ${m.image ? `<img class="chatpic" src="${m.image}" alt="Ảnh bài tập">` : ''}
           </div>
         </div>
@@ -1373,7 +1421,7 @@ function generateMessagesHtml() {
       return `
         <div class="chat-msg-row bot">
           <img src="avatar_co_yen.jpg" alt="Cô Yến" class="chat-msg-avatar">
-          <div class="chat-msg-content">${esc(m.text)}</div>
+          <div class="chat-msg-content">${formatMessageContent(m.text)}</div>
         </div>
       `;
     }
@@ -1631,15 +1679,15 @@ async function renderView() {
               <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
                 <span style="background:#eaf6ef;color:#18614a;font-weight:700;font-size:11.5px;padding:3px 9px;border-radius:6px">Toán ${l.grade_id}</span>
                 <h3 style="color:#144e3c;font-size:17px;margin:8px 0 10px">${esc(l.title)}</h3>
-                <div style="font-size:14px;line-height:1.75;color:#2a453c">${esc(l.content)}</div>
+                <div style="font-size:14px;line-height:1.75;color:#2a453c">${formatMessageContent(l.content)}</div>
                 ${l.sample_example ? `
                   <div class="notice-box success">
-                    <b>Ví dụ minh họa:</b><br>${esc(l.sample_example)}
+                    <b>Ví dụ minh họa:</b><br>${formatMessageContent(l.sample_example)}
                   </div>
                 ` : ''}
                 ${l.self_check_question ? `
                   <div class="notice-box warn">
-                    <b>❓ Câu hỏi tự kiểm tra:</b> ${esc(l.self_check_question)}
+                    <b>❓ Câu hỏi tự kiểm tra:</b> ${formatMessageContent(l.self_check_question)}
                   </div>
                 ` : ''}
               </div>
@@ -1691,7 +1739,7 @@ async function renderView() {
               <span style="font-size:12.5px;color:var(--text-muted);font-weight:600">Câu ${(quizIndex % quizList.length) + 1} / ${quizList.length}</span>
             </div>
 
-            <h3 style="font-size:17px;color:#144e3c;line-height:1.5;margin-bottom:16px">${esc(q.text)}</h3>
+            <h3 style="font-size:17px;color:#144e3c;line-height:1.5;margin-bottom:16px">${formatMessageContent(q.text)}</h3>
 
             <div id="quizOptionsContainer">
               ${q.options.map((opt, i) => `
@@ -2001,7 +2049,7 @@ async function executeChatRequest(text, streamId, sendBtn, inputElement) {
       <div class="chat-msg-row user">
         <div class="chat-msg-avatar user-avatar">👤</div>
         <div class="chat-msg-content">
-          ${text ? `<div>${esc(text)}</div>` : ''}
+          ${text ? `<div>${formatMessageContent(text)}</div>` : ''}
           ${currentImgURL ? `<img class="chatpic" src="${currentImgURL}" alt="Ảnh bài tập">` : ''}
         </div>
       </div>
@@ -2052,7 +2100,7 @@ async function executeChatRequest(text, streamId, sendBtn, inputElement) {
         stream.innerHTML += `
           <div class="chat-msg-row bot">
             <img src="avatar_co_yen.jpg" alt="Cô Yến" class="chat-msg-avatar">
-            <div class="chat-msg-content">${esc(d.reply)}</div>
+            <div class="chat-msg-content">${formatMessageContent(d.reply)}</div>
           </div>
         `;
       }
