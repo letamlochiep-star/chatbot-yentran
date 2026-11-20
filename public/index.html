@@ -667,22 +667,25 @@ button { cursor: pointer; border: none; outline: none; }
 
 /* KHUNG HIỂN THỊ HÌNH HỌC SVG */
 .svg-geometry-card {
-  margin: 12px auto;
-  max-width: 330px;
+  margin: 14px auto;
+  width: 100%;
+  max-width: 360px;
   background: #ffffff;
   border: 1.5px solid #d4ebdd;
   border-radius: 14px;
-  padding: 8px;
-  box-shadow: 0 4px 14px rgba(20, 78, 60, 0.05);
+  padding: 10px;
+  box-shadow: 0 4px 14px rgba(20, 78, 60, 0.06);
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
 }
 .svg-geometry-card svg {
-  max-width: 100%;
-  height: auto;
-  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 120px;
+  display: block !important;
 }
 
 /* KHUNG NHẬP LIỆU GHIM Ở ĐÁY (BOTTOM DOCK - NHƯ ANTIGRAVITY) */
@@ -1278,9 +1281,22 @@ const el = id => document.getElementById(id);
 // Định dạng tin nhắn & bảo toàn các hình học dạng ảnh SVG an toàn
 function formatMessageContent(rawText) {
   if (!rawText) return '';
+  let processed = String(rawText);
+
+  // 1. Gỡ bỏ markdown code block bọc quanh SVG (```xml, ```svg, ```html) nếu có
+  processed = processed.replace(/```(?:xml|svg|html)?\s*(<svg[\s\S]*?<\/svg>)\s*```/gi, '$1');
+  processed = processed.replace(/```(?:xml|svg|html)?\s*(<svg[\s\S]*)/gi, '$1');
+  processed = processed.replace(/(<\/svg>)\s*```/gi, '$1');
+
+  // 2. Tự động phục hồi nếu thẻ <svg> bị ngắt quãng giữa chừng (chưa kịp khép </svg>)
+  if (/<svg\b[^>]*>/i.test(processed) && !/<\/svg>/i.test(processed)) {
+    // Xóa đoạn chú thích comment dở dang nếu có
+    processed = processed.replace(/<!--[\s\S]*$/i, '').trim() + '\n</svg>';
+  }
+
+  // 3. Trích xuất tất cả các thẻ SVG an toàn
   const svgBlocks = [];
-  // Trích xuất thẻ SVG an toàn
-  let processed = String(rawText).replace(/<svg[\s\S]*?<\/svg>/gi, (match) => {
+  processed = processed.replace(/<svg[\s\S]*?<\/svg>/gi, (match) => {
     if (/<script/i.test(match) || /on\w+\s*=/i.test(match)) {
       return '';
     }
@@ -1289,16 +1305,21 @@ function formatMessageContent(rawText) {
     return token;
   });
 
-  // Escape HTML phần văn bản còn lại để chống XSS
+  // 4. Escape HTML phần văn bản còn lại để chống XSS
   processed = esc(processed);
 
-  // Phục hồi lại thẻ ảnh SVG nguyên vẹn
+  // 5. Định dạng Markdown cơ bản (in đậm, tiêu đề, đường kẻ)
+  processed = processed.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+  processed = processed.replace(/^###\s+(.*?)$/gm, '<h4 style="margin:12px 0 6px;color:#144e3c;font-size:15.5px;font-weight:700">$1</h4>');
+  processed = processed.replace(/^---\s*$/gm, '<hr style="border:none;border-top:1px dashed #d4ebdd;margin:12px 0">');
+
+  // 6. Phục hồi lại thẻ ảnh SVG nguyên vẹn
   svgBlocks.forEach((svg, idx) => {
     const token = `___SVG_GEOM_BLOCK_${idx}___`;
     processed = processed.replace(token, `<div class="svg-geometry-card">${svg}</div>`);
   });
 
-  // Chuyển xuống dòng
+  // 7. Chuyển xuống dòng
   processed = processed.replace(/\n/g, '<br>');
   return processed;
 }

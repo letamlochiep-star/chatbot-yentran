@@ -54,9 +54,13 @@ BẠN LÀ YENTRAN AI – TRỢ LÝ HỌC TOÁN THCS CỦA CÔ TRẦN THỊ HẢI
    - Luôn sử dụng LaTeX chuẩn KaTeX ($...$ trong dòng và $$...$$ trên dòng riêng).
    - Phân tích cặn kẽ ý nghĩa từng đại lượng, điều kiện áp dụng (ví dụ: mẫu số $\\ne 0$, biểu thức dưới dấu căn $\\ge 0$, cạnh tam giác $> 0$, các góc tương ứng...).
 
-   📐 PHẦN 3: MINH HỌA TRỰC QUAN (ẢNH SVG HOẶC BẢNG PHÂN TÍCH)
+   📐 PHẦN 3: MINH HỌA TRỰC QUAN (BẮT BUỘC VẼ ẢNH SVG NẾU LÀ HÌNH HỌC)
    - NẾU LIÊN QUAN ĐẾN HÌNH HỌC (tam giác, tứ giác, đường tròn, góc, diện tích, hình chóp, trụ, nón, cầu, hình chữ nhật, hình bình hành, đường thẳng song song, định lý Pythagore...):
      + BẮT BUỘC VẼ HÌNH MINH HỌA DƯỚI DẠNG ẢNH SVG INLINE (<svg viewBox="0 0 320 200" width="100%" ...>...</svg>) sắc nét, nền trắng viền xanh mint, nét vẽ stroke="#196653" dày 2.5px, đánh dấu to rõ các đỉnh (A, B, C, D, O...) bằng thẻ <text font-size="14" font-weight="bold" fill="#144e3c">, có góc vuông màu đỏ.
+     + QUY TẮC SVG BẮT BUỘC:
+       * Đặt thẻ <svg>...</svg> trực tiếp vào nội dung, TUYỆT ĐỐI KHÔNG bao bọc bằng dấu backticks markdown (```xml hoặc ```svg).
+       * TUYỆT ĐỐI KHÔNG VIẾT CHÚ THÍCH XML <!-- ... --> RƯỜM RÀ bên trong thẻ SVG.
+       * BẮT BUỘC PHẢI KHÉP THẺ BẰNG </svg> HOÀN CHỈNH.
      + Kèm đoạn văn phân tích chi tiết hình vẽ: đỉnh nào, cạnh nào đã biết số đo, cạnh nào cần tìm.
    - NẾU LÀ ĐẠI SỐ / SỐ HỌC: Bóc tách rõ ràng các thành phần của biểu thức, giả thiết đã cho và mục tiêu cần chứng minh hay tính toán.
 
@@ -188,7 +192,7 @@ module.exports = async (req, res) => {
 
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 20000);
+        const timeout = setTimeout(() => controller.abort(), 35000);
 
         const r = await fetch(url, {
           method: "POST",
@@ -214,6 +218,11 @@ module.exports = async (req, res) => {
               .replace(/chuẩn KaTeX/gi, "")
               .replace(/theo mã LaTeX/gi, "")
               .trim();
+
+            // Đảm bảo nếu thẻ SVG bị ngắt ngang thì tự động hoàn tất khép thẻ an toàn
+            if (cleaned.includes('<svg') && !cleaned.includes('</svg>')) {
+              cleaned = cleaned.replace(/<!--[\s\S]*$/i, '').trim() + '\n</svg>';
+            }
 
             return res.status(200).json({
               success: true,
