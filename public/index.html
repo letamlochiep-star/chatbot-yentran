@@ -3494,19 +3494,11 @@ async function handleAutoDraftLesson() {
   }
 
   try {
-    let res = await fetch(`${API_BASE}/public/generate-lesson`, {
+    let res = await fetch(`${API_BASE}/generate-lesson`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lessonTitle: title, grade: adminCurrentGrade })
     }).catch(() => null);
-
-    if (!res || !res.ok) {
-      res = await fetch(`${API_BASE}/generate-lesson`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lessonTitle: title, grade: adminCurrentGrade })
-      }).catch(() => null);
-    }
 
     if (!res || !res.ok) {
       throw new Error('Không thể kết nối đến máy chủ AI soạn bài.');
@@ -3819,27 +3811,11 @@ async function handleAutoExtractQuiz() {
   }
 
   try {
-    let res = await fetch(`${API_BASE}/public/generate-quiz`, {
+    let res = await fetch(`${API_BASE}/generate-quiz`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lessonTitle: title, grade: adminCurrentGrade })
     }).catch(() => null);
-
-    if (!res || !res.ok) {
-      res = await fetch(`${API_BASE}/admin/generate-quiz`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lessonTitle: title, grade: adminCurrentGrade })
-      }).catch(() => null);
-    }
-
-    if (!res || !res.ok) {
-      res = await fetch(`${API_BASE}/generate-quiz`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lessonTitle: title, grade: adminCurrentGrade })
-      }).catch(() => null);
-    }
 
     if (!res || !res.ok) {
       throw new Error('Không thể kết nối đến máy chủ sinh đề.');
