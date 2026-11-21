@@ -174,3 +174,5 @@ module.exports = async (req, res) => {
     questions: list
   });
 };
+
+module.exports.inMemoryQuizzesByGrade = inMemoryQuizzesByGrade;
