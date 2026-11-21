@@ -160,12 +160,11 @@ module.exports = async (req, res) => {
     try { body = JSON.parse(body); } catch (e) { body = {}; }
   }
 
-  const { lessonTitle, grade = "6" } = body || {};
-  if (!lessonTitle || !lessonTitle.trim()) {
+  const { lessonTitle, title, topic, grade = "6" } = body || {};
+  const cleanTitle = (lessonTitle || title || topic || "").trim();
+  if (!cleanTitle) {
     return res.status(400).json({ success: false, error: "Vui lòng cung cấp tiêu đề bài học." });
   }
-
-  const cleanTitle = lessonTitle.trim();
   const keys = getKeys();
 
   const prompt = `Bạn là Cô Trần Thị Hải Yến - giáo viên chuyên bồi dưỡng Toán THCS.

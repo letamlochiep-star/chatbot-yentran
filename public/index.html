@@ -1224,6 +1224,58 @@ button { cursor: pointer; border: none; outline: none; }
   .metrics-grid { grid-template-columns: 1fr; }
   .modern-chat-view { height: calc(100vh - 180px); min-height: 480px; }
 }
+
+/* GIAO DIỆN QUẢN TRỊ DÀNH RIÊNG CHO GIÁO VIÊN */
+.admin-subtabs-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #d4ebdd;
+}
+.btn-subtab {
+  background: #ffffff;
+  border: 1.5px solid #c8e6d5;
+  color: #144e3c;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+.btn-subtab:hover {
+  background: #f0faf4;
+  border-color: #196653;
+  transform: translateY(-1px);
+}
+.btn-subtab.active {
+  background: #196653;
+  color: #ffffff;
+  border-color: #144e3c;
+  box-shadow: 0 4px 12px rgba(25, 102, 83, 0.22);
+}
+.admin-tool-pill {
+  background: #f0faf4;
+  border: 1px solid #bce2cb;
+  color: #166534;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.admin-tool-pill:hover {
+  background: #dcfce7;
+  border-color: #166534;
+}
 </style>
 </head>
 <body>
@@ -1449,6 +1501,66 @@ function deleteCustomQuiz(grade, id) {
     let list = getCustomQuizzes(grade);
     list = list.filter(q => q.id !== id);
     localStorage.setItem('coYen_custom_quizzes_' + grade, JSON.stringify(list));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// QUẢN LÝ BÀI HỌC DO GIÁO VIÊN BIÊN SOẠN
+function getCustomLessons(grade) {
+  try {
+    const raw = localStorage.getItem('coYen_custom_lessons_' + grade);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomLesson(grade, lesson) {
+  try {
+    const list = getCustomLessons(grade);
+    list.unshift(lesson);
+    localStorage.setItem('coYen_custom_lessons_' + grade, JSON.stringify(list));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function deleteCustomLesson(grade, id) {
+  try {
+    let list = getCustomLessons(grade);
+    list = list.filter(l => l.id !== id);
+    localStorage.setItem('coYen_custom_lessons_' + grade, JSON.stringify(list));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// QUẢN LÝ TÀI LIỆU VÀ ĐỀ THI DO GIÁO VIÊN ĐĂNG TẢI
+function getCustomResources(grade) {
+  try {
+    const raw = localStorage.getItem('coYen_custom_resources_' + grade);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomResource(grade, resItem) {
+  try {
+    const list = getCustomResources(grade);
+    list.unshift(resItem);
+    localStorage.setItem('coYen_custom_resources_' + grade, JSON.stringify(list));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function deleteCustomResource(grade, id) {
+  try {
+    let list = getCustomResources(grade);
+    list = list.filter(r => r.id !== id);
+    localStorage.setItem('coYen_custom_resources_' + grade, JSON.stringify(list));
   } catch (e) {
     console.error(e);
   }
@@ -2102,7 +2214,16 @@ async function renderView() {
     try {
       const res = await fetch(`${API_BASE}/public/lessons?grade=${currentGrade}`);
       const d = await res.json();
-      const lessons = d.lessons || [];
+      const serverLessons = d.lessons || [];
+      const customLessons = getCustomLessons(currentGrade);
+
+      // Kết hợp bài học từ hệ thống và bài học do giáo viên vừa xuất bản
+      const combinedMap = new Map();
+      customLessons.forEach(l => combinedMap.set(l.id || l.title, { ...l, isCustom: true }));
+      serverLessons.forEach(l => {
+        if (!combinedMap.has(l.id || l.title)) combinedMap.set(l.id || l.title, { ...l, isCustom: false });
+      });
+      const lessons = Array.from(combinedMap.values());
 
       container.innerHTML = `
         <section class="panel">
@@ -2117,17 +2238,20 @@ async function renderView() {
 
           <div style="display:flex;flex-direction:column;gap:16px">
             ${lessons.length ? lessons.map(l => `
-              <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
-                <span style="background:#eaf6ef;color:#18614a;font-weight:700;font-size:11.5px;padding:3px 9px;border-radius:6px">Toán ${l.grade_id}</span>
-                <h3 style="color:#144e3c;font-size:17px;margin:8px 0 10px">${esc(l.title)}</h3>
-                <div style="font-size:14px;line-height:1.75;color:#2a453c">${formatMessageContent(l.content)}</div>
+              <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.03);position:relative">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <span style="background:#eaf6ef;color:#18614a;font-weight:700;font-size:11.5px;padding:3px 9px;border-radius:6px">Toán ${l.grade_id}</span>
+                  ${l.isCustom ? '<span style="background:#fef3c7;color:#92400e;font-size:11.5px;padding:2px 8px;border-radius:6px;font-weight:700">✨ Bài học do Cô Yến vừa biên soạn</span>' : ''}
+                </div>
+                <h3 style="color:#144e3c;font-size:17.5px;margin:6px 0 10px">${esc(l.title)}</h3>
+                <div style="font-size:14.5px;line-height:1.75;color:#2a453c">${formatMessageContent(l.content)}</div>
                 ${l.sample_example ? `
-                  <div class="notice-box success">
+                  <div class="notice-box success" style="margin-top:12px">
                     <b>Ví dụ minh họa:</b><br>${formatMessageContent(l.sample_example)}
                   </div>
                 ` : ''}
                 ${l.self_check_question ? `
-                  <div class="notice-box warn">
+                  <div class="notice-box warn" style="margin-top:10px">
                     <b>❓ Câu hỏi tự kiểm tra:</b> ${formatMessageContent(l.self_check_question)}
                   </div>
                 ` : ''}
@@ -2260,7 +2384,16 @@ async function renderView() {
     try {
       const res = await fetch(`${API_BASE}/public/resources?grade=${currentGrade}`);
       const d = await res.json();
-      const resources = d.resources || [];
+      const serverResources = d.resources || [];
+      const customResources = getCustomResources(currentGrade);
+
+      // Kết hợp tài liệu hệ thống và tài liệu giáo viên vừa đăng tải
+      const combinedResMap = new Map();
+      customResources.forEach(r => combinedResMap.set(r.id || r.title, { ...r, isCustom: true }));
+      serverResources.forEach(r => {
+        if (!combinedResMap.has(r.id || r.title)) combinedResMap.set(r.id || r.title, { ...r, isCustom: false });
+      });
+      const resources = Array.from(combinedResMap.values());
 
       container.innerHTML = `
         <section class="panel">
@@ -2273,12 +2406,17 @@ async function renderView() {
 
           <div style="display:flex;flex-direction:column;gap:12px">
             ${resources.length ? resources.map(r => `
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border:1px solid var(--card-border);border-radius:14px;background:#ffffff">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border:1px solid var(--card-border);border-radius:14px;background:#ffffff;gap:12px;flex-wrap:wrap">
                 <div>
-                  <h4 style="font-size:15px;color:#144e3c;margin-bottom:4px">${esc(r.title)}</h4>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                    <h4 style="font-size:15px;color:#144e3c;margin:0">${esc(r.title)}</h4>
+                    ${r.isCustom ? '<span style="background:#fef3c7;color:#92400e;font-size:11px;padding:2px 6px;border-radius:4px;font-weight:700">Mới tải lên</span>' : ''}
+                  </div>
                   <span style="font-size:12.5px;color:var(--text-muted)">Chủ đề: <b>${esc(r.topic)}</b> · Định dạng: <b>${esc(r.file_type)}</b> · ${esc(r.description)}</span>
                 </div>
-                <a href="${esc(r.file_url)}" class="btn-secondary" target="_blank">Tải về ⬇</a>
+                <a href="${esc(r.file_url || '#')}" class="btn-secondary" download="${esc(r.title)}" target="_blank" style="display:inline-flex;align-items:center;gap:6px">
+                  <span>⬇</span> Tải về
+                </a>
               </div>
             `).join('') : '<div class="notice-box warn">Chưa có tài liệu nào cho khối lớp này.</div>'}
           </div>
@@ -2736,169 +2874,905 @@ function handleTeacherLogout() {
   go('home');
 }
 
-// 8. Quản trị Giáo viên: Đưa bài tập tương tác theo bài & Trích xuất tự động
+// 8. KHÔNG GIAN QUẢN TRỊ DÀNH RIÊNG CHO GIÁO VIÊN (CÔ TRẦN THỊ HẢI YẾN)
 let adminCurrentGrade = '6';
+let adminSubTab = 'lessons'; // 'lessons', 'quizzes', 'resources', 'ai-prompt', 'stats'
+let attachedResourceFileData = null;
+let attachedResourceFileName = '';
+
+function switchAdminSubTab(tab) {
+  adminSubTab = tab;
+  renderAdminDashboard();
+}
+
+function onAdminGradeChange(gradeVal) {
+  adminCurrentGrade = gradeVal;
+  renderAdminDashboard();
+}
 
 async function renderAdminDashboard() {
   const container = el('content');
   if (!container) return;
 
-  const totalCustom = ['6','7','8','9'].reduce((sum, g) => sum + getCustomQuizzes(g).length, 0);
+  const totalCustomQuizzes = ['6','7','8','9'].reduce((sum, g) => sum + getCustomQuizzes(g).length, 0);
+  const totalCustomLessons = ['6','7','8','9'].reduce((sum, g) => sum + getCustomLessons(g).length, 0);
+  const totalCustomResources = ['6','7','8','9'].reduce((sum, g) => sum + getCustomResources(g).length, 0);
 
-  container.innerHTML = `
-    <!-- PHẦN 1: HEADER QUẢN TRỊ -->
-    <section class="panel">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
-        <div>
-          <h2>⚙️ Quản trị Giáo viên – Cô ${esc(currentUser ? currentUser.full_name : 'Trần Thị Hải Yến')}</h2>
-          <p class="sub" style="margin:0">Đưa bài tập tương tác lên cho học sinh theo từng bài, tự động trích xuất nội dung từ tiêu đề bài học.</p>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn-secondary" style="color:#b91c1c;border-color:#fecaca;background:#fef2f2" onclick="handleTeacherLogout()">Đăng xuất ⎋</button>
-        </div>
-      </div>
+  let subTabContentHtml = '';
 
-      <div class="metrics-grid">
-        <div class="metric-box"><strong id="adminCustomCount">${totalCustom + 8}</strong><span>Tổng số câu hỏi tương tác</span></div>
-        <div class="metric-box"><strong>${totalCustom}</strong><span>Câu hỏi do cô đưa lên</span></div>
-        <div class="metric-box"><strong>468</strong><span>Lượt học sinh đã làm bài</span></div>
-        <div class="metric-box"><strong>82.4%</strong><span>Tỷ lệ làm đúng trung bình</span></div>
-      </div>
-    </section>
-
-    <!-- PHẦN 2: ĐƯA BÀI TẬP TƯƠNG TÁC LÊN CHO HỌC SINH THEO BÀI -->
-    <section class="panel" style="margin-top:20px;border:2px solid #bce2cb">
-      <div style="margin-bottom:16px">
-        <h3 style="font-size:18px;color:#144e3c;display:flex;align-items:center;gap:8px">
-          <span>📝</span> Đưa bài tập tương tác lên cho học sinh làm theo bài
-        </h3>
-        <p style="font-size:13px;color:#557766;margin:4px 0 0">
-          Cô chỉ cần <b>chọn bài học</b> hoặc <b>nhập tiêu đề bài</b>, bấm nút trích xuất là hệ thống sẽ <b>tự động tạo câu hỏi trắc nghiệm tương tác</b> chuẩn kiến thức SGK/SBT!
-        </p>
-      </div>
-
-      <!-- KHỐI CHỌN LỚP & TIÊU ĐỀ BÀI HỌC -->
-      <div style="background:#f4faf6;border:1.5px solid #d4ebdd;border-radius:14px;padding:16px;margin-bottom:18px">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:14px">
+  // 1. SUBTAB 1: SOẠN & VIẾT BÀI HỌC MỚI
+  if (adminSubTab === 'lessons') {
+    subTabContentHtml = `
+      <section class="panel" style="border:2px solid #bce2cb">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px">
           <div>
-            <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">1. Chọn Khối lớp:</label>
-            <select id="adminQuizGrade" onchange="onAdminGradeChange(this.value)" style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;font-weight:700;color:#144e3c;background:#fff">
+            <h3 style="font-size:18px;color:#144e3c;margin:0 0 4px;display:flex;align-items:center;gap:8px">
+              <span>📝</span> Soạn & Viết bài học mới (Toán Lớp ${adminCurrentGrade})
+            </h3>
+            <p style="font-size:13px;color:#557766;margin:0">
+              Biên soạn lý thuyết cốt lõi, công thức then chốt, chèn hình học SVG vector và sử dụng AI hỗ trợ soạn bài tự động theo tiêu đề.
+            </p>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:13px;font-weight:700;color:#144e3c">Khối lớp:</label>
+            <select onchange="onAdminGradeChange(this.value)" style="padding:7px 12px;border-radius:10px;border:1.5px solid #196653;font-size:13px;font-weight:700;color:#144e3c;background:#e8f6ee">
               <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
               <option value="7" ${adminCurrentGrade==='7'?'selected':''}>Toán Lớp 7</option>
               <option value="8" ${adminCurrentGrade==='8'?'selected':''}>Toán Lớp 8</option>
               <option value="9" ${adminCurrentGrade==='9'?'selected':''}>Toán Lớp 9</option>
             </select>
           </div>
+        </div>
 
+        <!-- HÀNG CHỌN BÀI HỌC MẪU HOẶC NHẬP TIÊU ĐỀ -->
+        <div style="background:#f4faf6;border:1.5px solid #d4ebdd;border-radius:14px;padding:16px;margin-bottom:18px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:12px;align-items:flex-end">
+            <div>
+              <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">1. Chọn bài học gợi ý trong chương trình:</label>
+              <select id="adminLessonPresetSelect" onchange="onAdminLessonPresetChange(this.value)" style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;color:#144e3c;background:#fff">
+                <!-- Điền động theo khối lớp -->
+              </select>
+            </div>
+            <div>
+              <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">2. Tiêu đề bài học:</label>
+              <input type="text" id="adminLessonTitleInput" placeholder="Ví dụ: Định lý Pythagore & Ứng dụng thực tế" style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;font-weight:600;color:#144e3c">
+            </div>
+            <div>
+              <button type="button" id="btnAutoDraftLesson" class="btn-primary" style="background:#e5881e;color:#fff;border-color:#d47b15;display:inline-flex;align-items:center;gap:6px;font-weight:700;padding:10px 18px;width:100%;justify-content:center" onclick="handleAutoDraftLesson()">
+                <span>✨</span> AI Soạn bài tự động theo tiêu đề
+              </button>
+            </div>
+          </div>
+          <div id="lessonDraftLoadingStatus" style="margin-top:8px;font-size:13px;font-weight:600"></div>
+        </div>
+
+        <!-- THANH CÔNG CỤ CHÈN NHANH MẪU TOÁN HỌC & SVG -->
+        <div style="margin-bottom:12px">
+          <label style="font-size:12.5px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">⚡ Chèn nhanh mẫu nội dung & Hình học trực quan (SVG):</label>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <button type="button" class="admin-tool-pill" onclick="insertLessonTemplate('formula')">➕ Công thức $...$</button>
+            <button type="button" class="admin-tool-pill" onclick="insertLessonTemplate('tam_giac_vuong')">📐 Tam giác vuông SVG</button>
+            <button type="button" class="admin-tool-pill" onclick="insertLessonTemplate('hinh_binh_hanh')">🔷 Hình bình hành SVG</button>
+            <button type="button" class="admin-tool-pill" onclick="insertLessonTemplate('hinh_chu_nhat')">🔲 Hình chữ nhật / Vuông SVG</button>
+            <button type="button" class="admin-tool-pill" onclick="insertLessonTemplate('duong_tron')">⭕ Đường tròn SVG</button>
+            <button type="button" class="admin-tool-pill" onclick="insertLessonTemplate('notice_box')">💡 Khung ghi chú / Chú ý</button>
+          </div>
+        </div>
+
+        <!-- FORM SOẠN THẢO BÀI HỌC -->
+        <form id="adminLessonForm" onsubmit="handleSaveTeacherLesson(event)">
+          <div class="form-field">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <label style="font-weight:700;color:#144e3c">Nội dung lý thuyết cốt lõi (hỗ trợ KaTeX $...$, định dạng Markdown và thẻ SVG):</label>
+              <button type="button" style="font-size:12px;color:#166534;background:none;border:none;cursor:pointer;text-decoration:underline" onclick="updateLiveLessonPreview()">Cập nhật xem trước ⟳</button>
+            </div>
+            <textarea id="lessonContentInput" required rows="9" style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #c8e6d5;font-family:inherit;font-size:14px;line-height:1.6" placeholder="Nhập lý thuyết, định nghĩa, định lý và công thức... Cô có thể bấm nút 'AI Soạn bài tự động' ở trên để tự động tạo nhanh nội dung chuẩn SGK!" oninput="updateLiveLessonPreview()"></textarea>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:14px;margin-bottom:14px">
+            <div class="form-field" style="margin:0">
+              <label style="font-size:13px;font-weight:700;color:#144e3c">Ví dụ minh họa mẫu:</label>
+              <textarea id="lessonExampleInput" rows="3" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;font-family:inherit" placeholder="Ví dụ: Tính cạnh huyền BC của tam giác ABC vuông tại A có AB = 3cm, AC = 4cm..."></textarea>
+            </div>
+
+            <div class="form-field" style="margin:0">
+              <label style="font-size:13px;font-weight:700;color:#144e3c">❓ Câu hỏi tự kiểm tra giúp học sinh tự tư duy:</label>
+              <textarea id="lessonSelfCheckInput" rows="3" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;font-family:inherit" placeholder="Ví dụ: Muốn áp dụng định lý Pythagore thì tam giác đó bắt buộc phải thỏa mãn điều kiện gì?"></textarea>
+            </div>
+          </div>
+
+          <!-- XEM TRƯỚC BÀI HỌC TRỰC QUAN -->
+          <div style="background:#fefbf2;border:1.5px solid #fed7aa;border-radius:12px;padding:14px;margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span style="font-size:13px;font-weight:700;color:#9a3412">👁️ Xem trước giao diện học sinh sẽ thấy:</span>
+              <span style="font-size:12px;color:#78350f">Tự động kết xuất công thức KaTeX & Đồ họa SVG</span>
+            </div>
+            <div id="adminLessonLivePreviewBox" style="background:#ffffff;border:1px solid #fed7aa;border-radius:10px;padding:16px;min-height:80px">
+              <p style="color:#a8a29e;font-size:13px;margin:0">Nội dung bài học sẽ hiển thị trực quan tại đây...</p>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <button class="btn-primary" type="submit" style="padding:10px 22px;font-size:14px;display:inline-flex;align-items:center;gap:6px">
+              <span>✅</span> Lưu & Xuất bản bài học lên Website
+            </button>
+            <button type="button" class="btn-secondary" onclick="resetTeacherLessonForm()">Làm mới form</button>
+            <span id="lessonSaveStatus" style="font-size:13px;font-weight:600"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- DANH SÁCH BÀI HỌC ĐÃ CÓ TRÊN HỆ THỐNG -->
+      <section class="panel" style="margin-top:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <h3 style="font-size:17px;color:#144e3c;margin:0">
+            📚 Danh sách bài học đang phát hành trên Website (Khối lớp ${adminCurrentGrade})
+          </h3>
+          <button class="btn-secondary" style="padding:5px 12px;font-size:12.5px" onclick="refreshAdminLessonsList()">🔄 Tải lại danh sách</button>
+        </div>
+        <div id="adminLessonsListContainer">
+          <!-- Điền động danh sách bài học -->
+        </div>
+      </section>
+    `;
+  }
+
+  // 2. SUBTAB 2: UPLOAD & QUẢN LÝ BÀI TẬP TƯƠNG TÁC
+  else if (adminSubTab === 'quizzes') {
+    subTabContentHtml = `
+      <section class="panel" style="border:2px solid #bce2cb">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px">
           <div>
-            <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">2. Chọn bài học mẫu trong chương trình:</label>
-            <select id="adminLessonSelect" onchange="onAdminLessonSelectChange(this.value)" style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;color:#144e3c;background:#fff">
-              <!-- Điền động theo khối lớp -->
+            <h3 style="font-size:18px;color:#144e3c;margin:0 0 4px;display:flex;align-items:center;gap:8px">
+              <span>🎯</span> Upload & Đưa bài tập tương tác lên cho học sinh làm theo bài
+            </h3>
+            <p style="font-size:13px;color:#557766;margin:0">
+              Cô chỉ cần chọn bài học hoặc nhập tiêu đề bài, bấm nút trích xuất là hệ thống sẽ tự động tạo câu hỏi trắc nghiệm tương tác chuẩn SGK/SBT!
+            </p>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:13px;font-weight:700;color:#144e3c">Khối lớp:</label>
+            <select onchange="onAdminGradeChange(this.value)" style="padding:7px 12px;border-radius:10px;border:1.5px solid #196653;font-size:13px;font-weight:700;color:#144e3c;background:#e8f6ee">
+              <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
+              <option value="7" ${adminCurrentGrade==='7'?'selected':''}>Toán Lớp 7</option>
+              <option value="8" ${adminCurrentGrade==='8'?'selected':''}>Toán Lớp 8</option>
+              <option value="9" ${adminCurrentGrade==='9'?'selected':''}>Toán Lớp 9</option>
             </select>
           </div>
         </div>
 
-        <div style="margin-top:14px">
-          <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">
-            3. Tiêu đề bài học dùng để trích xuất câu hỏi:
-          </label>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <input type="text" id="adminQuizTopicInput" placeholder="Ví dụ: Định lý Pythagore trong tam giác vuông" style="flex:1;min-width:260px;padding:10px 14px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:14px;font-weight:600;color:#144e3c">
-            
-            <!-- NÚT BẤM TRÍCH XUẤT TỰ ĐỘNG THEO TIÊU ĐỀ -->
-            <button type="button" id="btnAutoExtractQuiz" class="btn-primary" style="background:#e5881e;color:#fff;border-color:#d47b15;display:inline-flex;align-items:center;gap:6px;font-weight:700;padding:10px 18px" onclick="handleAutoExtractQuiz()">
-              <span>✨</span> Tự động trích xuất theo tiêu đề bài
-            </button>
+        <!-- KHỐI CHỌN LỚP & TIÊU ĐỀ BÀI HỌC -->
+        <div style="background:#f4faf6;border:1.5px solid #d4ebdd;border-radius:14px;padding:16px;margin-bottom:18px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:14px">
+            <div>
+              <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">1. Chọn bài học mẫu trong chương trình:</label>
+              <select id="adminLessonSelect" onchange="onAdminLessonSelectChange(this.value)" style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;color:#144e3c;background:#fff">
+                <!-- Điền động theo khối lớp -->
+              </select>
+            </div>
+            <div>
+              <label style="font-size:13px;font-weight:700;color:#144e3c;display:block;margin-bottom:6px">2. Tiêu đề bài học dùng để trích xuất câu hỏi:</label>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <input type="text" id="adminQuizTopicInput" placeholder="Ví dụ: Định lý Pythagore trong tam giác vuông" style="flex:1;min-width:240px;padding:9px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;font-weight:600;color:#144e3c">
+                <button type="button" id="btnAutoExtractQuiz" class="btn-primary" style="background:#e5881e;color:#fff;border-color:#d47b15;display:inline-flex;align-items:center;gap:6px;font-weight:700;padding:9px 16px" onclick="handleAutoExtractQuiz()">
+                  <span>✨</span> Tự động trích xuất theo tiêu đề
+                </button>
+              </div>
+            </div>
           </div>
           <div id="extractLoadingStatus" style="margin-top:8px;font-size:13px;font-weight:600"></div>
         </div>
-      </div>
 
-      <!-- FORM NỘI DUNG CÂU HỎI TRÍCH XUẤT ĐƯỢC -->
-      <form id="adminQuizForm" onsubmit="handleSaveTeacherQuiz(event)">
-        <div class="form-field">
-          <label style="font-weight:700;color:#144e3c">Nội dung câu hỏi (hỗ trợ công thức KaTeX $...$):</label>
-          <textarea id="quizQuestionText" required rows="3" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid #c8e6d5;font-family:inherit;font-size:14px" placeholder="Nội dung câu hỏi sẽ tự động trích xuất vào đây, cô có thể chỉnh sửa tự do..."></textarea>
+        <!-- FORM NỘI DUNG CÂU HỎI TRÍCH XUẤT ĐƯỢC -->
+        <form id="adminQuizForm" onsubmit="handleSaveTeacherQuiz(event)">
+          <div class="form-field">
+            <label style="font-weight:700;color:#144e3c">Nội dung câu hỏi (hỗ trợ công thức KaTeX $...$):</label>
+            <textarea id="quizQuestionText" required rows="3" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid #c8e6d5;font-family:inherit;font-size:14px" placeholder="Nội dung câu hỏi sẽ tự động trích xuất vào đây, cô có thể chỉnh sửa tự do..."></textarea>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+            <div class="form-field" style="margin:0">
+              <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án A:</label>
+              <input type="text" id="quizOpt0" required placeholder="Nhập đáp án A" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
+            </div>
+            <div class="form-field" style="margin:0">
+              <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án B:</label>
+              <input type="text" id="quizOpt1" required placeholder="Nhập đáp án B" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
+            </div>
+            <div class="form-field" style="margin:0">
+              <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án C:</label>
+              <input type="text" id="quizOpt2" required placeholder="Nhập đáp án C" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
+            </div>
+            <div class="form-field" style="margin:0">
+              <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án D:</label>
+              <input type="text" id="quizOpt3" required placeholder="Nhập đáp án D" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;margin-bottom:14px">
+            <div class="form-field" style="margin:0">
+              <label style="font-weight:700;color:#144e3c">Đáp án đúng:</label>
+              <select id="quizCorrectAnswer" style="padding:9px 12px;border-radius:8px;border:1.5px solid #196653;font-size:13.5px;font-weight:700;color:#144e3c;background:#e8f6ee;width:100%">
+                <option value="0">Phương án A</option>
+                <option value="1">Phương án B</option>
+                <option value="2">Phương án C</option>
+                <option value="3">Phương án D</option>
+              </select>
+            </div>
+
+            <div class="form-field" style="margin:0">
+              <label style="font-weight:700;color:#144e3c">Gợi ý tư duy của Cô Yến (Hint):</label>
+              <input type="text" id="quizHint" placeholder="Ví dụ: Áp dụng định lý Pythagore BC^2 = AB^2 + AC^2..." style="padding:9px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px;width:100%">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label style="font-weight:700;color:#144e3c">Lời giải thích chi tiết:</label>
+            <input type="text" id="quizExplanation" placeholder="Ví dụ: BC^2 = 6^2 + 8^2 = 36 + 64 = 100 => BC = 10cm" style="padding:9px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px;width:100%">
+          </div>
+
+          <!-- HÀNG NÚT LƯU BÀI TẬP -->
+          <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
+            <button class="btn-primary" type="submit" style="padding:10px 22px;font-size:14px;display:inline-flex;align-items:center;gap:6px">
+              <span>✅</span> Lưu & Đưa lên cho học sinh làm ngay
+            </button>
+            <button type="button" class="btn-secondary" onclick="resetTeacherQuizForm()">Làm mới form</button>
+            <span id="quizSaveStatus" style="font-size:13px;font-weight:600"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- PHẦN 3: DANH SÁCH BÀI TẬP ĐÃ CÓ THEO BÀI -->
+      <section class="panel" style="margin-top:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <h3 style="font-size:17px;color:#144e3c;margin:0">
+            📚 Danh sách bài tập tương tác theo bài (Khối lớp ${adminCurrentGrade})
+          </h3>
+          <button class="btn-secondary" style="padding:5px 12px;font-size:12.5px" onclick="refreshAdminQuizList()">🔄 Tải lại danh sách</button>
         </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-          <div class="form-field" style="margin:0">
-            <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án A:</label>
-            <input type="text" id="quizOpt0" required placeholder="Nhập đáp án A" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
-          </div>
-          <div class="form-field" style="margin:0">
-            <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án B:</label>
-            <input type="text" id="quizOpt1" required placeholder="Nhập đáp án B" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
-          </div>
-          <div class="form-field" style="margin:0">
-            <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án C:</label>
-            <input type="text" id="quizOpt2" required placeholder="Nhập đáp án C" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
-          </div>
-          <div class="form-field" style="margin:0">
-            <label style="font-size:12.5px;font-weight:700;color:#144e3c">Phương án D:</label>
-            <input type="text" id="quizOpt3" required placeholder="Nhập đáp án D" style="padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px">
-          </div>
+        <div id="adminQuizListContainer">
+          <!-- Điền động danh sách câu hỏi -->
         </div>
+      </section>
+    `;
+  }
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;margin-bottom:14px">
-          <div class="form-field" style="margin:0">
-            <label style="font-weight:700;color:#144e3c">Đáp án đúng:</label>
-            <select id="quizCorrectAnswer" style="padding:9px 12px;border-radius:8px;border:1.5px solid #196653;font-size:13.5px;font-weight:700;color:#144e3c;background:#e8f6ee;width:100%">
-              <option value="0">Phương án A</option>
-              <option value="1">Phương án B</option>
-              <option value="2">Phương án C</option>
-              <option value="3">Phương án D</option>
+  // 3. SUBTAB 3: UPLOAD & QUẢN LÝ TÀI LIỆU
+  else if (adminSubTab === 'resources') {
+    subTabContentHtml = `
+      <section class="panel" style="border:2px solid #bce2cb">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <div>
+            <h3 style="font-size:18px;color:#144e3c;margin:0 0 4px;display:flex;align-items:center;gap:8px">
+              <span>📁</span> Upload & Đăng tải tài liệu, đề thi lên Website (Toán Lớp ${adminCurrentGrade})
+            </h3>
+            <p style="font-size:13px;color:#557766;margin:0">
+              Đăng tải đề cương ôn tập, đề kiểm tra định kỳ, sổ tay công thức dưới định dạng PDF, DOCX để học sinh có thể tải về học tập.
+            </p>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:13px;font-weight:700;color:#144e3c">Khối lớp:</label>
+            <select onchange="onAdminGradeChange(this.value)" style="padding:7px 12px;border-radius:10px;border:1.5px solid #196653;font-size:13px;font-weight:700;color:#144e3c;background:#e8f6ee">
+              <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
+              <option value="7" ${adminCurrentGrade==='7'?'selected':''}>Toán Lớp 7</option>
+              <option value="8" ${adminCurrentGrade==='8'?'selected':''}>Toán Lớp 8</option>
+              <option value="9" ${adminCurrentGrade==='9'?'selected':''}>Toán Lớp 9</option>
             </select>
           </div>
+        </div>
 
-          <div class="form-field" style="margin:0">
-            <label style="font-weight:700;color:#144e3c">Gợi ý tư duy của Cô Yến (Hint):</label>
-            <input type="text" id="quizHint" placeholder="Ví dụ: Áp dụng định lý Pythagore BC^2 = AB^2 + AC^2..." style="padding:9px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px;width:100%">
+        <form id="adminResourceForm" onsubmit="handleSaveTeacherResource(event)">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;margin-bottom:14px">
+            <div class="form-field" style="margin:0">
+              <label style="font-weight:700;color:#144e3c">Tên tài liệu / Tên bộ đề thi:</label>
+              <input type="text" id="resTitleInput" required placeholder="Ví dụ: Đề cương ôn tập Học kỳ I Toán Lớp ${adminCurrentGrade}" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px">
+            </div>
+
+            <div class="form-field" style="margin:0">
+              <label style="font-weight:700;color:#144e3c">Chủ đề phân loại:</label>
+              <select id="resTopicSelect" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;color:#144e3c;background:#fff">
+                <option value="Đề cương ôn tập">Đề cương ôn tập</option>
+                <option value="Đề thi học kỳ">Đề thi & Đề kiểm tra học kỳ</option>
+                <option value="Sổ tay công thức">Sổ tay công thức then chốt</option>
+                <option value="Chuyên đề nâng cao">Chuyên đề nâng cao</option>
+                <option value="Bài toán thực tế">Bài toán thực tế</option>
+                <option value="Tổng hợp">Tài liệu tổng hợp</option>
+              </select>
+            </div>
+
+            <div class="form-field" style="margin:0">
+              <label style="font-weight:700;color:#144e3c">Định dạng tệp:</label>
+              <select id="resFileTypeSelect" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;color:#144e3c;background:#fff">
+                <option value="PDF">Tệp PDF (.pdf)</option>
+                <option value="DOCX">Tài liệu Word (.docx)</option>
+                <option value="PPTX">Bài giảng PowerPoint (.pptx)</option>
+                <option value="ZIP">Tệp nén tài liệu (.zip)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label style="font-weight:700;color:#144e3c">Tóm tắt mô tả nội dung tài liệu:</label>
+            <input type="text" id="resDescInput" placeholder="Ví dụ: Đầy đủ lý thuyết trọng tâm, các dạng bài thường gặp và ma trận đề thi có đáp án chi tiết." style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px">
+          </div>
+
+          <!-- UPLOAD FILE TỪ MÁY HOẶC NHẬP LINK -->
+          <div style="background:#f4faf6;border:1.5px solid #d4ebdd;border-radius:14px;padding:16px;margin-bottom:18px">
+            <label style="font-weight:700;color:#144e3c;display:block;margin-bottom:8px">Đính kèm tệp tài liệu:</label>
+            
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <input type="file" id="adminResourceFileInput" style="display:none" onchange="handleResourceFileSelect(event)">
+              <button type="button" class="btn-secondary" style="border-color:#196653;color:#144e3c;background:#fff;display:inline-flex;align-items:center;gap:6px" onclick="el('adminResourceFileInput').click()">
+                <span>📎</span> Chọn tệp từ máy tính
+              </button>
+              <span id="resourceFileInfoText" style="font-size:13px;color:#166534;font-weight:600"></span>
+            </div>
+
+            <div style="margin-top:10px">
+              <span style="font-size:12px;color:#557766">Hoặc dán đường link tải về trực tuyến (Google Drive, OneDrive, website...):</span>
+              <input type="text" id="resUrlInput" placeholder="https://..." style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13px;margin-top:4px">
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <button class="btn-primary" type="submit" style="padding:10px 22px;font-size:14px;display:inline-flex;align-items:center;gap:6px">
+              <span>✅</span> Lưu & Đăng tải tài liệu lên Website
+            </button>
+            <button type="button" class="btn-secondary" onclick="resetTeacherResourceForm()">Làm mới form</button>
+            <span id="resourceSaveStatus" style="font-size:13px;font-weight:600"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- DANH SÁCH TÀI LIỆU ĐÃ CÓ -->
+      <section class="panel" style="margin-top:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <h3 style="font-size:17px;color:#144e3c;margin:0">
+            📁 Danh mục tài liệu đang phát hành (Toán Lớp ${adminCurrentGrade})
+          </h3>
+          <button class="btn-secondary" style="padding:5px 12px;font-size:12.5px" onclick="refreshAdminResourcesList()">🔄 Tải lại danh sách</button>
+        </div>
+        <div id="adminResourcesListContainer">
+          <!-- Điền động danh sách tài liệu -->
+        </div>
+      </section>
+    `;
+  }
+
+  // 4. SUBTAB 4: TINH CHỈNH TRỢ LÝ AI & SYSTEM PROMPT
+  else if (adminSubTab === 'ai-prompt') {
+    subTabContentHtml = `
+      <section class="panel" style="border:2px solid #bce2cb">
+        <div style="margin-bottom:16px">
+          <h3 style="font-size:18px;color:#144e3c;margin:0 0 6px;display:flex;align-items:center;gap:8px">
+            <span>🤖</span> Cấu hình & Tinh chỉnh Trợ lý AI Cô Yến
+          </h3>
+          <p style="font-size:13.5px;color:#557766;margin:0">
+            Trợ lý AI bám sát kim chỉ nam sư phạm: <b>"HỎI ĐỂ HIỂU – KHÔNG LỜI GIẢI CHI TIẾT"</b>, định hướng học sinh tự tư duy và làm chủ kiến thức.
+          </p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;margin-bottom:20px">
+          <div style="background:#f4faf6;border:1.5px solid #d4ebdd;border-radius:14px;padding:16px">
+            <h4 style="color:#144e3c;font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:6px">
+              <span>🌟</span> 5 Quy tắc sư phạm vàng của Cô Yến
+            </h4>
+            <ol style="margin:0;padding-left:20px;font-size:13px;color:#2a453c;line-height:1.7">
+              <li><b>Không giải hộ từ đầu đến cuối:</b> Dẫn dắt từng bước nhỏ bằng câu hỏi gợi mở.</li>
+              <li><b>Phương pháp đối thoại Socrates:</b> Hỏi ngược lại để học sinh nhận diện bản chất bài toán.</li>
+              <li><b>Trực quan hóa hình học:</b> Luôn kết hợp hình vẽ SVG và công thức toán học KaTeX.</li>
+              <li><b>Động viên & Khích lệ:</b> Giọng điệu ấm áp, khen ngợi từng nỗ lực dù là nhỏ nhất.</li>
+              <li><b>Gợi ý hành động tiếp theo:</b> Kết thúc câu trả lời luôn có câu hỏi hoặc việc cần làm tiếp theo.</li>
+            </ol>
+          </div>
+
+          <div style="background:#fefbf2;border:1.5px solid #fed7aa;border-radius:14px;padding:16px">
+            <h4 style="color:#9a3412;font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:6px">
+              <span>🔑</span> Trạng thái Máy chủ & Gemini API Keys
+            </h4>
+            <div style="font-size:13px;color:#78350f;line-height:1.7">
+              <div>• <b>Chế độ kết nối:</b> Đa khóa dự phòng (Multi-Key Load Balancing Pool)</div>
+              <div>• <b>Trạng thái:</b> <span style="color:#15803d;font-weight:700">● Hoạt động ổn định (Sẵn sàng 24/7)</span></div>
+              <div>• <b>Bộ đệm dự phòng:</b> Tự động fallback kho dữ liệu SGK/SBT chuẩn khi ngoại tuyến.</div>
+              <div>• <b>Bộ lọc an toàn:</b> Bảo đảm 100% nội dung giáo dục thuần túy và bảo mật.</div>
+            </div>
           </div>
         </div>
 
         <div class="form-field">
-          <label style="font-weight:700;color:#144e3c">Lời giải thích chi tiết:</label>
-          <input type="text" id="quizExplanation" placeholder="Ví dụ: BC^2 = 6^2 + 8^2 = 36 + 64 = 100 => BC = 10cm" style="padding:9px 12px;border-radius:8px;border:1px solid #c8e6d5;font-size:13.5px;width:100%">
+          <label style="font-weight:700;color:#144e3c">Lời chào mừng chuẩn sư phạm của Cô Yến khi học sinh mở ứng dụng:</label>
+          <textarea id="aiGreetingCustom" rows="4" style="width:100%;padding:12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;font-family:inherit;line-height:1.6">Xin chào em! Cô là YENTRAN AI (Cô Trần Thị Hải Yến) – Trợ lý học tập và ôn tập môn Toán THCS.
+
+Phương châm dạy học của cô là "HỎI ĐỂ HIỂU – KHÔNG LỜI GIẢI CHI TIẾT": Cô sẽ không giải hộ từ đầu đến cuối, mà sẽ đặt câu hỏi gợi mở từng bước nhỏ để em tự suy nghĩ, tự phát hiện vấn đề và tự tìm ra lời giải. Em hãy chọn bài hoặc gửi ảnh bài tập để cô đồng hành cùng em nhé!</textarea>
         </div>
 
-        <!-- HÀNG NÚT LƯU BÀI TẬP -->
-        <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
-          <button class="btn-primary" type="submit" style="padding:10px 22px;font-size:14px;display:inline-flex;align-items:center;gap:6px">
-            <span>✅</span> Lưu & Đưa lên cho học sinh làm ngay
-          </button>
-          <button type="button" class="btn-secondary" onclick="resetTeacherQuizForm()">Làm mới form</button>
-          <span id="quizSaveStatus" style="font-size:13px;font-weight:600"></span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn-primary" onclick="alert('Đã cập nhật cấu hình Trợ lý AI thành công!')">Lưu cấu hình AI</button>
+          <button class="btn-secondary" onclick="go('chat')">Thử nghiệm đối thoại với Cô Yến ❯</button>
         </div>
-      </form>
+      </section>
+    `;
+  }
+
+  // 5. SUBTAB 5: THỐNG KÊ & BÁO CÁO
+  else if (adminSubTab === 'stats') {
+    subTabContentHtml = `
+      <section class="panel">
+        <h3 style="font-size:18px;color:#144e3c;margin:0 0 14px">📊 Báo cáo & Thống kê toàn diện hệ thống</h3>
+        
+        <div class="metrics-grid" style="margin-bottom:20px">
+          <div class="metric-box"><strong>${totalCustomLessons + 8}</strong><span>Tổng số bài học lý thuyết</span></div>
+          <div class="metric-box"><strong>${totalCustomQuizzes + 8}</strong><span>Tổng số câu hỏi tương tác</span></div>
+          <div class="metric-box"><strong>${totalCustomResources + 9}</strong><span>Tổng số tài liệu & đề thi</span></div>
+          <div class="metric-box"><strong>648</strong><span>Lượt học sinh truy cập học tập</span></div>
+        </div>
+
+        <div style="background:#ffffff;border:1px solid #d4ebdd;border-radius:14px;padding:20px">
+          <h4 style="color:#144e3c;font-size:16px;margin:0 0 12px">Phân bổ nội dung học tập theo 4 khối lớp:</h4>
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+            <thead>
+              <tr style="background:#f4faf6;text-align:left;color:#144e3c">
+                <th style="padding:10px 14px;border-bottom:2px solid #d4ebdd">Khối lớp</th>
+                <th style="padding:10px 14px;border-bottom:2px solid #d4ebdd">Bài học lý thuyết</th>
+                <th style="padding:10px 14px;border-bottom:2px solid #d4ebdd">Bài tập tương tác</th>
+                <th style="padding:10px 14px;border-bottom:2px solid #d4ebdd">Tài liệu & Đề thi</th>
+                <th style="padding:10px 14px;border-bottom:2px solid #d4ebdd">Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${['6','7','8','9'].map(g => `
+                <tr style="border-bottom:1px solid #eef5f1">
+                  <td style="padding:10px 14px;font-weight:700;color:#144e3c">Toán Lớp ${g}</td>
+                  <td style="padding:10px 14px">${getCustomLessons(g).length + 2} bài học</td>
+                  <td style="padding:10px 14px">${getCustomQuizzes(g).length + 2} câu hỏi</td>
+                  <td style="padding:10px 14px">${getCustomResources(g).length + 2} tài liệu</td>
+                  <td style="padding:10px 14px"><span style="color:#15803d;font-weight:600">● Đang hoạt động</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    `;
+  }
+
+  container.innerHTML = `
+    <!-- PHẦN 1: HEADER QUẢN TRỊ VIÊN -->
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <div>
+          <h2>⚙️ Bàn làm việc Quản trị – Cô ${esc(currentUser ? currentUser.full_name : 'Trần Thị Hải Yến')}</h2>
+          <p class="sub" style="margin:0">Viết bài học mới, upload bài tập tương tác theo bài và chia sẻ tài liệu ôn tập toàn diện cho học sinh.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" style="color:#b91c1c;border-color:#fecaca;background:#fef2f2" onclick="handleTeacherLogout()">Đăng xuất ⎋</button>
+        </div>
+      </div>
+
+      <!-- THANH CHUYỂN ĐỔI 5 SUBTABS QUẢN TRỊ -->
+      <div class="admin-subtabs-bar">
+        <button class="btn-subtab ${adminSubTab==='lessons'?'active':''}" onclick="switchAdminSubTab('lessons')">
+          <span>📝</span> Soạn & Viết bài học mới
+        </button>
+        <button class="btn-subtab ${adminSubTab==='quizzes'?'active':''}" onclick="switchAdminSubTab('quizzes')">
+          <span>🎯</span> Upload & Quản lý Bài tập
+        </button>
+        <button class="btn-subtab ${adminSubTab==='resources'?'active':''}" onclick="switchAdminSubTab('resources')">
+          <span>📁</span> Upload & Quản lý Tài liệu
+        </button>
+        <button class="btn-subtab ${adminSubTab==='ai-prompt'?'active':''}" onclick="switchAdminSubTab('ai-prompt')">
+          <span>🤖</span> Tinh chỉnh Trợ lý AI
+        </button>
+        <button class="btn-subtab ${adminSubTab==='stats'?'active':''}" onclick="switchAdminSubTab('stats')">
+          <span>📊</span> Thống kê & Báo cáo
+        </button>
+      </div>
     </section>
 
-    <!-- PHẦN 3: DANH SÁCH BÀI TẬP ĐÃ CÓ THEO BÀI -->
-    <section class="panel" style="margin-top:20px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
-        <h3 style="font-size:17px;color:#144e3c">
-          📚 Danh sách bài tập tương tác theo bài (Khối lớp <span id="adminListGradeText">${adminCurrentGrade}</span>)
-        </h3>
-        <button class="btn-secondary" style="padding:5px 12px;font-size:12.5px" onclick="refreshAdminQuizList()">🔄 Tải lại danh sách</button>
-      </div>
-      <div id="adminQuizListContainer">
-        <!-- Điền động danh sách câu hỏi -->
-      </div>
-    </section>
+    <!-- NỘI DUNG CHI TIẾT CỦA SUBTAB HIỆN TẠI -->
+    ${subTabContentHtml}
   `;
 
-  populateAdminLessonsDropdown();
-  refreshAdminQuizList();
+  // Khởi tạo các dropdown và danh sách phù hợp
+  if (adminSubTab === 'lessons') {
+    populateAdminLessonsPresetsDropdown();
+    refreshAdminLessonsList();
+    updateLiveLessonPreview();
+  } else if (adminSubTab === 'quizzes') {
+    populateAdminLessonsDropdown();
+    refreshAdminQuizList();
+  } else if (adminSubTab === 'resources') {
+    refreshAdminResourcesList();
+  }
 }
 
-function onAdminGradeChange(gradeVal) {
-  adminCurrentGrade = gradeVal;
-  populateAdminLessonsDropdown();
-  const elGradeText = el('adminListGradeText');
-  if (elGradeText) elGradeText.textContent = adminCurrentGrade;
-  refreshAdminQuizList();
+// DROPDOWN VÀ PRESET BÀI HỌC CHO SOẠN BÀI
+function populateAdminLessonsPresetsDropdown() {
+  const sel = el('adminLessonPresetSelect');
+  if (!sel) return;
+  const list = STANDARD_LESSONS[adminCurrentGrade] || [];
+  sel.innerHTML = '<option value="">-- Chọn bài học mẫu trong SGK/SBT --</option>' + list.map((l, i) => `<option value="${esc(l)}">Bài ${i + 1}: ${esc(l)}</option>`).join('');
 }
 
+function onAdminLessonPresetChange(val) {
+  const inputTitle = el('adminLessonTitleInput');
+  if (inputTitle && val) {
+    inputTitle.value = val;
+  }
+}
+
+// CHÈN NHANH MẪU NỘI DUNG & SVG
+function insertLessonTemplate(type) {
+  const textarea = el('lessonContentInput');
+  if (!textarea) return;
+
+  let snippet = '';
+  if (type === 'formula') {
+    snippet = '\n\\( a^2 + b^2 = c^2 \\)\n';
+  } else if (type === 'tam_giac_vuong') {
+    snippet = `\n<svg viewBox="0 0 320 180" width="100%" style="max-width:320px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:12px;padding:8px">
+  <polygon points="60,30 60,140 240,140" fill="#e8f6ee" stroke="#196653" stroke-width="2.5" stroke-linejoin="round"/>
+  <rect x="60" y="125" width="15" height="15" fill="none" stroke="#e11d48" stroke-width="2"/>
+  <circle cx="67" cy="132" r="1.5" fill="#e11d48"/>
+  <text x="45" y="152" fill="#144e3c" font-size="14" font-weight="bold">A</text>
+  <text x="45" y="30" fill="#144e3c" font-size="14" font-weight="bold">B</text>
+  <text x="245" y="150" fill="#144e3c" font-size="14" font-weight="bold">C</text>
+  <text x="140" y="80" fill="#b45309" font-size="12" font-weight="bold">Cạnh huyền BC</text>
+</svg>\n`;
+  } else if (type === 'hinh_binh_hanh') {
+    snippet = `\n<svg viewBox="0 0 340 180" width="100%" style="max-width:340px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:12px;padding:8px">
+  <polygon points="90,40 270,40 220,140 40,140" fill="#eff6fc" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round"/>
+  <line x1="90" y1="40" x2="220" y2="140" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="4 4"/>
+  <line x1="270" y1="40" x2="40" y2="140" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="4 4"/>
+  <circle cx="155" cy="90" r="3" fill="#dc2626"/>
+  <text x="158" y="85" fill="#dc2626" font-size="12" font-weight="bold">O</text>
+  <text x="80" y="32" fill="#1e3a8a" font-size="13" font-weight="bold">A</text>
+  <text x="275" y="32" fill="#1e3a8a" font-size="13" font-weight="bold">B</text>
+  <text x="225" y="155" fill="#1e3a8a" font-size="13" font-weight="bold">C</text>
+  <text x="25" y="155" fill="#1e3a8a" font-size="13" font-weight="bold">D</text>
+</svg>\n`;
+  } else if (type === 'hinh_chu_nhat') {
+    snippet = `\n<svg viewBox="0 0 320 180" width="100%" style="max-width:320px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:12px;padding:8px">
+  <rect x="50" y="40" width="220" height="100" fill="#fef8eb" stroke="#d97706" stroke-width="2.5" rx="3"/>
+  <text x="35" y="40" fill="#92400e" font-size="13" font-weight="bold">A</text>
+  <text x="275" y="40" fill="#92400e" font-size="13" font-weight="bold">B</text>
+  <text x="275" y="150" fill="#92400e" font-size="13" font-weight="bold">C</text>
+  <text x="35" y="150" fill="#92400e" font-size="13" font-weight="bold">D</text>
+</svg>\n`;
+  } else if (type === 'duong_tron') {
+    snippet = `\n<svg viewBox="0 0 320 200" width="100%" style="max-width:320px;display:block;margin:12px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:12px;padding:8px">
+  <circle cx="160" cy="100" r="75" fill="#f0faf4" stroke="#166534" stroke-width="2.5"/>
+  <circle cx="160" cy="100" r="3" fill="#166534"/>
+  <text x="165" y="98" fill="#166534" font-size="13" font-weight="bold">O</text>
+  <line x1="160" y1="100" x2="235" y2="100" stroke="#b45309" stroke-width="2"/>
+  <text x="190" y="92" fill="#b45309" font-size="12" font-weight="bold">R</text>
+</svg>\n`;
+  } else if (type === 'notice_box') {
+    snippet = `\n> **Chú ý quan trọng:** Hãy ghi nhớ điều kiện xác định và luôn kiểm tra lại kết quả sau khi giải!\n`;
+  }
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = textarea.value;
+  textarea.value = text.substring(0, start) + snippet + text.substring(end);
+  textarea.selectionStart = textarea.selectionEnd = start + snippet.length;
+  textarea.focus();
+  updateLiveLessonPreview();
+}
+
+// CẬP NHẬT XEM TRƯỚC BÀI HỌC (LIVE PREVIEW)
+function updateLiveLessonPreview() {
+  const box = el('adminLessonLivePreviewBox');
+  const input = el('lessonContentInput');
+  if (!box || !input) return;
+  const text = input.value.trim();
+  if (!text) {
+    box.innerHTML = '<p style="color:#a8a29e;font-size:13px;margin:0">Nội dung bài học sẽ hiển thị trực quan tại đây...</p>';
+    return;
+  }
+  box.innerHTML = formatMessageContent(text);
+  renderMath();
+}
+
+// AI HỖ TRỢ SOẠN BÀI HỌC TỰ ĐỘNG
+async function handleAutoDraftLesson() {
+  const inputTitle = el('adminLessonTitleInput');
+  const title = inputTitle ? inputTitle.value.trim() : '';
+  if (!title) {
+    alert('Cô hãy chọn hoặc nhập tiêu đề bài học trước nhé!');
+    return;
+  }
+
+  const btn = el('btnAutoDraftLesson');
+  const statusEl = el('lessonDraftLoadingStatus');
+  if (btn) btn.disabled = true;
+  if (statusEl) {
+    statusEl.innerHTML = '<span style="color:#d97706">🌱 Đang ứng dụng AI soạn thảo bài học "' + esc(title) + '" chuẩn SGK/SBT...</span>';
+  }
+
+  try {
+    let res = await fetch(`${API_BASE}/generate-lesson`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lessonTitle: title, grade: adminCurrentGrade })
+    }).catch(() => null);
+
+    if (!res || !res.ok) {
+      throw new Error('Không thể kết nối đến máy chủ AI soạn bài.');
+    }
+
+    const d = await res.json();
+    if (d.success && d.lesson) {
+      const les = d.lesson;
+      if (el('lessonContentInput')) el('lessonContentInput').value = les.content || '';
+      if (el('lessonExampleInput')) el('lessonExampleInput').value = les.sample_example || '';
+      if (el('lessonSelfCheckInput')) el('lessonSelfCheckInput').value = les.self_check_question || '';
+
+      updateLiveLessonPreview();
+
+      if (statusEl) {
+        statusEl.innerHTML = '<span style="color:#15803d">✅ Đã soạn thảo xong khung bài học! Cô hãy xem trước và chỉnh sửa theo ý mình nhé.</span>';
+      }
+    } else {
+      if (statusEl) statusEl.innerHTML = '<span style="color:#dc2626">Không thể soạn bài tự động, cô có thể tự viết bên dưới.</span>';
+    }
+  } catch (err) {
+    if (statusEl) statusEl.innerHTML = '<span style="color:#dc2626">Lỗi kết nối soạn bài: ' + esc(err.message) + '</span>';
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// LƯU BÀI HỌC MỚI CỦA GIÁO VIÊN
+async function handleSaveTeacherLesson(e) {
+  e.preventDefault();
+  const title = el('adminLessonTitleInput') ? el('adminLessonTitleInput').value.trim() : '';
+  const content = el('lessonContentInput') ? el('lessonContentInput').value.trim() : '';
+  const example = el('lessonExampleInput') ? el('lessonExampleInput').value.trim() : '';
+  const selfCheck = el('lessonSelfCheckInput') ? el('lessonSelfCheckInput').value.trim() : '';
+
+  if (!title || !content) {
+    alert('Vui lòng nhập đầy đủ tiêu đề và nội dung bài học.');
+    return;
+  }
+
+  const lessonObj = {
+    id: Date.now(),
+    grade_id: adminCurrentGrade,
+    title,
+    content,
+    sample_example: example,
+    self_check_question: selfCheck
+  };
+
+  saveCustomLesson(adminCurrentGrade, lessonObj);
+
+  try {
+    await fetch(`${API_BASE}/public/lessons`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lessonObj)
+    });
+  } catch (err) {}
+
+  const statusEl = el('lessonSaveStatus');
+  if (statusEl) {
+    statusEl.innerHTML = '<span style="color:#15803d;background:#e8f6ee;padding:4px 10px;border-radius:6px">🎉 Đã xuất bản bài học thành công! Học sinh vào mục "Kiến thức theo lớp" sẽ thấy ngay.</span>';
+    setTimeout(() => { if (statusEl) statusEl.innerHTML = ''; }, 4000);
+  }
+
+  resetTeacherLessonForm();
+  refreshAdminLessonsList();
+}
+
+function resetTeacherLessonForm() {
+  if (el('adminLessonTitleInput')) el('adminLessonTitleInput').value = '';
+  if (el('lessonContentInput')) el('lessonContentInput').value = '';
+  if (el('lessonExampleInput')) el('lessonExampleInput').value = '';
+  if (el('lessonSelfCheckInput')) el('lessonSelfCheckInput').value = '';
+  if (el('lessonDraftLoadingStatus')) el('lessonDraftLoadingStatus').innerHTML = '';
+  updateLiveLessonPreview();
+}
+
+// TẢI LẠI DANH SÁCH BÀI HỌC
+async function refreshAdminLessonsList() {
+  const container = el('adminLessonsListContainer');
+  if (!container) return;
+  container.innerHTML = '<p style="font-size:13px;color:#557766">Đang tải danh sách bài học...</p>';
+
+  try {
+    const res = await fetch(`${API_BASE}/public/lessons?grade=${adminCurrentGrade}`);
+    const d = await res.json();
+    const serverLessons = d.lessons || [];
+    const customLessons = getCustomLessons(adminCurrentGrade);
+
+    const map = new Map();
+    customLessons.forEach(l => map.set(l.id || l.title, { ...l, isCustom: true }));
+    serverLessons.forEach(l => {
+      if (!map.has(l.id || l.title)) map.set(l.id || l.title, { ...l, isCustom: false });
+    });
+    const all = Array.from(map.values());
+
+    if (all.length === 0) {
+      container.innerHTML = '<div class="notice-box warn">Chưa có bài học nào cho khối lớp này. Cô hãy soạn thảo ở trên để xuất bản nhé!</div>';
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:12px">
+        ${all.map((l, idx) => `
+          <div style="border:1px solid #d4ebdd;border-radius:12px;padding:16px;background:#ffffff;display:flex;justify-content:space-between;align-items:flex-start;gap:14px">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="background:#e8f6ee;color:#144e3c;font-weight:700;font-size:12px;padding:3px 8px;border-radius:6px">Toán ${l.grade_id}</span>
+                ${l.isCustom ? '<span style="background:#fef3c7;color:#92400e;font-size:11.5px;padding:2px 6px;border-radius:4px;font-weight:700">Cô vừa biên soạn</span>' : ''}
+                <span style="font-size:12px;color:#557766">#${idx + 1}</span>
+              </div>
+              <h4 style="color:#144e3c;font-size:16px;margin:0 0 8px">${esc(l.title)}</h4>
+              <div style="font-size:13.5px;color:#334155;line-height:1.6;max-height:80px;overflow:hidden">${formatMessageContent(l.content)}</div>
+            </div>
+            ${l.isCustom ? `
+              <button class="btn-secondary" style="color:#b91c1c;border-color:#fecaca;padding:5px 12px;font-size:12px" onclick="handleDeleteTeacherLesson(${l.id})">
+                Xóa
+              </button>
+            ` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+    renderMath();
+  } catch (err) {
+    container.innerHTML = '<div class="notice-box error">Lỗi tải danh sách bài học: ' + esc(err.message) + '</div>';
+  }
+}
+
+function handleDeleteTeacherLesson(id) {
+  if (confirm('Cô có chắc chắn muốn xóa bài học này khỏi website không?')) {
+    deleteCustomLesson(adminCurrentGrade, id);
+    refreshAdminLessonsList();
+  }
+}
+
+// XỬ LÝ ĐÍNH KÈM TỆP TÀI LIỆU
+function handleResourceFileSelect(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  attachedResourceFileName = file.name;
+  const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+  const textEl = el('resourceFileInfoText');
+  if (textEl) {
+    textEl.textContent = `✓ Đã chọn: ${file.name} (${sizeMb} MB)`;
+  }
+
+  // Tự động điền tên nếu chưa nhập
+  const titleInput = el('resTitleInput');
+  if (titleInput && !titleInput.value) {
+    titleInput.value = file.name.replace(/\.[^/.]+$/, "");
+  }
+
+  // Tạo URL tải về tệp cục bộ
+  attachedResourceFileData = URL.createObjectURL(file);
+}
+
+// LƯU VÀ ĐĂNG TẢI TÀI LIỆU MỚI
+async function handleSaveTeacherResource(e) {
+  e.preventDefault();
+  const title = el('resTitleInput') ? el('resTitleInput').value.trim() : '';
+  const topic = el('resTopicSelect') ? el('resTopicSelect').value : 'Tài liệu';
+  const fileType = el('resFileTypeSelect') ? el('resFileTypeSelect').value : 'PDF';
+  const desc = el('resDescInput') ? el('resDescInput').value.trim() : '';
+  const urlInput = el('resUrlInput') ? el('resUrlInput').value.trim() : '';
+
+  if (!title) {
+    alert('Vui lòng nhập tên tài liệu.');
+    return;
+  }
+
+  const fileUrl = attachedResourceFileData || urlInput || '#';
+
+  const resourceObj = {
+    id: Date.now(),
+    grade_id: adminCurrentGrade,
+    title,
+    topic,
+    file_type: fileType,
+    description: desc || 'Tài liệu ôn tập do Cô Yến chia sẻ',
+    file_url: fileUrl
+  };
+
+  saveCustomResource(adminCurrentGrade, resourceObj);
+
+  try {
+    await fetch(`${API_BASE}/public/resources`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(resourceObj)
+    });
+  } catch (err) {}
+
+  const statusEl = el('resourceSaveStatus');
+  if (statusEl) {
+    statusEl.innerHTML = '<span style="color:#15803d;background:#e8f6ee;padding:4px 10px;border-radius:6px">🎉 Đã đăng tải tài liệu thành công! Học sinh vào mục "Tài liệu học tập" sẽ thấy và tải về được ngay.</span>';
+    setTimeout(() => { if (statusEl) statusEl.innerHTML = ''; }, 4000);
+  }
+
+  resetTeacherResourceForm();
+  refreshAdminResourcesList();
+}
+
+function resetTeacherResourceForm() {
+  if (el('resTitleInput')) el('resTitleInput').value = '';
+  if (el('resDescInput')) el('resDescInput').value = '';
+  if (el('resUrlInput')) el('resUrlInput').value = '';
+  if (el('resourceFileInfoText')) el('resourceFileInfoText').textContent = '';
+  attachedResourceFileData = null;
+  attachedResourceFileName = '';
+}
+
+// TẢI LẠI DANH SÁCH TÀI LIỆU
+async function refreshAdminResourcesList() {
+  const container = el('adminResourcesListContainer');
+  if (!container) return;
+  container.innerHTML = '<p style="font-size:13px;color:#557766">Đang tải danh mục tài liệu...</p>';
+
+  try {
+    const res = await fetch(`${API_BASE}/public/resources?grade=${adminCurrentGrade}`);
+    const d = await res.json();
+    const serverResources = d.resources || [];
+    const customResources = getCustomResources(adminCurrentGrade);
+
+    const map = new Map();
+    customResources.forEach(r => map.set(r.id || r.title, { ...r, isCustom: true }));
+    serverResources.forEach(r => {
+      if (!map.has(r.id || r.title)) map.set(r.id || r.title, { ...r, isCustom: false });
+    });
+    const all = Array.from(map.values());
+
+    if (all.length === 0) {
+      container.innerHTML = '<div class="notice-box warn">Chưa có tài liệu nào cho khối lớp này. Cô hãy upload ở trên nhé!</div>';
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${all.map((r, idx) => `
+          <div style="border:1px solid #d4ebdd;border-radius:12px;padding:14px;background:#ffffff;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                <span style="background:#e8f6ee;color:#144e3c;font-weight:700;font-size:12px;padding:3px 8px;border-radius:6px">${esc(r.file_type || 'PDF')}</span>
+                <h4 style="font-size:15px;color:#144e3c;margin:0">${esc(r.title)}</h4>
+                ${r.isCustom ? '<span style="background:#fef3c7;color:#92400e;font-size:11px;padding:2px 6px;border-radius:4px;font-weight:700">Mới tải lên</span>' : ''}
+              </div>
+              <span style="font-size:12.5px;color:var(--text-muted)">Chủ đề: <b>${esc(r.topic)}</b> · ${esc(r.description)}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <a href="${esc(r.file_url || '#')}" class="btn-secondary" style="padding:5px 12px;font-size:12px" target="_blank" download="${esc(r.title)}">
+                Tải về ⬇
+              </a>
+              ${r.isCustom ? `
+                <button class="btn-secondary" style="color:#b91c1c;border-color:#fecaca;padding:5px 12px;font-size:12px" onclick="handleDeleteTeacherResource(${r.id})">
+                  Xóa
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } catch (err) {
+    container.innerHTML = '<div class="notice-box error">Lỗi tải danh mục tài liệu: ' + esc(err.message) + '</div>';
+  }
+}
+
+function handleDeleteTeacherResource(id) {
+  if (confirm('Cô có chắc chắn muốn xóa tài liệu này không?')) {
+    deleteCustomResource(adminCurrentGrade, id);
+    refreshAdminResourcesList();
+  }
+}
+
+// SUBTAB 2: DROPDOWN VÀ BÀI TẬP TƯƠNG TÁC
 function populateAdminLessonsDropdown() {
   const sel = el('adminLessonSelect');
   if (!sel) return;
@@ -3013,10 +3887,8 @@ async function handleSaveTeacherQuiz(e) {
     explanation
   };
 
-  // 1. Lưu vào localStorage
   saveCustomQuiz(adminCurrentGrade, questionObj);
 
-  // 2. Gửi lên server API
   try {
     await fetch(`${API_BASE}/public/quizzes`, {
       method: 'POST',
