@@ -13,7 +13,8 @@ let inMemoryResourcesByGrade = {
   ],
   "8": [
     { id: 6, grade_id: "8", title: "Trọn bộ 7 Hằng đẳng thức đáng nhớ & Bài tập vận dụng", file_type: "PDF", topic: "Đại số", description: "Phương pháp phân tích đa thức thành nhân tử", file_url: "#" },
-    { id: 7, grade_id: "8", title: "Chuyên đề Tứ giác: Hình bình hành, Hình chữ nhật, Hình thoi", file_type: "PDF", topic: "Hình học", description: "Các bài toán chứng minh và tính toán hình học", file_url: "#" }
+    { id: 7, grade_id: "8", title: "Chuyên đề Tứ giác: Hình bình hành, Hình chữ nhật, Hình thoi", file_type: "PDF", topic: "Hình học", description: "Các bài toán chứng minh và tính toán hình học", file_url: "#" },
+    { id: 10, grade_id: "8", title: "Mô phỏng tương tác: Khám phá Định lý Pythagore & Tam giác vuông", file_type: "HTML", topic: "Tương tác HTML", description: "Mô hình hình học trực quan giúp học sinh tự thao tác và kiểm chứng định lý", file_url: "https://letamlochiep-star.github.io/" }
   ],
   "9": [
     { id: 8, grade_id: "9", title: "Bộ đề luyện thi tuyển sinh vào Lớp 10 môn Toán (Mới nhất)", file_type: "PDF", topic: "Luyện thi 10", description: "Đề thi chuẩn cấu trúc Sở GD&ĐT có lời giải chi tiết", file_url: "#" },

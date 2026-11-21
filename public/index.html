@@ -2398,14 +2398,22 @@ async function renderView() {
               <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border:1px solid var(--card-border);border-radius:14px;background:#ffffff;gap:12px;flex-wrap:wrap">
                 <div>
                   <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                    <span style="background:${r.file_type==='HTML'?'#e0f2fe':r.file_type==='DOCX'?'#dbeafe':r.file_type==='PPTX'?'#ffedd5':'#e8f6ee'};color:${r.file_type==='HTML'?'#0369a1':r.file_type==='DOCX'?'#1d4ed8':r.file_type==='PPTX'?'#c2410c':'#144e3c'};font-weight:700;font-size:12px;padding:3px 8px;border-radius:6px">${esc(r.file_type || 'PDF')}</span>
                     <h4 style="font-size:15px;color:#144e3c;margin:0">${esc(r.title)}</h4>
                     ${r.isCustom ? '<span style="background:#fef3c7;color:#92400e;font-size:11px;padding:2px 6px;border-radius:4px;font-weight:700">Mới tải lên</span>' : ''}
                   </div>
-                  <span style="font-size:12.5px;color:var(--text-muted)">Chủ đề: <b>${esc(r.topic)}</b> · Định dạng: <b>${esc(r.file_type)}</b> · ${esc(r.description)}</span>
+                  <span style="font-size:12.5px;color:var(--text-muted)">Chủ đề: <b>${esc(r.topic)}</b> · Định dạng: <b>${esc(r.file_type || 'PDF')}</b> · ${esc(r.description)}</span>
                 </div>
-                <a href="${esc(r.file_url || '#')}" class="btn-secondary" download="${esc(r.title)}" target="_blank" style="display:inline-flex;align-items:center;gap:6px">
-                  <span>⬇</span> Tải về
-                </a>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                  ${r.file_type === 'HTML' ? `
+                    <a href="${esc(r.file_url || '#')}" class="btn-primary" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px">
+                      <span>🌐</span> Mở xem trực tiếp
+                    </a>
+                  ` : ''}
+                  <a href="${esc(r.file_url || '#')}" class="btn-secondary" download="${esc(r.title)}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px">
+                    <span>⬇</span> Tải về
+                  </a>
+                </div>
               </div>
             `).join('') : '<div class="notice-box warn">Chưa có tài liệu nào cho khối lớp này.</div>'}
           </div>
@@ -3136,7 +3144,7 @@ async function renderAdminDashboard() {
               <span>📁</span> Upload & Đăng tải tài liệu, đề thi lên Website (Toán Lớp ${adminCurrentGrade})
             </h3>
             <p style="font-size:13px;color:#557766;margin:0">
-              Đăng tải đề cương ôn tập, đề kiểm tra định kỳ, sổ tay công thức dưới định dạng PDF, DOCX để học sinh có thể tải về học tập.
+              Đăng tải đề cương ôn tập, đề kiểm tra định kỳ, sổ tay công thức dưới định dạng PDF, DOCX, HTML tương tác để học sinh có thể tải về hoặc trải nghiệm trực tiếp.
             </p>
           </div>
           <div style="display:flex;align-items:center;gap:8px">
@@ -3165,6 +3173,7 @@ async function renderAdminDashboard() {
                 <option value="Sổ tay công thức">Sổ tay công thức then chốt</option>
                 <option value="Chuyên đề nâng cao">Chuyên đề nâng cao</option>
                 <option value="Bài toán thực tế">Bài toán thực tế</option>
+                <option value="Tương tác HTML">Bài học tương tác / HTML</option>
                 <option value="Tổng hợp">Tài liệu tổng hợp</option>
               </select>
             </div>
@@ -3173,6 +3182,7 @@ async function renderAdminDashboard() {
               <label style="font-weight:700;color:#144e3c">Định dạng tệp:</label>
               <select id="resFileTypeSelect" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid #c8e6d5;font-size:13.5px;color:#144e3c;background:#fff">
                 <option value="PDF">Tệp PDF (.pdf)</option>
+                <option value="HTML">Trang web / Tài liệu tương tác HTML (.html, .htm)</option>
                 <option value="DOCX">Tài liệu Word (.docx)</option>
                 <option value="PPTX">Bài giảng PowerPoint (.pptx)</option>
                 <option value="ZIP">Tệp nén tài liệu (.zip)</option>
@@ -3190,7 +3200,7 @@ async function renderAdminDashboard() {
             <label style="font-weight:700;color:#144e3c;display:block;margin-bottom:8px">Đính kèm tệp tài liệu:</label>
             
             <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-              <input type="file" id="adminResourceFileInput" style="display:none" onchange="handleResourceFileSelect(event)">
+              <input type="file" id="adminResourceFileInput" accept=".html,.htm,.pdf,.docx,.doc,.pptx,.ppt,.zip,.rar,.7z" style="display:none" onchange="handleResourceFileSelect(event)">
               <button type="button" class="btn-secondary" style="border-color:#196653;color:#144e3c;background:#fff;display:inline-flex;align-items:center;gap:6px" onclick="el('adminResourceFileInput').click()">
                 <span>📎</span> Chọn tệp từ máy tính
               </button>
@@ -3629,9 +3639,37 @@ function handleResourceFileSelect(event) {
 
   attachedResourceFileName = file.name;
   const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+
+  // Tự động nhận diện định dạng tệp từ đuôi tệp tải lên
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  let detectedType = 'PDF';
+  if (ext === 'html' || ext === 'htm') {
+    detectedType = 'HTML';
+  } else if (ext === 'docx' || ext === 'doc') {
+    detectedType = 'DOCX';
+  } else if (ext === 'pptx' || ext === 'ppt') {
+    detectedType = 'PPTX';
+  } else if (ext === 'zip' || ext === 'rar' || ext === '7z') {
+    detectedType = 'ZIP';
+  } else if (ext === 'pdf') {
+    detectedType = 'PDF';
+  }
+
+  // Tự động đồng bộ sang ô chọn định dạng tệp
+  const typeSelect = el('resFileTypeSelect');
+  if (typeSelect) {
+    typeSelect.value = detectedType;
+  }
+
+  // Nếu là tệp HTML tương tác, tự động gợi ý chủ đề tương ứng nếu chưa chọn
+  const topicSelect = el('resTopicSelect');
+  if (topicSelect && detectedType === 'HTML' && topicSelect.value === 'Đề cương ôn tập') {
+    topicSelect.value = 'Tương tác HTML';
+  }
+
   const textEl = el('resourceFileInfoText');
   if (textEl) {
-    textEl.textContent = `✓ Đã chọn: ${file.name} (${sizeMb} MB)`;
+    textEl.innerHTML = `<span style="color:#15803d;font-weight:700">✓ Đã chọn: ${esc(file.name)} (${sizeMb} MB)</span> <span style="background:#e8f6ee;color:#144e3c;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700;margin-left:6px;display:inline-block">⚡ Tự động nhận diện định dạng: <b>${detectedType}</b></span>`;
   }
 
   // Tự động điền tên nếu chưa nhập
@@ -3640,8 +3678,21 @@ function handleResourceFileSelect(event) {
     titleInput.value = file.name.replace(/\.[^/.]+$/, "");
   }
 
-  // Tạo URL tải về tệp cục bộ
-  attachedResourceFileData = URL.createObjectURL(file);
+  // Lưu trữ dữ liệu tệp (ưu tiên Data URL để lưu giữ qua phiên làm việc)
+  try {
+    attachedResourceFileData = URL.createObjectURL(file);
+    if (file.size < 8 * 1024 * 1024) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        if (e.target?.result) {
+          attachedResourceFileData = e.target.result;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  } catch (err) {
+    console.warn('Lỗi đọc tệp:', err);
+  }
 }
 
 // LƯU VÀ ĐĂNG TẢI TÀI LIỆU MỚI
@@ -3694,7 +3745,9 @@ function resetTeacherResourceForm() {
   if (el('resTitleInput')) el('resTitleInput').value = '';
   if (el('resDescInput')) el('resDescInput').value = '';
   if (el('resUrlInput')) el('resUrlInput').value = '';
-  if (el('resourceFileInfoText')) el('resourceFileInfoText').textContent = '';
+  if (el('resFileTypeSelect')) el('resFileTypeSelect').value = 'PDF';
+  if (el('adminResourceFileInput')) el('adminResourceFileInput').value = '';
+  if (el('resourceFileInfoText')) el('resourceFileInfoText').innerHTML = '';
   attachedResourceFileData = null;
   attachedResourceFileName = '';
 }
@@ -3729,13 +3782,18 @@ async function refreshAdminResourcesList() {
           <div style="border:1px solid #d4ebdd;border-radius:12px;padding:14px;background:#ffffff;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
             <div>
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-                <span style="background:#e8f6ee;color:#144e3c;font-weight:700;font-size:12px;padding:3px 8px;border-radius:6px">${esc(r.file_type || 'PDF')}</span>
+                <span style="background:${r.file_type==='HTML'?'#e0f2fe':r.file_type==='DOCX'?'#dbeafe':r.file_type==='PPTX'?'#ffedd5':'#e8f6ee'};color:${r.file_type==='HTML'?'#0369a1':r.file_type==='DOCX'?'#1d4ed8':r.file_type==='PPTX'?'#c2410c':'#144e3c'};font-weight:700;font-size:12px;padding:3px 8px;border-radius:6px">${esc(r.file_type || 'PDF')}</span>
                 <h4 style="font-size:15px;color:#144e3c;margin:0">${esc(r.title)}</h4>
                 ${r.isCustom ? '<span style="background:#fef3c7;color:#92400e;font-size:11px;padding:2px 6px;border-radius:4px;font-weight:700">Mới tải lên</span>' : ''}
               </div>
               <span style="font-size:12.5px;color:var(--text-muted)">Chủ đề: <b>${esc(r.topic)}</b> · ${esc(r.description)}</span>
             </div>
-            <div style="display:flex;align-items:center;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              ${r.file_type === 'HTML' ? `
+                <a href="${esc(r.file_url || '#')}" class="btn-secondary" style="padding:5px 12px;font-size:12px;color:#0284c7;border-color:#bae6fd" target="_blank">
+                  🌐 Mở xem
+                </a>
+              ` : ''}
               <a href="${esc(r.file_url || '#')}" class="btn-secondary" style="padding:5px 12px;font-size:12px" target="_blank" download="${esc(r.title)}">
                 Tải về ⬇
               </a>
