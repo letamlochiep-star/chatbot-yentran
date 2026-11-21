@@ -1723,33 +1723,23 @@ function createInteractiveDiagramHtml(tplKey, customTitle, inlineSvg) {
   diagramCounter++;
   const cardId = 'geom_' + diagramCounter;
   const tpl = GEOMETRY_TEMPLATES[tplKey] || GEOMETRY_TEMPLATES.tam_giac_vuong;
-  const title = customTitle || tpl.title;
-  const svgContent = inlineSvg || tpl.svg;
+  const title = customTitle || (tpl ? tpl.title : 'Hình vẽ theo đề bài');
+  const svgContent = inlineSvg || (tpl ? tpl.svg : '');
 
   return `
-    <div class="geometry-interactive-card" id="geom_card_${cardId}">
-      <div class="geom-header">
-        <div class="geom-header-left">
-          <span class="geom-icon">📐</span>
-          <span class="geom-title" id="geom_title_${cardId}">${esc(title)}</span>
+    <div class="geometry-interactive-card" id="geom_card_${cardId}" style="margin:14px auto;max-width:380px;background:#ffffff;border:1.5px solid #bce2cb;border-radius:14px;box-shadow:0 3px 10px rgba(25,102,83,0.06);overflow:hidden">
+      <div class="geom-header" style="background:#f4faf6;border-bottom:1px solid #d4ebdd;padding:8px 14px;display:flex;justify-content:space-between;align-items:center">
+        <div class="geom-header-left" style="display:flex;align-items:center;gap:6px">
+          <span class="geom-icon" style="font-size:15px">📐</span>
+          <span class="geom-title" id="geom_title_${cardId}" style="font-weight:700;color:#144e3c;font-size:13px">${esc(title)}</span>
         </div>
-        <button type="button" class="geom-toggle-btn" onclick="toggleDiagram('${cardId}')">
+        <button type="button" class="geom-toggle-btn" onclick="toggleDiagram('${cardId}')" style="background:#ffffff;border:1px solid #bce2cb;border-radius:8px;padding:3px 8px;font-size:11.5px;color:#166534;cursor:pointer">
           <span id="btn_icon_${cardId}">👁️</span> <span id="btn_text_${cardId}">Ẩn hình</span>
         </button>
       </div>
-      <div class="geom-body" id="geom_body_${cardId}">
-        <div class="geom-svg-wrap" id="geom_svg_wrap_${cardId}">
+      <div class="geom-body" id="geom_body_${cardId}" style="padding:10px 12px">
+        <div class="geom-svg-wrap" id="geom_svg_wrap_${cardId}" style="display:flex;justify-content:center">
           ${svgContent}
-        </div>
-        <div class="geom-toolbar">
-          <span class="geom-note">💡 Bấm chọn mẫu hình minh họa khác nếu cần:</span>
-          <div class="geom-quick-pills">
-            <button type="button" class="geom-pill-btn ${tplKey === 'tam_giac_vuong' ? 'active' : ''}" data-key="tam_giac_vuong" onclick="switchDiagramTemplate('${cardId}', 'tam_giac_vuong')">Tam giác vuông</button>
-            <button type="button" class="geom-pill-btn ${tplKey === 'hinh_binh_hanh' ? 'active' : ''}" data-key="hinh_binh_hanh" onclick="switchDiagramTemplate('${cardId}', 'hinh_binh_hanh')">Hình bình hành</button>
-            <button type="button" class="geom-pill-btn ${tplKey === 'duong_tron' ? 'active' : ''}" data-key="duong_tron" onclick="switchDiagramTemplate('${cardId}', 'duong_tron')">Đường tròn</button>
-            <button type="button" class="geom-pill-btn ${tplKey === 'tam_giac_thuong' ? 'active' : ''}" data-key="tam_giac_thuong" onclick="switchDiagramTemplate('${cardId}', 'tam_giac_thuong')">Tam giác thường</button>
-            <button type="button" class="geom-pill-btn ${tplKey === 'hinh_chu_nhat' ? 'active' : ''}" data-key="hinh_chu_nhat" onclick="switchDiagramTemplate('${cardId}', 'hinh_chu_nhat')">Hình chữ nhật</button>
-          </div>
         </div>
       </div>
     </div>
@@ -1774,14 +1764,9 @@ function switchDiagramTemplate(cardId, tplKey) {
   const title = el('geom_title_' + cardId);
   if (wrap) wrap.innerHTML = tpl.svg;
   if (title) title.textContent = tpl.title;
-  const card = el('geom_card_' + cardId);
-  if (card) {
-    const btns = card.querySelectorAll('.geom-pill-btn');
-    btns.forEach(b => b.classList.toggle('active', b.dataset.key === tplKey));
-  }
 }
 
-// Định dạng tin nhắn & bảo toàn các hình học dạng ảnh SVG an toàn
+// Định dạng tin nhắn & bảo toàn hình vẽ SVG chuẩn xác theo đề bài
 function formatMessageContent(rawText) {
   if (!rawText) return '';
   let processed = String(rawText);
@@ -1796,59 +1781,60 @@ function formatMessageContent(rawText) {
     processed = processed.replace(/<!--[\s\S]*$/i, '').trim() + '\n</svg>';
   }
 
-  // 3. Trích xuất tất cả các thẻ hình tương tác DIAGRAM và thẻ SVG an toàn
-  const geomBlocks = [];
+  // 3. Trích xuất tất cả các hình SVG chính xác của đề bài TRƯỚC KHI xử lý ký tự đặc biệt
+  const svgBlocks = [];
 
   // Trích xuất thẻ [DIAGRAM: type | label]
   processed = processed.replace(/\[DIAGRAM:\s*([a-zA-Z0-9_-]+)(?:\s*\|\s*([^\]]+))?\]/gi, (match, type, label) => {
     const tplKey = (type || 'tam_giac_vuong').trim().toLowerCase();
-    const token = `___GEOM_INTERACTIVE_BLOCK_${geomBlocks.length}___`;
-    geomBlocks.push(createInteractiveDiagramHtml(tplKey, (label || '').trim()));
+    const token = `___EXACT_PROBLEM_SVG_${svgBlocks.length}___`;
+    svgBlocks.push(createInteractiveDiagramHtml(tplKey, (label || '').trim()));
     return token;
   });
 
-  // Trích xuất các thẻ <svg> inline và bao bọc bằng khung tương tác
+  // Trích xuất các thẻ <svg> inline và bảo toàn nguyên vẹn XML, tránh bị chèn <br>
   processed = processed.replace(/<svg[\s\S]*?<\/svg>/gi, (match) => {
     if (/<script/i.test(match) || /on\w+\s*=/i.test(match)) {
       return '';
     }
-    const token = `___GEOM_INTERACTIVE_BLOCK_${geomBlocks.length}___`;
-    geomBlocks.push(createInteractiveDiagramHtml('tam_giac_vuong', 'Hình vẽ minh họa', match));
+    const token = `___EXACT_PROBLEM_SVG_${svgBlocks.length}___`;
+    const cleanSvg = match.trim();
+    // Bọc trong khung hiển thị hình vẽ thanh lịch chuẩn mực
+    const block = `
+      <div class="problem-figure-wrapper" style="margin:12px auto;max-width:380px">
+        <div style="background:#ffffff;border:1.5px solid #bce2cb;border-radius:14px;padding:12px;box-shadow:0 3px 10px rgba(25,102,83,0.06);box-sizing:border-box">
+          <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+            <span>📐</span> Hình vẽ theo yêu cầu đề bài:
+          </div>
+          <div style="display:flex;justify-content:center;overflow:hidden">
+            ${cleanSvg}
+          </div>
+        </div>
+      </div>
+    `;
+    svgBlocks.push(block);
     return token;
   });
 
   // 4. Escape HTML phần văn bản còn lại để chống XSS
   processed = esc(processed);
+  processed = processed.replace(/&lt;br\s*\/?&gt;/gi, '<br>');
 
   // 5. Định dạng Markdown cơ bản (in đậm, tiêu đề, đường kẻ)
   processed = processed.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
   processed = processed.replace(/^###\s+(.*?)$/gm, '<h4 style="margin:12px 0 6px;color:#144e3c;font-size:15px;font-weight:700">$1</h4>');
   processed = processed.replace(/^---\s*$/gm, '<hr style="border:none;border-top:1px dashed #d4ebdd;margin:12px 0">');
 
-  // 6. Phục hồi lại các khối hình học tương tác
-  geomBlocks.forEach((blockHtml, idx) => {
-    const token = `___GEOM_INTERACTIVE_BLOCK_${idx}___`;
+  // 6. Xử lý xuống dòng cho phần văn bản TRƯỚC KHI khôi phục SVG (ngăn ngừa tuyệt đối thẻ <br> rơi vào bên trong SVG)
+  processed = processed.replace(/\n\n+/g, '<br><br>');
+  processed = processed.replace(/\n/g, '<br>');
+
+  // 7. Khôi phục lại chính xác các khối hình SVG của đề bài (hoàn toàn nguyên vẹn)
+  svgBlocks.forEach((blockHtml, idx) => {
+    const token = `___EXACT_PROBLEM_SVG_${idx}___`;
     processed = processed.replace(token, blockHtml);
   });
 
-  // 7. Nếu văn bản nhắc đến hình học mà chưa có khối hình nào, tự động gợi ý khối hình kèm nút bấm
-  if (geomBlocks.length === 0) {
-    const low = processed.toLowerCase();
-    if (low.includes('tam giác vuông') || low.includes('cạnh huyền') || low.includes('pythagore') || low.includes('py-ta-go')) {
-      processed += createInteractiveDiagramHtml('tam_giac_vuong', 'Tam giác vuông ABC (tại A)');
-    } else if (low.includes('hình bình hành')) {
-      processed += createInteractiveDiagramHtml('hinh_binh_hanh', 'Hình bình hành ABCD');
-    } else if (low.includes('đường tròn') || low.includes('góc ở tâm') || low.includes('góc nội tiếp')) {
-      processed += createInteractiveDiagramHtml('duong_tron', 'Đường tròn (O; R)');
-    } else if (low.includes('hình chữ nhật')) {
-      processed += createInteractiveDiagramHtml('hinh_chu_nhat', 'Hình chữ nhật ABCD');
-    } else if (low.includes('tam giác') && (low.includes('đường cao') || low.includes('diện tích tam giác'))) {
-      processed += createInteractiveDiagramHtml('tam_giac_thuong', 'Tam giác nhọn ABC (Đường cao AH)');
-    }
-  }
-
-  // 8. Chuyển xuống dòng
-  processed = processed.replace(/\n/g, '<br>');
   return processed;
 }
 

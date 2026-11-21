@@ -9,12 +9,18 @@ let inMemoryQuizzesByGrade = {
       grade_id: "6", 
       topic: "Hình học trực quan: Tam giác đều, Hình vuông", 
       text: `Cho tam giác đều $ABC$ có độ dài cạnh $AB = 6\\text{ cm}$ như hình vẽ:<br>
-<svg viewBox="0 0 200 130" width="100%" style="max-width:200px;display:block;margin:8px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:12px;padding:6px;">
-  <polygon points="100,20 40,110 160,110" fill="#e8f6ef" stroke="#196653" stroke-width="2.5"/>
-  <text x="94" y="15" fill="#144e3c" font-size="12" font-weight="bold">A</text>
-  <text x="25" y="118" fill="#144e3c" font-size="12" font-weight="bold">B</text>
-  <text x="165" y="118" fill="#144e3c" font-size="12" font-weight="bold">C</text>
-  <text x="50" y="65" fill="#196653" font-size="11" font-weight="bold">6 cm</text>
+<svg viewBox="0 0 240 160" width="100%" style="max-width:240px;display:block;margin:8px auto;background:#ffffff">
+  <polygon points="120,20 40,140 200,140" fill="#e8f6ee" stroke="#196653" stroke-width="2.5" stroke-linejoin="round"/>
+  <line x1="76" y1="78" x2="84" y2="82" stroke="#196653" stroke-width="2"/>
+  <line x1="156" y1="82" x2="164" y2="78" stroke="#196653" stroke-width="2"/>
+  <line x1="118" y1="136" x2="122" y2="144" stroke="#196653" stroke-width="2"/>
+  <circle cx="120" cy="20" r="3.5" fill="#144e3c"/>
+  <text x="115" y="14" fill="#144e3c" font-size="13" font-weight="bold">A</text>
+  <circle cx="40" cy="140" r="3.5" fill="#144e3c"/>
+  <text x="24" y="148" fill="#144e3c" font-size="13" font-weight="bold">B</text>
+  <circle cx="200" cy="140" r="3.5" fill="#144e3c"/>
+  <text x="206" y="148" fill="#144e3c" font-size="13" font-weight="bold">C</text>
+  <text x="52" y="75" fill="#b45309" font-size="12" font-weight="bold">6 cm</text>
 </svg>
 Chu vi của tam giác đều $ABC$ là:`, 
       options: ["$12\\text{ cm}$", "$18\\text{ cm}$", "$36\\text{ cm}$", "$24\\text{ cm}$"], 
