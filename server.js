@@ -369,9 +369,19 @@ app.post('/api/generate-quiz', (req, res) => {
   return handler(req, res);
 });
 
+app.post('/api/public/generate-quiz', (req, res) => {
+  const handler = require('./api/public/generate-quiz.js');
+  return handler(req, res);
+});
+
 // AI Hỗ trợ giáo viên soạn thảo bài học
 app.post('/api/generate-lesson', (req, res) => {
   const handler = require('./api/generate-lesson.js');
+  return handler(req, res);
+});
+
+app.post('/api/public/generate-lesson', (req, res) => {
+  const handler = require('./api/public/generate-lesson.js');
   return handler(req, res);
 });
 
