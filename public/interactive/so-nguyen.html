@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mô phỏng tương tác: Trục số nguyên & Phép cộng trừ - Cô Yến Toán THCS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #196653;
+      --primary-light: #e8f6ee;
+      --bg: #f5f9f6;
+      --border: #c8e6d5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: #2d3748;
+      padding: 16px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(25,102,83,0.08);
+    }
+    header { text-align: center; margin-bottom: 20px; }
+    h1 { font-family: 'Space Grotesk', sans-serif; color: #144e3c; font-size: 22px; margin-bottom: 6px; }
+    .badge { display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 8px; }
+    .canvas-box { border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; background: #fafdfb; margin-bottom: 20px; }
+    svg { width: 100%; height: 160px; }
+    .controls { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; justify-content: center; background: #f0f7f3; padding: 14px; border-radius: 12px; }
+    .controls label { font-weight: 700; color: #144e3c; font-size: 14px; }
+    .controls input { width: 70px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--border); font-size: 14px; text-align: center; }
+    .controls select { padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--border); font-size: 14px; font-weight: 700; }
+    .result-box { background: #e8f6ee; border: 1.5px solid #a3e6be; border-radius: 12px; padding: 14px; text-align: center; font-size: 16px; font-weight: 700; color: #144e3c; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">🔢 Toán Lớp 6 · Số học trực quan</div>
+    <h1>Mô phỏng tương tác: Trục số nguyên & Phép cộng trừ</h1>
+    <p style="font-size:13.5px;color:#557766">Quan sát trực tiếp bước nhảy của các số nguyên âm và số nguyên dương trên trục số</p>
+  </header>
+
+  <div class="controls">
+    <label>Số thứ nhất (a):</label>
+    <input type="number" id="numA" value="-3" min="-8" max="8" onchange="renderNumberLine()">
+    
+    <label>Phép tính:</label>
+    <select id="op" onchange="renderNumberLine()">
+      <option value="+">Cộng (+)</option>
+      <option value="-">Trừ (-)</option>
+    </select>
+
+    <label>Số thứ hai (b):</label>
+    <input type="number" id="numB" value="5" min="-8" max="8" onchange="renderNumberLine()">
+  </div>
+
+  <div class="canvas-box">
+    <svg id="numLineSvg" viewBox="-20 0 640 140"></svg>
+  </div>
+
+  <div class="result-box" id="resultText">
+    Phép tính: (-3) + 5 = 2 · Kết quả điểm đến là 2
+  </div>
+</div>
+
+<script>
+function renderNumberLine() {
+  const a = parseInt(document.getElementById('numA').value) || 0;
+  const op = document.getElementById('op').value;
+  const b = parseInt(document.getElementById('numB').value) || 0;
+  const res = op === '+' ? (a + b) : (a - b);
+
+  document.getElementById('resultText').innerHTML = `
+    Phép tính: <b>(${a}) ${op} (${b}) = ${res}</b> · 
+    <span style="color:#0f5132">Bắt đầu tại điểm <b>${a}</b>, dịch chuyển <b>${Math.abs(b)}</b> đơn vị về phía ${ (op === '+' && b >= 0) || (op === '-' && b < 0) ? 'phải (dương)' : 'trái (âm)' } $\\rightarrow$ Đến điểm <b>${res}</b></span>
+  `;
+
+  const svg = document.getElementById('numLineSvg');
+  const minVal = -9;
+  const maxVal = 9;
+  const startX = 30;
+  const endX = 570;
+  const y = 80;
+  const step = (endX - startX) / (maxVal - minVal);
+
+  const getX = (val) => startX + (val - minVal) * step;
+
+  let ticks = '';
+  for (let i = minVal; i <= maxVal; i++) {
+    const x = getX(i);
+    const isZero = i === 0;
+    ticks += `
+      <line x1="${x}" y1="${y - 8}" x2="${x}" y2="${y + 8}" stroke="${isZero ? '#dc2626' : '#64748b'}" stroke-width="${isZero ? 2.5 : 1.5}"/>
+      <text x="${x}" y="${y + 24}" text-anchor="middle" font-size="${isZero ? 13 : 11}" font-weight="${isZero ? 'bold' : 'normal'}" fill="${isZero ? '#dc2626' : '#334155'}">${i}</text>
+    `;
+  }
+
+  // Tọa độ a và res
+  const xa = getX(a);
+  const xres = getX(res);
+  const arcHeight = Math.min(50, 20 + Math.abs(xres - xa) * 0.15);
+
+  svg.innerHTML = `
+    <!-- Trục ngang có mũi tên 2 đầu -->
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#144e3c"/>
+      </marker>
+    </defs>
+    <line x1="${startX - 15}" y1="${y}" x2="${endX + 15}" y2="${y}" stroke="#144e3c" stroke-width="2.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+    ${ticks}
+
+    <!-- Cung nhảy từ a đến res -->
+    <path d="M ${xa} ${y-10} Q ${(xa + xres)/2} ${y - 10 - arcHeight} ${xres} ${y-10}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="4 2"/>
+
+    <!-- Điểm bắt đầu a -->
+    <circle cx="${xa}" cy="${y}" r="6" fill="#f59e0b" stroke="#b45309" stroke-width="2"/>
+    <text x="${xa}" y="${y - 16}" text-anchor="middle" font-size="12" font-weight="bold" fill="#b45309">Bắt đầu: ${a}</text>
+
+    <!-- Điểm kết quả res -->
+    <circle cx="${xres}" cy="${y}" r="7" fill="#16a34a" stroke="#14532d" stroke-width="2"/>
+    <text x="${xres}" y="${y - 28}" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">Đích: ${res}</text>
+  `;
+}
+window.addEventListener('DOMContentLoaded', renderNumberLine);
+</script>
+</body>
+</html>

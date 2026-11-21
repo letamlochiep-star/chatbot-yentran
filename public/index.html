@@ -2394,7 +2394,9 @@ async function renderView() {
           </div>
 
           <div style="display:flex;flex-direction:column;gap:12px">
-            ${resources.length ? resources.map(r => `
+            ${resources.length ? resources.map(r => {
+              globalResourcesCache.set(String(r.id), r);
+              return `
               <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border:1px solid var(--card-border);border-radius:14px;background:#ffffff;gap:12px;flex-wrap:wrap">
                 <div>
                   <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
@@ -2406,16 +2408,16 @@ async function renderView() {
                 </div>
                 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
                   ${r.file_type === 'HTML' ? `
-                    <a href="${esc(r.file_url || '#')}" class="btn-primary" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px">
+                    <button type="button" class="btn-primary" onclick="viewInteractiveResource('${r.id}')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px;cursor:pointer">
                       <span>🌐</span> Mở xem trực tiếp
-                    </a>
+                    </button>
                   ` : ''}
-                  <a href="${esc(r.file_url || '#')}" class="btn-secondary" download="${esc(r.title)}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px">
+                  <button type="button" class="btn-secondary" onclick="downloadResourceFile('${r.id}')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px;cursor:pointer">
                     <span>⬇</span> Tải về
-                  </a>
+                  </button>
                 </div>
               </div>
-            `).join('') : '<div class="notice-box warn">Chưa có tài liệu nào cho khối lớp này.</div>'}
+            `;}).join('') : '<div class="notice-box warn">Chưa có tài liệu nào cho khối lớp này.</div>'}
           </div>
         </section>
       `;
@@ -2876,6 +2878,9 @@ let adminCurrentGrade = '6';
 let adminSubTab = 'lessons'; // 'lessons', 'quizzes', 'resources', 'ai-prompt', 'stats'
 let attachedResourceFileData = null;
 let attachedResourceFileName = '';
+let attachedResourceHtmlText = '';
+const globalResourcesCache = new Map();
+let currentModalResource = null;
 
 function switchAdminSubTab(tab) {
   adminSubTab = tab;
@@ -3678,6 +3683,19 @@ function handleResourceFileSelect(event) {
     titleInput.value = file.name.replace(/\.[^/.]+$/, "");
   }
 
+  // Nếu là file HTML, đọc nội dung văn bản để hỗ trợ chạy tương tác trực tiếp
+  if (detectedType === 'HTML') {
+    const textReader = new FileReader();
+    textReader.onload = function(e) {
+      if (e.target?.result) {
+        attachedResourceHtmlText = e.target.result;
+      }
+    };
+    textReader.readAsText(file);
+  } else {
+    attachedResourceHtmlText = '';
+  }
+
   // Lưu trữ dữ liệu tệp (ưu tiên Data URL để lưu giữ qua phiên làm việc)
   try {
     attachedResourceFileData = URL.createObjectURL(file);
@@ -3709,7 +3727,7 @@ async function handleSaveTeacherResource(e) {
     return;
   }
 
-  const fileUrl = attachedResourceFileData || urlInput || '#';
+  const fileUrl = (fileType === 'HTML' && !urlInput && attachedResourceHtmlText) ? '' : (urlInput || attachedResourceFileData || '#');
 
   const resourceObj = {
     id: Date.now(),
@@ -3718,7 +3736,8 @@ async function handleSaveTeacherResource(e) {
     topic,
     file_type: fileType,
     description: desc || 'Tài liệu ôn tập do Cô Yến chia sẻ',
-    file_url: fileUrl
+    file_url: fileUrl,
+    html_content: fileType === 'HTML' ? attachedResourceHtmlText : undefined
   };
 
   saveCustomResource(adminCurrentGrade, resourceObj);
@@ -3733,7 +3752,7 @@ async function handleSaveTeacherResource(e) {
 
   const statusEl = el('resourceSaveStatus');
   if (statusEl) {
-    statusEl.innerHTML = '<span style="color:#15803d;background:#e8f6ee;padding:4px 10px;border-radius:6px">🎉 Đã đăng tải tài liệu thành công! Học sinh vào mục "Tài liệu học tập" sẽ thấy và tải về được ngay.</span>';
+    statusEl.innerHTML = '<span style="color:#15803d;background:#e8f6ee;padding:4px 10px;border-radius:6px">🎉 Đã đăng tải tài liệu thành công! Học sinh vào mục "Tài liệu học tập" sẽ thấy và trải nghiệm được ngay.</span>';
     setTimeout(() => { if (statusEl) statusEl.innerHTML = ''; }, 4000);
   }
 
@@ -3750,6 +3769,7 @@ function resetTeacherResourceForm() {
   if (el('resourceFileInfoText')) el('resourceFileInfoText').innerHTML = '';
   attachedResourceFileData = null;
   attachedResourceFileName = '';
+  attachedResourceHtmlText = '';
 }
 
 // TẢI LẠI DANH SÁCH TÀI LIỆU
@@ -3778,7 +3798,9 @@ async function refreshAdminResourcesList() {
 
     container.innerHTML = `
       <div style="display:flex;flex-direction:column;gap:10px">
-        ${all.map((r, idx) => `
+        ${all.map((r, idx) => {
+          globalResourcesCache.set(String(r.id), r);
+          return `
           <div style="border:1px solid #d4ebdd;border-radius:12px;padding:14px;background:#ffffff;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
             <div>
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
@@ -3790,13 +3812,13 @@ async function refreshAdminResourcesList() {
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
               ${r.file_type === 'HTML' ? `
-                <a href="${esc(r.file_url || '#')}" class="btn-secondary" style="padding:5px 12px;font-size:12px;color:#0284c7;border-color:#bae6fd" target="_blank">
+                <button type="button" class="btn-secondary" style="padding:5px 12px;font-size:12px;color:#0284c7;border-color:#bae6fd;cursor:pointer" onclick="viewInteractiveResource('${r.id}')">
                   🌐 Mở xem
-                </a>
+                </button>
               ` : ''}
-              <a href="${esc(r.file_url || '#')}" class="btn-secondary" style="padding:5px 12px;font-size:12px" target="_blank" download="${esc(r.title)}">
+              <button type="button" class="btn-secondary" style="padding:5px 12px;font-size:12px;cursor:pointer" onclick="downloadResourceFile('${r.id}')">
                 Tải về ⬇
-              </a>
+              </button>
               ${r.isCustom ? `
                 <button class="btn-secondary" style="color:#b91c1c;border-color:#fecaca;padding:5px 12px;font-size:12px" onclick="handleDeleteTeacherResource(${r.id})">
                   Xóa
@@ -3804,7 +3826,7 @@ async function refreshAdminResourcesList() {
               ` : ''}
             </div>
           </div>
-        `).join('')}
+        `;}).join('')}
       </div>
     `;
   } catch (err) {
@@ -4026,7 +4048,140 @@ function handleDeleteTeacherQuiz(id) {
   }
 }
 
+// ==========================================
+// TRÌNH XEM VÀ TƯƠNG TÁC TÀI LIỆU HTML
+// ==========================================
+function viewInteractiveResource(id) {
+  const r = globalResourcesCache.get(String(id));
+  if (!r) {
+    alert('Không tìm thấy tài liệu tương tác.');
+    return;
+  }
+  currentModalResource = r;
+
+  const modal = el('interactiveViewerModal');
+  const titleEl = el('interactiveModalTitle');
+  const subEl = el('interactiveModalSub');
+  const iframe = el('interactiveModalIframe');
+  if (!modal || !iframe) return;
+
+  titleEl.textContent = r.title || 'Mô phỏng tương tác';
+  subEl.textContent = `Chủ đề: ${r.topic || 'Toán học tương tác'} · Môn Toán THCS Cô Yến`;
+
+  // Kiểm tra nguồn tài liệu HTML
+  if (r.html_content) {
+    iframe.removeAttribute('src');
+    iframe.srcdoc = r.html_content;
+  } else if (r.file_url && r.file_url !== '#') {
+    iframe.removeAttribute('srcdoc');
+    iframe.src = r.file_url;
+  } else {
+    iframe.removeAttribute('src');
+    iframe.srcdoc = `
+      <div style="font-family:sans-serif;padding:40px;text-align:center;color:#144e3c;background:#f5f9f6;height:100vh;box-sizing:border-box">
+        <h3 style="font-size:20px;margin-bottom:10px">🌱 Bài học tương tác đang được hoàn thiện</h3>
+        <p style="color:#557766;font-size:14px;max-width:480px;margin:0 auto">Tài liệu này hiện chưa có nội dung mô phỏng chi tiết. Cô Yến sẽ cập nhật ngay trong ít phút tới nhé!</p>
+      </div>
+    `;
+  }
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeInteractiveModal() {
+  const modal = el('interactiveViewerModal');
+  const iframe = el('interactiveModalIframe');
+  if (iframe) {
+    iframe.src = 'about:blank';
+    iframe.removeAttribute('srcdoc');
+  }
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+  currentModalResource = null;
+}
+
+function openCurrentResourceInNewTab() {
+  if (!currentModalResource) return;
+  const r = currentModalResource;
+  if (r.html_content) {
+    const blob = new Blob([r.html_content], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  } else if (r.file_url && r.file_url !== '#') {
+    window.open(r.file_url, '_blank');
+  } else {
+    alert('Không có liên kết để mở tab mới.');
+  }
+}
+
+function downloadCurrentResource() {
+  if (!currentModalResource) return;
+  downloadResourceFile(currentModalResource.id);
+}
+
+function downloadResourceFile(id) {
+  const r = globalResourcesCache.get(String(id));
+  if (!r) return;
+
+  if (r.html_content) {
+    const blob = new Blob([r.html_content], { type: 'text/html;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = (r.title || 'bai-hoc-tuong-tac') + '.html';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return;
+  }
+
+  if (r.file_url && r.file_url !== '#') {
+    const link = document.createElement('a');
+    link.href = r.file_url;
+    link.target = '_blank';
+    link.download = r.title || 'tai-lieu';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return;
+  }
+
+  alert('Tài liệu này chưa có tệp đính kèm. Cô Yến sẽ cập nhật bổ sung sớm nhé!');
+}
+
 window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<!-- MODAL XEM TRỰC TIẾP BÀI HỌC TƯƠNG TÁC HTML -->
+<div id="interactiveViewerModal" onclick="if(event.target===this) closeInteractiveModal()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.75);z-index:99999;backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:12px;box-sizing:border-box">
+  <div style="background:#ffffff;width:100%;max-width:1080px;height:92vh;max-height:860px;border-radius:20px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 25px 60px -15px rgba(0,0,0,0.4);border:1.5px solid #bbf7d0">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 22px;border-bottom:1.5px solid #d4ebdd;background:#f4faf6;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:24px;background:#e8f6ee;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center">🌐</span>
+        <div>
+          <h3 id="interactiveModalTitle" style="font-size:16px;color:#144e3c;margin:0;font-weight:700">Mô phỏng tương tác</h3>
+          <p id="interactiveModalSub" style="font-size:12px;color:#557766;margin:0">Bài học & Mô hình trực quan môn Toán THCS Cô Yến</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button type="button" class="btn-secondary" style="padding:7px 14px;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;background:#fff;border-color:#196653;color:#144e3c;font-weight:700;cursor:pointer" onclick="openCurrentResourceInNewTab()">
+          <span>⤢</span> Mở toàn màn hình / Tab mới
+        </button>
+        <button type="button" class="btn-secondary" style="padding:7px 14px;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;background:#fff;cursor:pointer" onclick="downloadCurrentResource()">
+          <span>⬇</span> Tải file HTML
+        </button>
+        <button type="button" onclick="closeInteractiveModal()" style="border:none;background:#e2e8f0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;color:#334155;cursor:pointer;font-weight:bold;margin-left:4px" title="Đóng cửa sổ">
+          ✕
+        </button>
+      </div>
+    </div>
+    <!-- Body iframe -->
+    <div style="flex:1;position:relative;background:#f8fafc;width:100%;height:100%">
+      <iframe id="interactiveModalIframe" style="width:100%;height:100%;border:none;display:block" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    </div>
+  </div>
+</div>
 </script>
 </body>
 </html>

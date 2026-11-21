@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mô phỏng tương tác: Định lý Pythagore - Cô Yến Toán THCS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #196653;
+      --primary-dark: #124b3c;
+      --primary-light: #e8f6ee;
+      --accent: #d97706;
+      --bg: #f5f9f6;
+      --card-bg: #ffffff;
+      --text-main: #144e3c;
+      --text-body: #2d3748;
+      --text-muted: #557766;
+      --border: #c8e6d5;
+      --shadow: 0 10px 25px -5px rgba(25, 102, 83, 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-body);
+      line-height: 1.6;
+      padding: 16px;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      border-bottom: 2px dashed var(--border);
+      padding-bottom: 16px;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text-main);
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: #fbfdfc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .panel h2 {
+      font-size: 16px;
+      color: var(--primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .control-group {
+      margin-bottom: 14px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 13.5px;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .btn-chip {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-chip:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+    .canvas-container {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      min-height: 280px;
+    }
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+    .formula-box {
+      background: #ecfdf5;
+      border: 1.5px solid #a7f3d0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+    }
+    .formula-step {
+      font-size: 14px;
+      margin: 4px 0;
+      font-weight: 600;
+      color: #065f46;
+    }
+    .formula-step strong {
+      color: #047857;
+      font-size: 15px;
+    }
+    .quiz-section {
+      margin-top: 24px;
+      background: #fffbeb;
+      border: 1.5px solid #fde68a;
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .quiz-section h3 {
+      font-size: 15px;
+      color: #92400e;
+      margin-bottom: 8px;
+    }
+    .quiz-input-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .quiz-input-row input {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1.5px solid #d97706;
+      font-size: 14px;
+      width: 120px;
+    }
+    .btn-submit {
+      background: #d97706;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-submit:hover {
+      background: #b45309;
+    }
+    .feedback {
+      margin-top: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="badge">📐 Toán Lớp 8 · Hình học trực quan</div>
+    <h1>Mô phỏng tương tác: Định lý Pythagore</h1>
+    <p class="subtitle">Thao tác thay đổi độ dài hai cạnh góc vuông để quan sát sự tương ứng giữa tổng diện tích các hình vuông</p>
+  </header>
+
+  <div class="grid">
+    <!-- CỘT ĐIỀU KHIỂN & CÔNG THỨC -->
+    <div>
+      <div class="panel">
+        <h2><span>⚙️</span> Điều chỉnh cạnh góc vuông</h2>
+
+        <div class="control-group">
+          <label>
+            <span>Cạnh góc vuông $a$ ($AB$):</span>
+            <strong id="valA">3 cm</strong>
+          </label>
+          <input type="range" id="rangeA" min="3" max="12" step="1" value="3" oninput="updateSimulation()">
+        </div>
+
+        <div class="control-group">
+          <label>
+            <span>Cạnh góc vuông $b$ ($AC$):</span>
+            <strong id="valB">4 cm</strong>
+          </label>
+          <input type="range" id="rangeB" min="3" max="12" step="1" value="4" oninput="updateSimulation()">
+        </div>
+
+        <div style="margin-top:12px">
+          <span style="font-size:12.5px;font-weight:700;color:var(--text-muted)">Bộ ba số Pythagore mẫu:</span>
+          <div class="presets">
+            <button class="btn-chip" onclick="setPreset(3, 4)">(3, 4, 5)</button>
+            <button class="btn-chip" onclick="setPreset(6, 8)">(6, 8, 10)</button>
+            <button class="btn-chip" onclick="setPreset(5, 12)">(5, 12, 13)</button>
+            <button class="btn-chip" onclick="setPreset(9, 12)">(9, 12, 15)</button>
+          </div>
+        </div>
+
+        <!-- CÔNG THỨC VÀ TÍNH TOÁN -->
+        <div class="formula-box">
+          <div style="font-size:13px;font-weight:700;color:#047857;margin-bottom:6px">
+            ✨ Định lý Pythagore: $BC^2 = AB^2 + AC^2$
+          </div>
+          <div class="formula-step">
+            $a^2 = <span id="calcA2">3^2 = 9</span>\text{ cm}^2$
+          </div>
+          <div class="formula-step">
+            $b^2 = <span id="calcB2">4^2 = 16</span>\text{ cm}^2$
+          </div>
+          <div class="formula-step" style="border-top:1px dashed #a7f3d0;padding-top:4px;margin-top:4px">
+            $c^2 = a^2 + b^2 = <span id="calcSum">9 + 16 = 25</span>\text{ cm}^2$
+          </div>
+          <div class="formula-step" style="color:#0f5132;font-size:15px;margin-top:4px">
+            👉 <strong>Cạnh huyền $c = BC = \sqrt{<span id="calcC2">25</span>} = <span id="calcC">5</span>\text{ cm}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CỘT HÌNH VẼ MINH HỌA SVG -->
+    <div>
+      <div class="panel">
+        <h2><span>📊</span> Hình vẽ trực quan tam giác & diện tích</h2>
+        <div class="canvas-container">
+          <svg id="geomSvg" viewBox="0 0 340 320" width="340" height="320">
+            <!-- Điền động bằng Javascript -->
+          </svg>
+        </div>
+        <div style="display:flex;justify-content:space-around;margin-top:12px;font-size:12px;font-weight:700">
+          <span style="color:#2563eb">■ Hình vuông cạnh $a$ (Diện tích: <span id="areaA">9</span>)</span>
+          <span style="color:#16a34a">■ Hình vuông cạnh $b$ (Diện tích: <span id="areaB">16</span>)</span>
+          <span style="color:#d97706">■ Cạnh huyền $c$ (<span id="lenC">5</span>)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHẦN THỬ THÁCH VẬN DỤNG NHANH -->
+  <div class="quiz-section">
+    <h3>🎯 Thử thách tính nhanh cùng Cô Yến</h3>
+    <p id="quizQuestion" style="font-size:13.5px;color:#78350f">
+      Cho tam giác vuông có hai cạnh góc vuông $a = 6\text{ cm}$ và $b = 8\text{ cm}$. Hãy tính độ dài cạnh huyền $c$:
+    </p>
+    <div class="quiz-input-row">
+      <input type="number" id="quizAnswer" placeholder="Nhập số cm...">
+      <button class="btn-submit" onclick="checkQuiz()">Kiểm tra</button>
+      <button class="btn-chip" onclick="generateNewQuiz()">Tạo câu mới 🎲</button>
+    </div>
+    <div id="quizFeedback" class="feedback"></div>
+  </div>
+
+  <footer>
+    Hệ thống Bài học Tương tác Toán THCS · Giáo viên hướng dẫn: Cô Trần Thị Hải Yến
+  </footer>
+</div>
+
+<script>
+let currentQuizExpected = 10;
+
+function updateSimulation() {
+  const a = parseInt(document.getElementById('rangeA').value);
+  const b = parseInt(document.getElementById('rangeB').value);
+
+  document.getElementById('valA').textContent = a + ' cm';
+  document.getElementById('valB').textContent = b + ' cm';
+
+  const a2 = a * a;
+  const b2 = b * b;
+  const c2 = a2 + b2;
+  const c = Math.sqrt(c2);
+  const cFormatted = Number.isInteger(c) ? c : c.toFixed(2);
+
+  document.getElementById('calcA2').textContent = `${a}² = ${a2}`;
+  document.getElementById('calcB2').textContent = `${b}² = ${b2}`;
+  document.getElementById('calcSum').textContent = `${a2} + ${b2} = ${c2}`;
+  document.getElementById('calcC2').textContent = c2;
+  document.getElementById('calcC').textContent = cFormatted;
+
+  document.getElementById('areaA').textContent = a2;
+  document.getElementById('areaB').textContent = b2;
+  document.getElementById('lenC').textContent = cFormatted + ' cm';
+
+  drawSvg(a, b, c);
+}
+
+function setPreset(a, b) {
+  document.getElementById('rangeA').value = a;
+  document.getElementById('rangeB').value = b;
+  updateSimulation();
+}
+
+function drawSvg(a, b, c) {
+  const svg = document.getElementById('geomSvg');
+  // Scale để vừa khung 340x320
+  const maxSide = Math.max(a, b, 8);
+  const scale = 110 / maxSide;
+
+  const originX = 140;
+  const originY = 220;
+
+  const ax = originX;
+  const ay = originY;
+
+  const bx = originX;
+  const by = originY - (a * scale);
+
+  const cx = originX + (b * scale);
+  const cy = originY;
+
+  // Tính tọa độ hình vuông trên cạnh a (bên trái)
+  const aSqWidth = a * scale;
+  const sqAx = originX - aSqWidth;
+  const sqAy = by;
+
+  // Tính tọa độ hình vuông trên cạnh b (phía dưới)
+  const bSqWidth = b * scale;
+  const sqBx = originX;
+  const sqBy = originY;
+
+  svg.innerHTML = `
+    <!-- Khung lưới mờ -->
+    <defs>
+      <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f0f7f3" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="340" height="320" fill="url(#grid)" />
+
+    <!-- Hình vuông trên cạnh a (xanh dương) -->
+    <rect x="${sqAx}" y="${sqAy}" width="${aSqWidth}" height="${aSqWidth}" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5" rx="3"/>
+    <text x="${sqAx + aSqWidth/2}" y="${sqAy + aSqWidth/2 + 5}" text-anchor="middle" font-size="12" font-weight="700" fill="#1d4ed8">a²=${a*a}</text>
+
+    <!-- Hình vuông trên cạnh b (xanh lá) -->
+    <rect x="${sqBx}" y="${sqBy}" width="${bSqWidth}" height="${bSqWidth}" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5" rx="3"/>
+    <text x="${sqBx + bSqWidth/2}" y="${sqBy + bSqWidth/2 + 5}" text-anchor="middle" font-size="12" font-weight="700" fill="#15803d">b²=${b*b}</text>
+
+    <!-- Tam giác vuông ABC -->
+    <polygon points="${ax},${ay} ${bx},${by} ${cx},${cy}" fill="#f0fdf4" stroke="#166534" stroke-width="2.5" stroke-linejoin="round"/>
+
+    <!-- Ký hiệu góc vuông tại A -->
+    <polyline points="${ax},${ay-14} ${ax+14},${ay-14} ${ax+14},${ay}" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+
+    <!-- Tên các đỉnh -->
+    <text x="${ax - 14}" y="${ay + 16}" font-size="14" font-weight="bold" fill="#144e3c">A</text>
+    <text x="${bx - 14}" y="${by - 6}" font-size="14" font-weight="bold" fill="#144e3c">B</text>
+    <text x="${cx + 8}" y="${cy + 16}" font-size="14" font-weight="bold" fill="#144e3c">C</text>
+
+    <!-- Độ dài cạnh -->
+    <text x="${ax - 10}" y="${(ay + by)/2}" text-anchor="end" font-size="12" font-weight="700" fill="#2563eb">a = ${a}</text>
+    <text x="${(ax + cx)/2}" y="${ay + 16}" text-anchor="middle" font-size="12" font-weight="700" fill="#16a34a">b = ${b}</text>
+    <text x="${(bx + cx)/2 + 12}" y="${(by + cy)/2 - 8}" text-anchor="start" font-size="12" font-weight="700" fill="#d97706">c ≈ ${Number.isInteger(c)?c:c.toFixed(1)}</text>
+  `;
+}
+
+function checkQuiz() {
+  const ans = parseFloat(document.getElementById('quizAnswer').value);
+  const fb = document.getElementById('quizFeedback');
+  if (isNaN(ans)) {
+    fb.innerHTML = '<span style="color:#dc2626">Vui lòng nhập một số hợp lệ.</span>';
+    return;
+  }
+  if (Math.abs(ans - currentQuizExpected) < 0.1) {
+    fb.innerHTML = '<span style="color:#16a34a">🎉 Rất chính xác! Em đã áp dụng đúng định lý Pythagore: c² = a² + b²!</span>';
+  } else {
+    fb.innerHTML = `<span style="color:#dc2626">Chưa đúng rồi. Gợi ý: Hãy tính căn bậc hai của tổng bình phương hai cạnh góc vuông nhé. (Đáp án đúng là ${currentQuizExpected})</span>`;
+  }
+}
+
+function generateNewQuiz() {
+  const triples = [
+    [3, 4, 5],
+    [6, 8, 10],
+    [5, 12, 13],
+    [9, 12, 15],
+    [8, 15, 17]
+  ];
+  const pick = triples[Math.floor(Math.random() * triples.length)];
+  currentQuizExpected = pick[2];
+  document.getElementById('quizQuestion').innerHTML = `Cho tam giác vuông có hai cạnh góc vuông $a = ${pick[0]}\\text{ cm}$ và $b = ${pick[1]}\\text{ cm}$. Hãy tính độ dài cạnh huyền $c$:`;
+  document.getElementById('quizAnswer').value = '';
+  document.getElementById('quizFeedback').innerHTML = '';
+}
+
+// Khởi chạy ban đầu
+window.addEventListener('DOMContentLoaded', () => {
+  updateSimulation();
+});
+</script>
+</body>
+</html>

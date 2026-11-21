@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mô phỏng tương tác: Tổng 3 góc của Tam giác - Cô Yến Toán THCS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #196653; --border: #c8e6d5; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f5f9f6; color: #2d3748; padding: 16px; }
+    .container { max-width: 850px; margin: 0 auto; background: #fff; border-radius: 20px; border: 1px solid var(--border); padding: 24px; box-shadow: 0 10px 25px rgba(25,102,83,0.08); }
+    header { text-align: center; margin-bottom: 20px; }
+    .badge { display: inline-block; background: #e8f6ee; color: var(--primary); font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 8px; }
+    h1 { font-family: 'Space Grotesk', sans-serif; color: #144e3c; font-size: 22px; margin-bottom: 6px; }
+    .canvas-box { border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; background: #fafdfb; display: flex; justify-content: center; }
+    svg { width: 100%; max-width: 500px; height: 260px; }
+    .stats { display: flex; justify-content: space-around; margin: 16px 0; flex-wrap: wrap; gap: 10px; }
+    .stat-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 16px; text-align: center; font-weight: 700; }
+    .theorem { background: #e8f6ee; border: 1.5px solid #a7f3d0; border-radius: 12px; padding: 12px; text-align: center; font-size: 15px; font-weight: 700; color: #144e3c; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">📐 Toán Lớp 7 · Định lý Tam giác</div>
+    <h1>Mô phỏng tương tác: Tổng 3 góc của một tam giác</h1>
+    <p style="font-size:13.5px;color:#557766">Chọn các góc A và B để quan sát góc C tự động điều chỉnh, đảm bảo tổng 3 góc luôn bằng 180°</p>
+  </header>
+
+  <div style="display:flex;gap:16px;justify-content:center;margin-bottom:16px;flex-wrap:wrap">
+    <div>
+      <label style="font-weight:700;color:#144e3c">Góc A (°): </label>
+      <input type="range" id="angleA" min="20" max="120" value="60" oninput="updateTriangle()">
+      <span id="txtA" style="font-weight:700;color:#2563eb">60°</span>
+    </div>
+    <div>
+      <label style="font-weight:700;color:#144e3c">Góc B (°): </label>
+      <input type="range" id="angleB" min="20" max="120" value="70" oninput="updateTriangle()">
+      <span id="txtB" style="font-weight:700;color:#16a34a">70°</span>
+    </div>
+  </div>
+
+  <div class="canvas-box">
+    <svg id="triSvg" viewBox="0 0 400 240"></svg>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card" style="color:#2563eb">Góc Â: <span id="sA">60</span>°</div>
+    <div class="stat-card" style="color:#16a34a">Góc B̂: <span id="sB">70</span>°</div>
+    <div class="stat-card" style="color:#d97706">Góc Ĉ = 180° - (Â + B̂): <span id="sC">50</span>°</div>
+  </div>
+
+  <div class="theorem">
+    ✨ Định lý: Tổng ba góc của một tam giác bất kỳ luôn bằng 180°: Â + B̂ + Ĉ = 180°
+  </div>
+</div>
+
+<script>
+function updateTriangle() {
+  let a = parseInt(document.getElementById('angleA').value);
+  let b = parseInt(document.getElementById('angleB').value);
+  if (a + b >= 170) {
+    b = 170 - a;
+    document.getElementById('angleB').value = b;
+  }
+  const c = 180 - a - b;
+
+  document.getElementById('txtA').textContent = a + '°';
+  document.getElementById('txtB').textContent = b + '°';
+  document.getElementById('sA').textContent = a;
+  document.getElementById('sB').textContent = b;
+  document.getElementById('sC').textContent = c;
+
+  // Vẽ tam giác ABC
+  const svg = document.getElementById('triSvg');
+  const bx = 60, by = 200;
+  const cx = 340, cy = 200;
+  const baseLen = cx - bx;
+
+  // Tính tọa độ A dựa trên góc B và C
+  const radB = (b * Math.PI) / 180;
+  const radC = (c * Math.PI) / 180;
+  const radA = (a * Math.PI) / 180;
+
+  const sideC = (baseLen * Math.sin(radC)) / Math.sin(radA);
+  const ax = bx + sideC * Math.cos(radB);
+  const ay = by - sideC * Math.sin(radB);
+
+  svg.innerHTML = `
+    <polygon points="${ax},${ay} ${bx},${by} ${cx},${cy}" fill="#f0fdf4" stroke="#166534" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="${ax}" cy="${ay}" r="4" fill="#2563eb"/>
+    <circle cx="${bx}" cy="${by}" r="4" fill="#16a34a"/>
+    <circle cx="${cx}" cy="${cy}" r="4" fill="#d97706"/>
+    <text x="${ax}" y="${ay - 10}" text-anchor="middle" font-size="14" font-weight="bold" fill="#2563eb">A (${a}°)</text>
+    <text x="${bx - 12}" y="${by + 16}" font-size="14" font-weight="bold" fill="#16a34a">B (${b}°)</text>
+    <text x="${cx + 8}" y="${cy + 16}" font-size="14" font-weight="bold" fill="#d97706">C (${c}°)</text>
+  `;
+}
+window.addEventListener('DOMContentLoaded', updateTriangle);
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mô phỏng tương tác: Góc nội tiếp & Góc ở tâm - Cô Yến Toán THCS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #196653; --border: #c8e6d5; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f5f9f6; color: #2d3748; padding: 16px; }
+    .container { max-width: 850px; margin: 0 auto; background: #fff; border-radius: 20px; border: 1px solid var(--border); padding: 24px; box-shadow: 0 10px 25px rgba(25,102,83,0.08); }
+    header { text-align: center; margin-bottom: 20px; }
+    .badge { display: inline-block; background: #e8f6ee; color: var(--primary); font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 8px; }
+    h1 { font-family: 'Space Grotesk', sans-serif; color: #144e3c; font-size: 22px; margin-bottom: 6px; }
+    .canvas-box { border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; background: #fafdfb; display: flex; justify-content: center; }
+    svg { width: 100%; max-width: 440px; height: 300px; }
+    .theorem { background: #e8f6ee; border: 1.5px solid #a7f3d0; border-radius: 12px; padding: 14px; text-align: center; font-size: 15px; font-weight: 700; color: #144e3c; margin-top: 16px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">⭕ Toán Lớp 9 · Hình học Đường tròn</div>
+    <h1>Mô phỏng tương tác: Góc ở tâm & Góc nội tiếp</h1>
+    <p style="font-size:13.5px;color:#557766">Kiểm chứng định lý: Số đo của góc nội tiếp luôn bằng một nửa số đo của góc ở tâm cùng chắn một cung</p>
+  </header>
+
+  <div style="display:flex;gap:16px;justify-content:center;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+    <label style="font-weight:700;color:#144e3c">Số đo cung chắn AB (°): </label>
+    <input type="range" id="arcDeg" min="30" max="150" value="80" oninput="updateCircle()">
+    <span id="txtArc" style="font-weight:700;color:#2563eb;font-size:16px">80°</span>
+  </div>
+
+  <div class="canvas-box">
+    <svg id="circleSvg" viewBox="0 0 360 300"></svg>
+  </div>
+
+  <div class="theorem">
+    ✨ Định lý: Số đo góc ở tâm $\widehat{AOB} = \text{sđ}\overgroup{AB} = <span id="thAOB">80</span>^\circ$<br>
+    👉 Số đo góc nội tiếp $\widehat{AMB} = \frac{1}{2}\widehat{AOB} = \frac{1}{2} \times <span id="thAOB2">80</span>^\circ = <span id="thAMB">40</span>^\circ$
+  </div>
+</div>
+
+<script>
+function updateCircle() {
+  const deg = parseInt(document.getElementById('arcDeg').value);
+  document.getElementById('txtArc').textContent = deg + '°';
+  document.getElementById('thAOB').textContent = deg;
+  document.getElementById('thAOB2').textContent = deg;
+  document.getElementById('thAMB').textContent = (deg / 2);
+
+  const svg = document.getElementById('circleSvg');
+  const cx = 180, cy = 150, r = 110;
+
+  // Điểm O
+  const ox = cx, oy = cy;
+
+  // Cung AB đối xứng qua trục dọc phía dưới
+  const half = (deg / 2) * (Math.PI / 180);
+  const angA = (Math.PI / 2) - half;
+  const angB = (Math.PI / 2) + half;
+
+  const ax = cx + r * Math.cos(angA);
+  const ay = cy + r * Math.sin(angA);
+
+  const bx = cx + r * Math.cos(angB);
+  const by = cy + r * Math.sin(angB);
+
+  // Điểm M nằm phía trên đường tròn
+  const mx = cx;
+  const my = cy - r;
+
+  svg.innerHTML = `
+    <!-- Đường tròn (O) -->
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+    <circle cx="${ox}" cy="${oy}" r="4" fill="#144e3c"/>
+    <text x="${ox + 8}" y="${oy - 6}" font-size="13" font-weight="bold" fill="#144e3c">O</text>
+
+    <!-- Cung AB tô đậm -->
+    <path d="M ${ax} ${ay} A ${r} ${r} 0 0 1 ${bx} ${by}" fill="none" stroke="#dc2626" stroke-width="4"/>
+
+    <!-- Góc ở tâm AOB -->
+    <line x1="${ox}" y1="${oy}" x2="${ax}" y2="${ay}" stroke="#2563eb" stroke-width="2"/>
+    <line x1="${ox}" y1="${oy}" x2="${bx}" y2="${by}" stroke="#2563eb" stroke-width="2"/>
+
+    <!-- Góc nội tiếp AMB -->
+    <line x1="${mx}" y1="${my}" x2="${ax}" y2="${ay}" stroke="#16a34a" stroke-width="2" stroke-dasharray="3 3"/>
+    <line x1="${mx}" y1="${my}" x2="${bx}" y2="${by}" stroke="#16a34a" stroke-width="2" stroke-dasharray="3 3"/>
+
+    <!-- Đỉnh M -->
+    <circle cx="${mx}" cy="${my}" r="5" fill="#16a34a"/>
+    <text x="${mx}" y="${my - 10}" text-anchor="middle" font-size="14" font-weight="bold" fill="#16a34a">M (Góc nội tiếp = ${deg/2}°)</text>
+
+    <!-- Đỉnh A và B -->
+    <circle cx="${ax}" cy="${ay}" r="4" fill="#dc2626"/>
+    <text x="${ax + 10}" y="${ay + 14}" font-size="13" font-weight="bold" fill="#dc2626">A</text>
+
+    <circle cx="${bx}" cy="${by}" r="4" fill="#dc2626"/>
+    <text x="${bx - 18}" y="${by + 14}" font-size="13" font-weight="bold" fill="#dc2626">B</text>
+
+    <!-- Nhãn góc ở tâm -->
+    <text x="${ox}" y="${oy + 32}" text-anchor="middle" font-size="13" font-weight="bold" fill="#2563eb">Góc ở tâm = ${deg}°</text>
+  `;
+}
+window.addEventListener('DOMContentLoaded', updateCircle);
+</script>
+</body>
+</html>
