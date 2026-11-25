@@ -138,7 +138,7 @@ function getFallbackQuizByTopic(title, grade) {
       "Chỉ nhìn đề bài và đoán kết quả"
     ],
     correct_answer: 0,
-    hint: "Phương châm học Toán của Cô Yến: 'Hỏi để hiểu - Không lời giải chi tiết'. Hãy luôn đọc kỹ đề, bóc tách dữ kiện và viết công thức ra giấy nháp trước.",
+    hint: "Phương châm học Toán của Thầy Lê Tâm: 'Hỏi để hiểu - Không lời giải chi tiết'. Hãy luôn đọc kỹ đề, bóc tách dữ kiện và viết công thức ra giấy nháp trước.",
     explanation: "Đọc kỹ đề bài, ghi lại công thức và nháp từng bước là chìa khóa vàng giúp học sinh THCS hiểu sâu và làm đúng mọi bài toán."
   };
 }
@@ -167,7 +167,7 @@ module.exports = async (req, res) => {
   }
   const keys = getKeys();
 
-  const prompt = `Bạn là Cô Trần Thị Hải Yến - giáo viên chuyên bồi dưỡng Toán THCS.
+  const prompt = `Bạn là Thầy Lê Tâm - giáo viên chuyên bồi dưỡng Toán THCS.
 Nhiệm vụ của bạn: Hãy tự động trích xuất và tạo 01 câu hỏi trắc nghiệm tương tác chất lượng cao bám sát nội dung SGK/SBT mới theo đúng TIÊU ĐỀ BÀI HỌC sau:
 - Tiêu đề bài học: "${cleanTitle}"
 - Khối lớp: Lớp ${grade} (Toán THCS)

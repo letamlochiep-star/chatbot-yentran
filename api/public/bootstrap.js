@@ -6,7 +6,7 @@ module.exports = async (req, res) => {
   const fallbackData = {
     success: true,
     teacher: {
-      name: "Cô Trần Thị Hải Yến",
+      name: "Thầy Lê Tâm",
       motto: "HỎI ĐỂ HIỂU – KHÔNG LỜI GIẢI CHI TIẾT"
     },
     grades: [

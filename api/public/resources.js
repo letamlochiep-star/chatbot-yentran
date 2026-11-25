@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
       title: title.trim(),
       file_type: (file_type || "PDF").toUpperCase(),
       topic: topic || "Tài liệu",
-      description: description || "Tài liệu môn Toán do Cô Yến chia sẻ",
+      description: description || "Tài liệu môn Toán do Thầy Lê Tâm chia sẻ",
       file_url: file_url || "#",
       html_content: html_content || undefined
     };

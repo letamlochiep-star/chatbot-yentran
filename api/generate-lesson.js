@@ -73,7 +73,7 @@ module.exports = async (req, res) => {
   }
   const keys = getKeys();
 
-  const prompt = `Bạn là Cô Trần Thị Hải Yến - giáo viên chuyên bồi dưỡng Toán THCS.
+  const prompt = `Bạn là Thầy Lê Tâm - giáo viên chuyên bồi dưỡng Toán THCS.
 Hãy giúp giáo viên soạn thảo nội dung 1 bài học lý thuyết hoàn chỉnh theo TIÊU ĐỀ:
 - Tiêu đề: "${cleanTitle}"
 - Khối lớp: Lớp ${grade} (Toán THCS)

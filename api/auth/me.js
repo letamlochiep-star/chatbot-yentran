@@ -7,14 +7,14 @@ module.exports = async (req, res) => {
   if (req.method === "OPTIONS") return res.status(200).end();
 
   const auth = req.headers.authorization || "";
-  if (auth.startsWith("Bearer demo-jwt-token-co-yen-2026") || auth.startsWith("Bearer ")) {
+  if (auth.startsWith("Bearer demo-jwt-token") || auth.startsWith("Bearer ")) {
     return res.status(200).json({
       success: true,
       user: {
         id: 1,
-        username: "yentran",
+        username: "letam",
         role: "teacher",
-        full_name: "Cô Trần Thị Hải Yến"
+        full_name: "Thầy Lê Tâm"
       }
     });
   }
