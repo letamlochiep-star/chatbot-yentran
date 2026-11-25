@@ -46,6 +46,26 @@ const FALLBACK_BANK = {
     correct_answer: 0,
     hint: "Góc nội tiếp bằng nửa số đo góc ở tâm cùng chắn một cung: $\\widehat{ACB} = \\frac{1}{2} \\widehat{AOB} = \\frac{80^\\circ}{2} = 40^\\circ$.",
     explanation: "Số đo góc nội tiếp $\\widehat{ACB} = \\frac{1}{2} \\cdot 80^\\circ = 40^\\circ$. Phương án chính xác là A."
+  },
+  13: {
+    correct_answer: 1,
+    hint: "Phân thức xác định khi mẫu thức khác 0: $x^2 - 4 \\neq 0 \\iff (x-2)(x+2) \\neq 0$.",
+    explanation: "Ta có $x^2 - 4 \\neq 0 \\iff x \\neq 2$ và $x \\neq -2$ (tức $x \\neq \\pm 2$). Phương án chính xác là B."
+  },
+  14: {
+    correct_answer: 1,
+    hint: "Theo định lý Thalès: $\\frac{AM}{MB} = \\frac{AN}{NC}$.",
+    explanation: "Theo định lý Thalès: $\\frac{2}{4} = \\frac{3}{NC} \\implies NC = \\frac{4 \\cdot 3}{2} = 6$. Phương án chính xác là B."
+  },
+  15: {
+    correct_answer: 0,
+    hint: "Theo định lý Vi-ét: $S = 7, P = 12$. Biến đổi $x_1^2 + x_2^2 = S^2 - 2P$.",
+    explanation: "$x_1^2 + x_2^2 = 7^2 - 2 \\cdot 12 = 49 - 24 = 25$. Phương án chính xác là A."
+  },
+  16: {
+    correct_answer: 0,
+    hint: "Hệ thức lượng trong tam giác vuông: $AH^2 = BH \\cdot CH$.",
+    explanation: "$AH^2 = 4 \\cdot 9 = 36 \\implies AH = 6\\text{ cm}$. Phương án chính xác là A."
   }
 };
 

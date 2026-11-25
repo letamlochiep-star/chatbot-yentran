@@ -116,6 +116,50 @@ function getFallbackQuizByTopic(title, grade) {
     };
   }
 
+  if (t.includes("phân thức")) {
+    return {
+      topic: title || "Phân thức đại số: Điều kiện xác định & Rút gọn",
+      text: "Điều kiện xác định của phân thức đại số $\\frac{2x - 1}{x^2 - 4}$ là:",
+      options: ["$x \\neq \\pm 2$", "$x \\neq 2$", "$x \\neq -2$", "$x > 0$"],
+      correct_answer: 0,
+      hint: "Phân thức $\\frac{A}{B}$ xác định khi mẫu thức khác 0: $B \\neq 0$. Ở đây $x^2 - 4 \\neq 0 \\iff (x-2)(x+2) \\neq 0$.",
+      explanation: "Ta có $x^2 - 4 \\neq 0 \\iff (x-2)(x+2) \\neq 0 \\iff x \\neq 2$ và $x \\neq -2$ (tức là $x \\neq \\pm 2$)."
+    };
+  }
+
+  if (t.includes("vi-ét") || t.includes("viet") || t.includes("bậc hai")) {
+    return {
+      topic: title || "Phương trình bậc hai & Định lý Vi-ét",
+      text: "Cho phương trình bậc hai $x^2 - 7x + 12 = 0$. Giá trị của biểu thức $T = x_1^2 + x_2^2$ bằng:",
+      options: ["$25$", "$37$", "$49$", "$13$"],
+      correct_answer: 0,
+      hint: "Theo định lý Vi-ét: $S = x_1 + x_2 = 7$, $P = x_1 x_2 = 12$. Ta biến đổi $x_1^2 + x_2^2 = (x_1+x_2)^2 - 2x_1x_2 = S^2 - 2P$.",
+      explanation: "Ta có $S = 7, P = 12 \\implies x_1^2 + x_2^2 = 7^2 - 2 \\cdot 12 = 49 - 24 = 25$."
+    };
+  }
+
+  if (t.includes("thalès") || t.includes("thales") || t.includes("đồng dạng")) {
+    return {
+      topic: title || "Định lý Thalès & Tam giác đồng dạng",
+      text: "Cho $\\triangle ABC$ có $MN \\parallel BC$ ($M \\in AB, N \\in AC$). Biết $AM = 2\\text{ cm}, MB = 4\\text{ cm}, AN = 3\\text{ cm}$. Độ dài đoạn thẳng $NC$ là:",
+      options: ["$6\\text{ cm}$", "$5\\text{ cm}$", "$8\\text{ cm}$", "$4.5\\text{ cm}$"],
+      correct_answer: 0,
+      hint: "Vì $MN \\parallel BC$, áp dụng định lý Thalès: $\\frac{AM}{MB} = \\frac{AN}{NC}$.",
+      explanation: "Theo định lý Thalès: $\\frac{2}{4} = \\frac{3}{NC} \\implies NC = \\frac{4 \\cdot 3}{2} = 6\\text{ cm}$."
+    };
+  }
+
+  if (t.includes("hệ thức lượng")) {
+    return {
+      topic: title || "Hệ thức lượng trong tam giác vuông",
+      text: "Cho $\\triangle ABC$ vuông tại $A$, đường cao $AH$. Biết hình chiếu $BH = 4\\text{ cm}$ và $CH = 9\\text{ cm}$. Độ dài đường cao $AH$ là:",
+      options: ["$6\\text{ cm}$", "$5\\text{ cm}$", "$6.5\\text{ cm}$", "$36\\text{ cm}$"],
+      correct_answer: 0,
+      hint: "Bình phương đường cao bằng tích hai hình chiếu trên cạnh huyền: $AH^2 = BH \\cdot CH$.",
+      explanation: "$AH^2 = BH \\cdot CH = 4 \\cdot 9 = 36 \\implies AH = \\sqrt{36} = 6\\text{ cm}$."
+    };
+  }
+
   if (t.includes("hữu tỉ") || t.includes("phân số")) {
     return {
       topic: title || "Số hữu tỉ & Các phép tính",

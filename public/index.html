@@ -1419,7 +1419,7 @@ const navTabs = [
 ];
 
 let page = 'home';
-let currentGrade = '6';
+let currentGrade = '8';
 let appData = {
   teacher: { name: 'Thầy Lê Tâm', motto: 'HỎI ĐỂ HIỂU – KHÔNG LỜI GIẢI CHI TIẾT' },
   prompts: {},
@@ -1463,20 +1463,22 @@ const STANDARD_LESSONS = {
     "Các trường hợp bằng nhau của hai tam giác"
   ],
   "8": [
-    "Đa thức nhiều biến & Các phép toán",
-    "7 Hằng đẳng thức đáng nhớ",
-    "Phân thức đại số và các tính chất",
-    "Tứ giác: Hình bình hành & Hình chữ nhật",
-    "Tứ giác: Hình thoi & Hình vuông",
-    "Định lý Thalès trong tam giác"
+    "7 Hằng đẳng thức đáng nhớ & Phân tích đa thức thành nhân tử",
+    "Phân thức đại số: Điều kiện xác định & Rút gọn",
+    "Hàm số bậc nhất y = ax + b & Đồ thị",
+    "Phương trình bậc nhất một ẩn & Giải bài toán bằng cách lập PT",
+    "Tứ giác: Hình bình hành, Hình chữ nhật, Hình thoi, Hình vuông",
+    "Định lý Thalès trong tam giác & Hệ quả",
+    "Các trường hợp đồng dạng của hai tam giác"
   ],
   "9": [
-    "Căn bậc hai & Hằng đẳng thức căn(A^2) = |A|",
-    "Liên hệ giữa phép nhân, phép chia và phép khai phương",
-    "Phương trình bậc nhất hai ẩn & Hệ phương trình",
-    "Đường tròn: Góc ở tâm & Góc nội tiếp",
-    "Tứ giác nội tiếp đường tròn",
-    "Hình trụ, Hình nón, Hình cầu trong thực tế"
+    "Căn bậc hai & Rút gọn biểu thức chứa căn (Ôn thi vào 10)",
+    "Hệ hai phương trình bậc nhất hai ẩn & Giải bài toán thực tế",
+    "Hàm số y = ax^2 & Phương trình bậc hai một ẩn",
+    "Định lý Vi-ét và các dạng bài toán ứng dụng",
+    "Hệ thức lượng trong tam giác vuông & Tỉ số lượng giác",
+    "Góc với đường tròn & Tứ giác nội tiếp đường tròn",
+    "Bất đẳng thức Cauchy & Bài toán tìm Min - Max"
   ]
 };
 
@@ -1981,19 +1983,19 @@ async function renderView() {
       <section class="hero-card">
         <div class="hero-left-content">
           <h2 class="greeting-title">Xin chào em! 👋</h2>
-          <h3 class="intro-subtitle">Mình là Thầy Lê Tâm<br>– Trợ lý học Toán THCS.</h3>
+          <h3 class="intro-subtitle">Mình là Thầy Lê Tâm<br>– Trợ lý học Toán THCS (Trọng tâm Lớp 8 & Lớp 9).</h3>
           <p class="intro-desc">
-            Thầy sẽ đồng hành cùng em trong hành trình học Toán: giải đáp thắc mắc, hướng dẫn kiến thức, luyện tập và ôn tập hiệu quả. Em cứ mạnh dạn hỏi bài, gửi hình bài tập hoặc chọn nội dung em muốn học nhé! 💚
+            Thầy sẽ đồng hành cùng em trong hành trình học Toán, đặc biệt chuyên sâu bồi dưỡng <b>Toán Lớp 8</b> và ôn luyện <b>Toán Lớp 9 thi vào Lớp 10</b>: giải đáp thắc mắc, hướng dẫn kiến thức, luyện tập và ôn tập hiệu quả. Em cứ mạnh dạn hỏi bài hoặc gửi hình bài tập nhé! 💚
           </p>
         </div>
 
         <div class="hero-right-stage">
           <span class="hero-doodle doodle-top-left">$ax^2 + bx + c = 0$</span>
-          <span class="hero-doodle doodle-mid-left">$S = \\pi r^2$</span>
-          <span class="hero-doodle doodle-bot-left">$\\begin{cases} y = 2x+1 \\\\ y = x-3 \\end{cases}$</span>
-          <span class="hero-doodle doodle-top-right">$\\triangle ABC$ vuông</span>
-          <span class="hero-doodle doodle-mid-right">Hình hộp lập phương</span>
-          <span class="hero-doodle doodle-bot-right">Toán 6, 7, 8, 9 📚</span>
+          <span class="hero-doodle doodle-mid-left">$(A+B)^2 = A^2+2AB+B^2$</span>
+          <span class="hero-doodle doodle-bot-left">$\\begin{cases} x+y = 5 \\\\ 2x-y = 1 \\end{cases}$</span>
+          <span class="hero-doodle doodle-top-right">$\\triangle ABC$ vuông tại A</span>
+          <span class="hero-doodle doodle-mid-right">Định lý Thalès & Vi-ét</span>
+          <span class="hero-doodle doodle-bot-right">Toán Lớp 8 & 9 (Vào 10) 🎯</span>
 
           <div class="standing-photo-wrap">
             <img src="co_yen_standing.jpg" alt="Thầy Lê Tâm" class="co-yen-img">
@@ -2004,7 +2006,7 @@ async function renderView() {
       <div class="teacher-bubble-row">
         <img src="avatar_co_yen.jpg" alt="Thầy Lê Tâm" class="bubble-avatar">
         <div class="speech-bubble">
-          Em muốn học hay giải bài Toán nào hôm nay? Hãy nhập câu hỏi, hoặc chụp/tải ảnh bài tập để thầy cùng em tìm lời giải nhé! ✨
+          Em muốn học hay giải bài Toán nào hôm nay? Hãy nhập câu hỏi, hoặc chụp/tải ảnh bài tập để thầy cùng em tư duy từng bước nhé! ✨
         </div>
       </div>
 
@@ -2016,7 +2018,7 @@ async function renderView() {
             <div class="q-title">Hỏi bài Toán cùng Thầy Lê Tâm</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px">
-            <span class="dock-hint">📖 Toán THCS (Lớp 6 – 9)</span>
+            <span class="dock-hint">⭐ Trọng tâm Toán Lớp 8 & Toán Lớp 9</span>
             <button class="pill-btn pill-btn-mint" style="padding:5px 12px;font-size:12px" onclick="go('chat')">
               <span>↗</span> Mở rộng toàn màn hình
             </button>
@@ -2053,7 +2055,7 @@ async function renderView() {
                 <span>📷</span> Chụp ảnh bài tập
               </button>
             </div>
-            <span class="dock-hint">Tối đa 10MB/ảnh • Cô gợi ý từng bước, không giải hộ.</span>
+            <span class="dock-hint">Tối đa 10MB/ảnh • Thầy gợi ý từng bước, không giải hộ.</span>
           </div>
         </div>
       </section>
@@ -2069,13 +2071,13 @@ async function renderView() {
             <span class="feat-card-arrow">❯</span>
           </div>
           <p class="feat-card-desc">
-            Hệ thống lý thuyết, công thức, phương pháp giải theo từng lớp.
+            Hệ thống lý thuyết trọng tâm Lớp 8 & Lớp 9, công thức then chốt và phương pháp giải.
           </p>
           <div class="feat-grade-pills">
-            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('6')">Lớp 6</button>
+            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('8')">⭐ Lớp 8</button>
+            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('9')">🎯 Lớp 9 (Vào 10)</button>
             <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('7')">Lớp 7</button>
-            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('8')">Lớp 8</button>
-            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('9')">Lớp 9</button>
+            <button class="feat-grade-btn" onclick="event.stopPropagation();switchGradeAndGo('6')">Lớp 6</button>
           </div>
         </div>
 
@@ -2146,11 +2148,11 @@ async function renderView() {
 
           <div style="display:flex;align-items:center;gap:10px">
             <label style="font-weight:700;color:var(--primary);font-size:13px">Lớp:</label>
-            <select id="chatGradeSelect" onchange="currentGrade=this.value" style="padding:6px 10px;border-radius:10px;border:1px solid var(--card-border);font-size:13px">
-              <option value="6" ${currentGrade==='6'?'selected':''}>Toán 6</option>
+            <select id="chatGradeSelect" onchange="currentGrade=this.value" style="padding:6px 10px;border-radius:10px;border:1px solid var(--card-border);font-size:13px;font-weight:700;color:#144e3c">
+              <option value="8" ${currentGrade==='8'?'selected':''}>⭐ Toán 8 (Trọng tâm)</option>
+              <option value="9" ${currentGrade==='9'?'selected':''}>🎯 Toán 9 (Vào 10)</option>
               <option value="7" ${currentGrade==='7'?'selected':''}>Toán 7</option>
-              <option value="8" ${currentGrade==='8'?'selected':''}>Toán 8</option>
-              <option value="9" ${currentGrade==='9'?'selected':''}>Toán 9</option>
+              <option value="6" ${currentGrade==='6'?'selected':''}>Toán 6</option>
             </select>
             <button class="pill-btn pill-btn-sand" style="padding:6px 12px;font-size:12.5px" onclick="clearFullChat()">
               <span>🗑️</span> Làm mới đoạn chat
@@ -2172,7 +2174,7 @@ async function renderView() {
               <textarea 
                 id="dedicatedChatInput" 
                 rows="1" 
-                placeholder="Nhập câu hỏi hoặc nói cho cô biết em đang vướng ở bước nào (Enter để gửi)..."
+                placeholder="Nhập câu hỏi hoặc nói cho thầy biết em đang vướng ở bước nào (Enter để gửi)..."
                 onkeydown="handleTextareaKeydown(event, 'dedicated')"
               ></textarea>
               <button class="dock-send-btn" type="submit" id="dedicatedSendBtn" title="Gửi câu hỏi">➤</button>
@@ -2220,8 +2222,8 @@ async function renderView() {
           <p class="sub">Hệ thống hóa lý thuyết cốt lõi, công thức then chốt và các câu hỏi tự kiểm tra theo chuẩn GDPT.</p>
 
           <div class="grade-pills-bar">
-            ${['6','7','8','9'].map(g => `
-              <button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>
+            ${['8','9','7','6'].map(g => `
+              <button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">${g==='8'?'⭐ Toán Lớp 8 (Trọng tâm)':g==='9'?'🎯 Toán Lớp 9 (Vào 10)':('Toán Lớp '+g)}</button>
             `).join('')}
           </div>
 
@@ -2282,7 +2284,7 @@ async function renderView() {
           <section class="panel">
             <h2>📝 Bài tập tương tác – Khối ${currentGrade}</h2>
             <div class="grade-pills-bar">
-              ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
+              ${['8','9','7','6'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">${g==='8'?'⭐ Toán Lớp 8 (Trọng tâm)':g==='9'?'🎯 Toán Lớp 9 (Vào 10)':('Toán Lớp '+g)}</button>`).join('')}
             </div>
             <div class="notice-box warn">Chưa có câu hỏi nào trong ngân hàng đề Toán lớp ${currentGrade}. Giáo viên có thể vào mục Quản trị để đưa thêm bài tập tương tác theo bài!</div>
           </section>
@@ -2306,7 +2308,7 @@ async function renderView() {
           <p class="sub">Học sinh chủ động chọn bài học để luyện tập trắc nghiệm tương tác, nhận gợi ý sư phạm tức thì từ Thầy Lê Tâm.</p>
 
           <div class="grade-pills-bar">
-            ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
+            ${['8','9','7','6'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">${g==='8'?'⭐ Toán Lớp 8 (Trọng tâm)':g==='9'?'🎯 Toán Lớp 9 (Vào 10)':('Toán Lớp '+g)}</button>`).join('')}
           </div>
 
           <!-- BỘ LỌC CHỌN BÀI HỌC CỤ THỂ -->
@@ -2390,7 +2392,7 @@ async function renderView() {
           <p class="sub">Đề cương ôn tập, tóm tắt công thức và đề kiểm tra học kỳ do Thầy Lê Tâm biên soạn.</p>
 
           <div class="grade-pills-bar">
-            ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
+            ${['8','9','7','6'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">${g==='8'?'⭐ Toán Lớp 8 (Trọng tâm)':g==='9'?'🎯 Toán Lớp 9 (Vào 10)':('Toán Lớp '+g)}</button>`).join('')}
           </div>
 
           <div style="display:flex;flex-direction:column;gap:12px">
@@ -2428,31 +2430,75 @@ async function renderView() {
 
   // TAB 6: ÔN TẬP & KIỂM TRA
   else if (page === 'review') {
+    let checklistHtml = '';
+    let focusHtml = '';
+
+    if (currentGrade === '8') {
+      checklistHtml = `
+        <li><b>7 Hằng đẳng thức:</b> Thành thạo khai triển và phân tích đa thức thành nhân tử.</li>
+        <li><b>Phân thức đại số:</b> Luôn nhớ tìm ĐKXĐ (mẫu khác 0) và rút gọn trước khi tính toán.</li>
+        <li><b>PT bậc nhất một ẩn:</b> Nắm chắc 3 bước giải bài toán bằng cách lập phương trình (toán chuyển động, năng suất).</li>
+        <li><b>Tứ giác:</b> Thuộc lòng định nghĩa, tính chất và dấu hiệu nhận biết hình bình hành, hình chữ nhật, hình thoi, hình vuông.</li>
+        <li><b>Định lý Thalès & Đồng dạng:</b> Vận dụng tỉ số đồng dạng, cạnh tương ứng tỉ lệ trong tam giác.</li>
+      `;
+      focusHtml = `
+        Toán Lớp 8 là năm học bản lề mang tính quyết định của toàn cấp THCS. Nắm chắc <b>7 Hằng đẳng thức</b>, kỹ năng biến đổi <b>Phân thức đại số</b> và <b>Tam giác đồng dạng</b> sẽ giúp em xây dựng nền tảng vững vàng nhất để bước vào Lớp 9 ôn thi Tuyển sinh vào Lớp 10.
+      `;
+    } else if (currentGrade === '9') {
+      checklistHtml = `
+        <li><b>Căn thức bậc hai:</b> Tìm ĐKXĐ, rút gọn biểu thức chứa căn và giải bài toán phụ (P nguyên, Min-Max).</li>
+        <li><b>Hệ phương trình bậc nhất 2 ẩn:</b> Thuần thục phương pháp cộng đại số, phương pháp thế và giải bài toán thực tế.</li>
+        <li><b>Parabol & Phương trình bậc hai:</b> Biệt thức $\\Delta$, công thức nghiệm và định lý Vi-ét ($S, P$).</li>
+        <li><b>Hệ thức lượng trong tam giác vuông:</b> Thuộc 4 hệ thức lượng và tỉ số lượng giác góc nhọn (sin, cos, tan, cot).</li>
+        <li><b>Đường tròn & Tứ giác nội tiếp:</b> Góc ở tâm, góc nội tiếp và 4 dấu hiệu chứng minh tứ giác nội tiếp.</li>
+      `;
+      focusHtml = `
+        Toán Lớp 9 là giai đoạn nước rút trọng yếu cho kỳ thi <b>Tuyển sinh vào Lớp 10 THPT</b>. Học sinh cần rèn luyện khả năng trình bày bài giải chặt chẽ từng bước, chú ý điều kiện nghiệm và không để mất điểm ở các câu hỏi cơ bản, đồng thời chinh phục câu hình học và bài toán phân loại.
+      `;
+    } else if (currentGrade === '7') {
+      checklistHtml = `
+        <li><b>Số hữu tỉ & Số thực:</b> Thành thạo cộng, trừ, nhân, chia và quy tắc dấu ngoặc.</li>
+        <li><b>Tam giác bằng nhau:</b> Thuộc 3 trường hợp bằng nhau (c-c-c, c-g-c, g-c-g) và các trường hợp tam giác vuông.</li>
+        <li><b>Định lý Pythagore:</b> Áp dụng tính cạnh huyền và cạnh góc vuông ($BC^2 = AB^2 + AC^2$).</li>
+        <li><b>Góc & Đường thẳng song song:</b> Nắm vững cặp góc so le trong, đồng vị và tia phân giác.</li>
+      `;
+      focusHtml = `
+        Toán Lớp 7 mở rộng tập hợp số và bắt đầu bước vào hình học suy luận hình thức. Em hãy chú ý vẽ hình chính xác và viết giả thiết, kết luận cẩn thận.
+      `;
+    } else {
+      checklistHtml = `
+        <li><b>Tập hợp số tự nhiên:</b> Thứ tự thực hiện phép tính, lũy thừa, dấu hiệu chia hết, ƯCLN và BCNN.</li>
+        <li><b>Số nguyên:</b> Quy tắc cộng trừ nhân chia số nguyên âm và quy tắc dấu ngoặc.</li>
+        <li><b>Phân số:</b> Rút gọn phân số, quy đồng mẫu số và các phép tính cơ bản.</li>
+        <li><b>Hình học trực quan:</b> Nhận biết tam giác đều, hình vuông, lục giác đều, hình bình hành, hình chữ nhật.</li>
+      `;
+      focusHtml = `
+        Toán Lớp 6 là bước chuyển tiếp quan trọng từ Tiểu học lên THCS. Hãy rèn luyện thói quen tính toán nháp cẩn thận và hiểu rõ bản chất từng phép tính.
+      `;
+    }
+
     container.innerHTML = `
       <section class="panel">
         <h2>🎯 Ôn tập & Kiểm tra – Nắm vững Toán THCS</h2>
-        <p class="sub">Kế hoạch ôn tập theo 4 khối lớp 6, 7, 8, 9 nhằm củng cố kiến thức trước các bài kiểm tra định kỳ và thi tuyển sinh.</p>
+        <p class="sub">Kế hoạch ôn tập theo 4 khối lớp 6, 7, 8, 9, đặc biệt tập trung chuyên sâu cho Toán Lớp 8 và Toán Lớp 9 thi vào Lớp 10.</p>
 
         <div class="grade-pills-bar">
-          ${['6','7','8','9'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">Toán Lớp ${g}</button>`).join('')}
+          ${['8','9','7','6'].map(g => `<button class="grade-pill-item ${currentGrade===g?'active':''}" onclick="switchGradeAndGo('${g}')">${g==='8'?'⭐ Toán Lớp 8 (Trọng tâm)':g==='9'?'🎯 Toán Lớp 9 (Vào 10)':('Toán Lớp '+g)}</button>`).join('')}
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
-          <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px">
+          <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.03)">
             <h3 style="color:#144e3c;margin-bottom:8px">📝 Checklist Ôn tập Khối ${currentGrade}</h3>
             <ul style="padding-left:20px;font-size:14px;line-height:1.8;color:#2d5044">
-              <li>Nắm chắc các định nghĩa và điều kiện xác định.</li>
-              <li>Học thuộc bảng công thức biến đổi cơ bản.</li>
-              <li>Luyện tập 15–20 câu trắc nghiệm tương tác mỗi tuần.</li>
-              <li>Tự giải lại các bài toán mẫu mà không nhìn đáp án.</li>
+              ${checklistHtml}
             </ul>
             <button class="btn-primary" style="margin-top:14px" onclick="go('quiz')">Bắt đầu làm bài tương tác ❯</button>
           </div>
 
-          <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff">
+          <div style="border:1px solid var(--card-border);border-radius:16px;padding:20px;background:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.03)">
             <h3 style="color:#144e3c;margin-bottom:8px">💡 Trọng tâm kiến thức Lớp ${currentGrade}</h3>
-            <p style="font-size:14px;line-height:1.7;color:#3b5f52">
-              Chương trình Toán THCS kết hợp nhuần nhuyễn giữa tư duy Đại số và Hình học trực quan. Khi gặp bài toán hình học, em hãy luôn vẽ hình chính xác và ghi rõ giả thiết – kết luận nhé!
+            <p style="font-size:14px;line-height:1.75;color:#3b5f52">
+              ${focusHtml}
             </p>
             <button class="btn-secondary" style="margin-top:14px" onclick="go('knowledge')">Xem bài giảng theo lớp ❯</button>
           </div>
@@ -2874,7 +2920,7 @@ function handleTeacherLogout() {
 }
 
 // 8. KHÔNG GIAN QUẢN TRỊ DÀNH RIÊNG CHO GIÁO VIÊN (THẦY LÊ TÂM)
-let adminCurrentGrade = '6';
+let adminCurrentGrade = '8';
 let adminSubTab = 'lessons'; // 'lessons', 'quizzes', 'resources', 'ai-prompt', 'stats'
 let attachedResourceFileData = null;
 let attachedResourceFileName = '';
@@ -2918,10 +2964,10 @@ async function renderAdminDashboard() {
           <div style="display:flex;align-items:center;gap:8px">
             <label style="font-size:13px;font-weight:700;color:#144e3c">Khối lớp:</label>
             <select onchange="onAdminGradeChange(this.value)" style="padding:7px 12px;border-radius:10px;border:1.5px solid #196653;font-size:13px;font-weight:700;color:#144e3c;background:#e8f6ee">
-              <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
+              <option value="8" ${adminCurrentGrade==='8'?'selected':''}>⭐ Toán Lớp 8 (Trọng tâm)</option>
+              <option value="9" ${adminCurrentGrade==='9'?'selected':''}>🎯 Toán Lớp 9 (Vào 10)</option>
               <option value="7" ${adminCurrentGrade==='7'?'selected':''}>Toán Lớp 7</option>
-              <option value="8" ${adminCurrentGrade==='8'?'selected':''}>Toán Lớp 8</option>
-              <option value="9" ${adminCurrentGrade==='9'?'selected':''}>Toán Lớp 9</option>
+              <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
             </select>
           </div>
         </div>
@@ -3029,16 +3075,16 @@ async function renderAdminDashboard() {
               <span>🎯</span> Upload & Đưa bài tập tương tác lên cho học sinh làm theo bài
             </h3>
             <p style="font-size:13px;color:#557766;margin:0">
-              Cô chỉ cần chọn bài học hoặc nhập tiêu đề bài, bấm nút trích xuất là hệ thống sẽ tự động tạo câu hỏi trắc nghiệm tương tác chuẩn SGK/SBT!
+              Thầy chỉ cần chọn bài học hoặc nhập tiêu đề bài, bấm nút trích xuất là hệ thống sẽ tự động tạo câu hỏi trắc nghiệm tương tác chuẩn SGK/SBT!
             </p>
           </div>
           <div style="display:flex;align-items:center;gap:8px">
             <label style="font-size:13px;font-weight:700;color:#144e3c">Khối lớp:</label>
             <select onchange="onAdminGradeChange(this.value)" style="padding:7px 12px;border-radius:10px;border:1.5px solid #196653;font-size:13px;font-weight:700;color:#144e3c;background:#e8f6ee">
-              <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
+              <option value="8" ${adminCurrentGrade==='8'?'selected':''}>⭐ Toán Lớp 8 (Trọng tâm)</option>
+              <option value="9" ${adminCurrentGrade==='9'?'selected':''}>🎯 Toán Lớp 9 (Vào 10)</option>
               <option value="7" ${adminCurrentGrade==='7'?'selected':''}>Toán Lớp 7</option>
-              <option value="8" ${adminCurrentGrade==='8'?'selected':''}>Toán Lớp 8</option>
-              <option value="9" ${adminCurrentGrade==='9'?'selected':''}>Toán Lớp 9</option>
+              <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
             </select>
           </div>
         </div>
@@ -3069,7 +3115,7 @@ async function renderAdminDashboard() {
         <form id="adminQuizForm" onsubmit="handleSaveTeacherQuiz(event)">
           <div class="form-field">
             <label style="font-weight:700;color:#144e3c">Nội dung câu hỏi (hỗ trợ công thức KaTeX $...$):</label>
-            <textarea id="quizQuestionText" required rows="3" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid #c8e6d5;font-family:inherit;font-size:14px" placeholder="Nội dung câu hỏi sẽ tự động trích xuất vào đây, cô có thể chỉnh sửa tự do..."></textarea>
+            <textarea id="quizQuestionText" required rows="3" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid #c8e6d5;font-family:inherit;font-size:14px" placeholder="Nội dung câu hỏi sẽ tự động trích xuất vào đây, thầy có thể chỉnh sửa tự do..."></textarea>
           </div>
 
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
@@ -3155,10 +3201,10 @@ async function renderAdminDashboard() {
           <div style="display:flex;align-items:center;gap:8px">
             <label style="font-size:13px;font-weight:700;color:#144e3c">Khối lớp:</label>
             <select onchange="onAdminGradeChange(this.value)" style="padding:7px 12px;border-radius:10px;border:1.5px solid #196653;font-size:13px;font-weight:700;color:#144e3c;background:#e8f6ee">
-              <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
+              <option value="8" ${adminCurrentGrade==='8'?'selected':''}>⭐ Toán Lớp 8 (Trọng tâm)</option>
+              <option value="9" ${adminCurrentGrade==='9'?'selected':''}>🎯 Toán Lớp 9 (Vào 10)</option>
               <option value="7" ${adminCurrentGrade==='7'?'selected':''}>Toán Lớp 7</option>
-              <option value="8" ${adminCurrentGrade==='8'?'selected':''}>Toán Lớp 8</option>
-              <option value="9" ${adminCurrentGrade==='9'?'selected':''}>Toán Lớp 9</option>
+              <option value="6" ${adminCurrentGrade==='6'?'selected':''}>Toán Lớp 6</option>
             </select>
           </div>
         </div>
@@ -3324,9 +3370,9 @@ Phương châm dạy học của thầy là "HỎI ĐỂ HIỂU – KHÔNG LỜI
               </tr>
             </thead>
             <tbody>
-              ${['6','7','8','9'].map(g => `
+              ${['8','9','7','6'].map(g => `
                 <tr style="border-bottom:1px solid #eef5f1">
-                  <td style="padding:10px 14px;font-weight:700;color:#144e3c">Toán Lớp ${g}</td>
+                  <td style="padding:10px 14px;font-weight:700;color:#144e3c">${g==='8'?'⭐ Toán Lớp 8 (Trọng tâm)':g==='9'?'🎯 Toán Lớp 9 (Vào 10)':('Toán Lớp '+g)}</td>
                   <td style="padding:10px 14px">${getCustomLessons(g).length + 2} bài học</td>
                   <td style="padding:10px 14px">${getCustomQuizzes(g).length + 2} câu hỏi</td>
                   <td style="padding:10px 14px">${getCustomResources(g).length + 2} tài liệu</td>

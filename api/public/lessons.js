@@ -97,6 +97,22 @@ $$\\triangle ABC \\text{ vuông tại } A \\implies BC^2 = AB^2 + AC^2 \\quad (a
 • Hình chữ nhật: Là hình bình hành có một góc vuông (hoặc hai đường chéo bằng nhau).`,
       sample_example: "Cho hình bình hành $ABCD$ có $AB = 7\\text{ cm}, BC = 5\\text{ cm}$. Chu vi là: $2 \\cdot (7 + 5) = 24\\text{ cm}$.",
       self_check_question: "Hình bình hành có hai đường chéo vuông góc với nhau là hình gì?"
+    },
+    {
+      id: 9,
+      grade_id: "8",
+      title: "Phân thức đại số & Rút gọn phân thức",
+      content: "Phân thức đại số là biểu thức có dạng $\\frac{A}{B}$ với $A, B$ là các đa thức và $B \\neq 0$. Điều kiện xác định (ĐKXĐ) là giá trị của biến làm cho mẫu thức khác 0. Muốn rút gọn phân thức, ta phân tích tử và mẫu thành nhân tử rồi chia cả tử và mẫu cho nhân tử chung.",
+      sample_example: "Rút gọn phân thức $\\frac{x^2 - 4}{x - 2}$ (với $x \\neq 2$): $\\frac{(x-2)(x+2)}{x-2} = x + 2$.",
+      self_check_question: "Điều kiện xác định của phân thức $\\frac{2x+1}{x^2 - 9}$ là gì?"
+    },
+    {
+      id: 10,
+      grade_id: "8",
+      title: "Định lý Thalès & Tam giác đồng dạng",
+      content: "Định lý Thalès: Nếu một đường thẳng song song với một cạnh của tam giác và cắt hai cạnh còn lại thì nó định ra trên hai cạnh đó những đoạn thẳng tương ứng tỉ lệ: $MN \\parallel BC \\implies \\frac{AM}{AB} = \\frac{AN}{AC} = \\frac{MN}{BC}$. Hai tam giác đồng dạng nếu các góc tương ứng bằng nhau và các cạnh tương ứng tỉ lệ.",
+      sample_example: "Cho $\\triangle ABC$ có $MN \\parallel BC$ ($M \\in AB, N \\in AC$). Biết $AM = 2, MB = 4, AN = 3$. Tính $NC$: $\\frac{AM}{MB} = \\frac{AN}{NC} \\implies \\frac{2}{4} = \\frac{3}{NC} \\implies NC = 6$.",
+      self_check_question: "Hai tam giác bằng nhau thì có đồng dạng với nhau không? Tỉ số đồng dạng bằng bao nhiêu?"
     }
   ],
   "9": [
@@ -134,6 +150,22 @@ $$\\widehat{ACB} = \\frac{1}{2} \\widehat{AOB} = \\frac{1}{2} \\text{sđ}\\overp
 Hệ quả: Các góc nội tiếp cùng chắn một cung thì bằng nhau; Góc nội tiếp chắn nửa đường tròn là góc vuông ($90^\\circ$).`,
       sample_example: "Cho góc ở tâm $\\widehat{AOB} = 80^\\circ$. Tính góc nội tiếp $\\widehat{ACB}$ cùng chắn cung $AB$: $\\widehat{ACB} = \\frac{80^\\circ}{2} = 40^\\circ$.",
       self_check_question: "Góc nội tiếp chắn nửa đường tròn có số đo bằng bao nhiêu độ?"
+    },
+    {
+      id: 11,
+      grade_id: "9",
+      title: "Phương trình bậc hai & Định lý Vi-ét",
+      content: "Cho phương trình $ax^2 + bx + c = 0$ ($a \\neq 0$). Biệt thức $\\Delta = b^2 - 4ac$. Nếu $\\Delta > 0$, phương trình có 2 nghiệm phân biệt; $\\Delta = 0$, nghiệm kép $x = -b/(2a)$; $\\Delta < 0$, vô nghiệm. Nếu phương trình có nghiệm $x_1, x_2$, theo định lý Vi-ét: $S = x_1 + x_2 = -\\frac{b}{a}$ và $P = x_1 x_2 = \\frac{c}{a}$.",
+      sample_example: "Không giải phương trình, tính tổng và tích nghiệm của $x^2 - 5x + 6 = 0$: $S = x_1 + x_2 = 5$, $P = x_1 x_2 = 6$.",
+      self_check_question: "Công thức biến đổi biểu thức $x_1^2 + x_2^2$ theo $S$ và $P$ là gì?"
+    },
+    {
+      id: 12,
+      grade_id: "9",
+      title: "Hệ thức lượng trong tam giác vuông & Tỉ số lượng giác",
+      content: "Cho $\\triangle ABC$ vuông tại $A$, đường cao $AH$ ứng với cạnh huyền $BC$: 1) $AB^2 = BH \\cdot BC$, $AC^2 = CH \\cdot BC$; 2) $AH^2 = BH \\cdot CH$; 3) $AB \\cdot AC = AH \\cdot BC$; 4) $\\frac{1}{AH^2} = \\frac{1}{AB^2} + \\frac{1}{AC^2}$. Tỉ số lượng giác: $\\sin = \\text{đối}/\\text{huyền}$, $\\cos = \\text{kề}/\\text{huyền}$, $\\tan = \\text{đối}/\\text{kề}$, $\\cot = \\text{kề}/\\text{đối}$.",
+      sample_example: "Cho tam giác vuông $ABC$ có cạnh góc vuông $AB = 3, AC = 4$. Cạnh huyền $BC = 5$. Đường cao $AH = \\frac{AB \\cdot AC}{BC} = \\frac{3 \\cdot 4}{5} = 2.4\\text{ cm}$.",
+      self_check_question: "Hai góc phụ nhau có mối liên hệ gì về tỉ số lượng giác sin và cos?"
     }
   ]
 };
@@ -182,8 +214,8 @@ module.exports = async (req, res) => {
   }
 
   // GET: Học sinh hoặc Giáo viên xem danh sách bài học
-  const grade = req.query?.grade || "6";
-  const lessons = inMemoryLessonsByGrade[grade] || inMemoryLessonsByGrade["6"] || [];
+  const grade = req.query?.grade || "8";
+  const lessons = inMemoryLessonsByGrade[grade] || inMemoryLessonsByGrade["8"] || [];
 
   return res.status(200).json({
     success: true,

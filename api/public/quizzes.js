@@ -74,6 +74,45 @@ Chu vi của hình bình hành $ABCD$ là:`,
       correct_answer: 0,
       hint: "Hình bình hành có các cạnh đối bằng nhau: $AB=CD=7\\text{ cm}, BC=AD=5\\text{ cm}$. Chu vi $P = 2 \\cdot (7 + 5) = 24\\text{ cm}$.",
       explanation: "Chu vi hình bình hành: $P = 2 \\cdot (AB + BC) = 2 \\cdot (7 + 5) = 24\\text{ cm}$."
+    },
+    {
+      id: 13,
+      grade_id: "8",
+      topic: "Phân thức đại số: Điều kiện xác định & Rút gọn",
+      text: "Điều kiện xác định của phân thức đại số $\\frac{2x - 1}{x^2 - 4}$ là:",
+      options: ["$x \\neq 2$", "$x \\neq \\pm 2$", "$x \\neq -2$", "$x > 0$"],
+      correct_answer: 1,
+      hint: "Phân thức $\\frac{A}{B}$ xác định khi mẫu thức khác 0: $B \\neq 0$. Ở đây $x^2 - 4 \\neq 0 \\iff (x-2)(x+2) \\neq 0$.",
+      explanation: "Ta có $x^2 - 4 \\neq 0 \\iff (x-2)(x+2) \\neq 0 \\iff x \\neq 2$ và $x \\neq -2$ (tức là $x \\neq \\pm 2$)."
+    },
+    {
+      id: 14,
+      grade_id: "8",
+      topic: "Định lý Thalès trong tam giác",
+      text: `Cho $\\triangle ABC$ có $MN \\parallel BC$ ($M \\in AB, N \\in AC$) như hình vẽ:<br>
+<svg viewBox="0 0 240 150" width="100%" style="max-width:240px;display:block;margin:8px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:12px;padding:6px;">
+  <polygon points="120,20 40,135 200,135" fill="#f4faf6" stroke="#196653" stroke-width="2.5"/>
+  <line x1="72" y1="89" x2="168" y2="89" stroke="#e11d48" stroke-width="2"/>
+  <circle cx="120" cy="20" r="3" fill="#144e3c"/>
+  <circle cx="40" cy="135" r="3" fill="#144e3c"/>
+  <circle cx="200" cy="135" r="3" fill="#144e3c"/>
+  <circle cx="72" cy="89" r="3" fill="#e11d48"/>
+  <circle cx="168" cy="89" r="3" fill="#e11d48"/>
+  <text x="115" y="14" fill="#144e3c" font-size="12" font-weight="bold">A</text>
+  <text x="24" y="142" fill="#144e3c" font-size="12" font-weight="bold">B</text>
+  <text x="206" y="142" fill="#144e3c" font-size="12" font-weight="bold">C</text>
+  <text x="56" y="88" fill="#e11d48" font-size="11" font-weight="bold">M</text>
+  <text x="174" y="88" fill="#e11d48" font-size="11" font-weight="bold">N</text>
+  <text x="80" y="55" fill="#196653" font-size="10" font-weight="bold">AM = 2</text>
+  <text x="42" y="112" fill="#196653" font-size="10" font-weight="bold">MB = 4</text>
+  <text x="145" y="55" fill="#196653" font-size="10" font-weight="bold">AN = 3</text>
+  <text x="180" y="112" fill="#b45309" font-size="10" font-weight="bold">NC = ?</text>
+</svg>
+Độ dài đoạn thẳng $NC$ là:`,
+      options: ["$5$", "$6$", "$8$", "$4.5$"],
+      correct_answer: 1,
+      hint: "Vì $MN \\parallel BC$, áp dụng định lý Thalès: $\\frac{AM}{MB} = \\frac{AN}{NC}$.",
+      explanation: "Áp dụng định lý Thalès: $\\frac{AM}{MB} = \\frac{AN}{NC} \\implies \\frac{2}{4} = \\frac{3}{NC} \\implies NC = \\frac{4 \\cdot 3}{2} = 6$."
     }
   ],
   "9": [
@@ -104,6 +143,40 @@ Số đo của góc nội tiếp $\\widehat{ACB}$ là:`,
       correct_answer: 0,
       hint: "Góc nội tiếp bằng nửa số đo góc ở tâm cùng chắn một cung: $\\widehat{ACB} = \\frac{1}{2} \\widehat{AOB} = \\frac{80^\\circ}{2} = 40^\\circ$.",
       explanation: "$\\widehat{ACB} = \\frac{1}{2} \\cdot 80^\\circ = 40^\\circ$."
+    },
+    {
+      id: 15,
+      grade_id: "9",
+      topic: "Phương trình bậc hai & Định lý Vi-ét",
+      text: "Cho phương trình bậc hai $x^2 - 7x + 12 = 0$. Giá trị của biểu thức $T = x_1^2 + x_2^2$ bằng:",
+      options: ["$25$", "$37$", "$49$", "$13$"],
+      correct_answer: 0,
+      hint: "Áp dụng định lý Vi-ét: $S = x_1 + x_2 = 7$, $P = x_1 x_2 = 12$. Biến đổi $x_1^2 + x_2^2 = S^2 - 2P$.",
+      explanation: "Theo định lý Vi-ét: $S = 7, P = 12$. Ta có $x_1^2 + x_2^2 = (x_1+x_2)^2 - 2x_1x_2 = 7^2 - 2 \\cdot 12 = 49 - 24 = 25$."
+    },
+    {
+      id: 16,
+      grade_id: "9",
+      topic: "Hệ thức lượng trong tam giác vuông",
+      text: `Cho $\\triangle ABC$ vuông tại $A$, đường cao $AH$ như hình vẽ:<br>
+<svg viewBox="0 0 240 140" width="100%" style="max-width:240px;display:block;margin:8px auto;background:#ffffff;border:1px solid #d4ebdd;border-radius:12px;padding:6px;">
+  <polygon points="50,20 50,115 190,115" fill="#f4faf6" stroke="#196653" stroke-width="2.5"/>
+  <polyline points="50,103 62,103 62,115" fill="none" stroke="#e11d48" stroke-width="2"/>
+  <line x1="50" y1="20" x2="108" y2="115" stroke="#196653" stroke-width="2" stroke-dasharray="3,3"/>
+  <circle cx="108" cy="115" r="3" fill="#144e3c"/>
+  <text x="35" y="125" fill="#144e3c" font-size="12" font-weight="bold">A</text>
+  <text x="35" y="18" fill="#144e3c" font-size="12" font-weight="bold">B</text>
+  <text x="195" y="125" fill="#144e3c" font-size="12" font-weight="bold">C</text>
+  <text x="110" y="132" fill="#144e3c" font-size="11" font-weight="bold">H</text>
+  <text x="68" y="128" fill="#196653" font-size="10" font-weight="bold">BH=4</text>
+  <text x="145" y="128" fill="#196653" font-size="10" font-weight="bold">HC=9</text>
+  <text x="82" y="65" fill="#e11d48" font-size="11" font-weight="bold">AH = ?</text>
+</svg>
+Độ dài đường cao $AH$ là:`,
+      options: ["$6\\text{ cm}$", "$5\\text{ cm}$", "$6.5\\text{ cm}$", "$36\\text{ cm}$"],
+      correct_answer: 0,
+      hint: "Áp dụng hệ thức lượng trong tam giác vuông: Bình phương đường cao bằng tích hai hình chiếu: $AH^2 = BH \\cdot HC$.",
+      explanation: "$AH^2 = BH \\cdot HC = 4 \\cdot 9 = 36 \\implies AH = \\sqrt{36} = 6\\text{ cm}$."
     }
   ]
 };
@@ -154,10 +227,10 @@ module.exports = async (req, res) => {
   }
 
   // GET: Học sinh hoặc Giáo viên lấy danh sách bài tập theo khối lớp và theo bài học
-  const grade = req.query?.grade || "6";
+  const grade = req.query?.grade || "8";
   const selectedTopic = req.query?.topic || "";
 
-  let list = inMemoryQuizzesByGrade[grade] || inMemoryQuizzesByGrade["6"] || [];
+  let list = inMemoryQuizzesByGrade[grade] || inMemoryQuizzesByGrade["8"] || [];
 
   // Lấy danh sách tất cả các bài học (chủ đề) duy nhất của khối lớp này
   const topicsSet = new Set();

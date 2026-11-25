@@ -10,10 +10,10 @@ module.exports = async (req, res) => {
       motto: "HỎI ĐỂ HIỂU – KHÔNG LỜI GIẢI CHI TIẾT"
     },
     grades: [
-      { id: "6", name: "Toán Lớp 6" },
-      { id: "7", name: "Toán Lớp 7" },
-      { id: "8", name: "Toán Lớp 8" },
-      { id: "9", name: "Toán Lớp 9" }
+      { id: "8", name: "⭐ Toán Lớp 8 (Trọng tâm)", desc: "7 Hằng đẳng thức, Phân thức, PT bậc nhất, Tứ giác & Thalès" },
+      { id: "9", name: "🎯 Toán Lớp 9 (Ôn thi vào 10)", desc: "Căn thức, Parabol & Vi-ét, Hệ thức lượng & Tứ giác nội tiếp" },
+      { id: "7", name: "Toán Lớp 7", desc: "Số hữu tỉ, Tam giác bằng nhau, Định lý Pythagore" },
+      { id: "6", name: "Toán Lớp 6", desc: "Số tự nhiên, Số nguyên, Phân số, Hình trực quan" }
     ],
     metrics: {
       totalVisits: 1250,

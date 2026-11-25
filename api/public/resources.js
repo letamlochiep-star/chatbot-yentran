@@ -71,8 +71,8 @@ module.exports = async (req, res) => {
   }
 
   // GET: Học sinh hoặc Giáo viên xem tài liệu
-  const grade = req.query?.grade || "6";
-  const resources = inMemoryResourcesByGrade[grade] || inMemoryResourcesByGrade["6"] || [];
+  const grade = req.query?.grade || "8";
+  const resources = inMemoryResourcesByGrade[grade] || inMemoryResourcesByGrade["8"] || [];
 
   return res.status(200).json({
     success: true,
