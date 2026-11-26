@@ -3734,7 +3734,7 @@ function handleResourceFileSelect(event) {
     const textReader = new FileReader();
     textReader.onload = function(e) {
       if (e.target?.result) {
-        attachedResourceHtmlText = e.target.result;
+        attachedResourceHtmlText = ensureKaTeXInHtml(e.target.result);
       }
     };
     textReader.readAsText(file);
@@ -4097,6 +4097,44 @@ function handleDeleteTeacherQuiz(id) {
 // ==========================================
 // TRÌNH XEM VÀ TƯƠNG TÁC TÀI LIỆU HTML
 // ==========================================
+function ensureKaTeXInHtml(htmlContent) {
+  if (!htmlContent) return htmlContent;
+  if (htmlContent.includes('katex.min.css') || htmlContent.includes('katex.min.js')) {
+    return htmlContent;
+  }
+
+  const katexHeadInjection = `
+  <!-- Tự động bảo toàn công thức toán học KaTeX chuẩn đẹp từ Thầy Lê Tâm -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.renderMathInElement) {
+        window.renderMathInElement(document.body, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false }
+          ],
+          ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "svg"],
+          throwOnError: false
+        });
+      }
+    });
+  </script>
+`;
+
+  if (htmlContent.includes('</head>')) {
+    return htmlContent.replace('</head>', katexHeadInjection + '\n</head>');
+  } else if (htmlContent.includes('<head>')) {
+    return htmlContent.replace('<head>', '<head>\n' + katexHeadInjection);
+  } else if (htmlContent.includes('<body>')) {
+    return htmlContent.replace('<body>', '<head>' + katexHeadInjection + '</head>\n<body>');
+  } else {
+    return '<!DOCTYPE html><html><head>' + katexHeadInjection + '</head><body>' + htmlContent + '</body></html>';
+  }
+}
+
 function viewInteractiveResource(id) {
   const r = globalResourcesCache.get(String(id));
   if (!r) {
@@ -4114,10 +4152,29 @@ function viewInteractiveResource(id) {
   titleEl.textContent = r.title || 'Mô phỏng tương tác';
   subEl.textContent = `Chủ đề: ${r.topic || 'Toán học tương tác'} · Môn Toán THCS Thầy Lê Tâm`;
 
-  // Kiểm tra nguồn tài liệu HTML
+  // Tự động kiểm tra và kích hoạt render công thức KaTeX khi iframe tải xong
+  iframe.onload = function() {
+    try {
+      const doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+      if (!doc) return;
+      const win = doc.defaultView || iframe.contentWindow;
+      if (win && win.renderMathInElement) {
+        win.renderMathInElement(doc.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'svg'],
+          throwOnError: false
+        });
+      }
+    } catch (e) {}
+  };
+
+  // Kiểm tra nguồn tài liệu HTML (đảm bảo KaTeX luôn có mặt)
   if (r.html_content) {
     iframe.removeAttribute('src');
-    iframe.srcdoc = r.html_content;
+    iframe.srcdoc = ensureKaTeXInHtml(r.html_content);
   } else if (r.file_url && r.file_url !== '#') {
     iframe.removeAttribute('srcdoc');
     iframe.src = r.file_url;
@@ -4151,7 +4208,8 @@ function openCurrentResourceInNewTab() {
   if (!currentModalResource) return;
   const r = currentModalResource;
   if (r.html_content) {
-    const blob = new Blob([r.html_content], { type: 'text/html;charset=utf-8' });
+    const finalHtml = ensureKaTeXInHtml(r.html_content);
+    const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
   } else if (r.file_url && r.file_url !== '#') {
@@ -4171,7 +4229,8 @@ function downloadResourceFile(id) {
   if (!r) return;
 
   if (r.html_content) {
-    const blob = new Blob([r.html_content], { type: 'text/html;charset=utf-8' });
+    const finalHtml = ensureKaTeXInHtml(r.html_content);
+    const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = (r.title || 'bai-hoc-tuong-tac') + '.html';

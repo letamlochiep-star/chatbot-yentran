@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mô phỏng tương tác: Góc nội tiếp & Góc ở tâm - Thầy Lê Tâm Toán THCS</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <!-- KaTeX CDN cho công thức toán học -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <style>
     :root { --primary: #196653; --border: #c8e6d5; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -103,7 +107,17 @@ function updateCircle() {
     <text x="${ox}" y="${oy + 32}" text-anchor="middle" font-size="13" font-weight="bold" fill="#2563eb">Góc ở tâm = ${deg}°</text>
   `;
 }
-window.addEventListener('DOMContentLoaded', updateCircle);
+window.addEventListener('DOMContentLoaded', () => {
+  updateCircle();
+  setTimeout(() => {
+    if (window.renderMathInElement) {
+      window.renderMathInElement(document.body, {
+        delimiters: [{ left: '$', right: '$', display: false }],
+        throwOnError: false
+      });
+    }
+  }, 100);
+});
 </script>
 </body>
 </html>
