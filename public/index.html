@@ -402,9 +402,9 @@ button { cursor: pointer; border: none; outline: none; }
 }
 .standing-photo-wrap img.co-yen-img {
   height: 240px;
-  max-width: 180px;
+  max-width: 195px;
   object-fit: cover;
-  object-position: top center;
+  object-position: center 20%;
   border-radius: 18px;
   border: 4px solid #ffffff;
   box-shadow: 0 10px 25px rgba(20, 78, 60, 0.16);
@@ -1309,7 +1309,7 @@ button { cursor: pointer; border: none; outline: none; }
           <path d="M16 80 C 4 78, 3 70, 15 74" fill="#88ccaec7"/>
         </svg>
 
-        <img src="avatar_co_yen.jpg" alt="Ảnh Thầy Lê Tâm">
+        <img src="avatar_le_tam.jpg?v=2" alt="Ảnh Thầy Lê Tâm">
 
         <svg class="wreath-right" viewBox="0 0 40 100" fill="none">
           <path d="M30 95 C 10 70, 5 30, 25 5" stroke="#9ed7be" stroke-width="2.5" fill="none"/>
@@ -1940,7 +1940,7 @@ function generateMessagesHtml() {
   if (!chatHistory.length) {
     return `
       <div class="chat-msg-row bot">
-        <img src="avatar_co_yen.jpg" alt="Thầy Lê Tâm" class="chat-msg-avatar">
+        <img src="avatar_le_tam.jpg?v=2" alt="Thầy Lê Tâm" class="chat-msg-avatar">
         <div class="chat-msg-content">
           Chào em! 🌷 Thầy là Lê Tâm AI – trợ lý học Toán của Thầy Lê Tâm.<br>
           Phương châm của thầy là <b>“Hỏi để hiểu – Không lời giải chi tiết”</b>. Thầy sẽ không giải hộ từ đầu đến cuối mà đặt câu hỏi gợi mở từng bước nhỏ để em tự suy nghĩ và tự tìm ra lời giải.<br><br>
@@ -1964,7 +1964,7 @@ function generateMessagesHtml() {
     } else {
       return `
         <div class="chat-msg-row bot">
-          <img src="avatar_co_yen.jpg" alt="Thầy Lê Tâm" class="chat-msg-avatar">
+          <img src="avatar_le_tam.jpg?v=2" alt="Thầy Lê Tâm" class="chat-msg-avatar">
           <div class="chat-msg-content">${formatMessageContent(m.text)}</div>
         </div>
       `;
@@ -1998,13 +1998,13 @@ async function renderView() {
           <span class="hero-doodle doodle-bot-right">Toán Lớp 8 & 9 (Vào 10) 🎯</span>
 
           <div class="standing-photo-wrap">
-            <img src="co_yen_standing.jpg" alt="Thầy Lê Tâm" class="co-yen-img">
+            <img src="thay_tam_desk.jpg?v=2" alt="Thầy Lê Tâm" class="co-yen-img">
           </div>
         </div>
       </section>
 
       <div class="teacher-bubble-row">
-        <img src="avatar_co_yen.jpg" alt="Thầy Lê Tâm" class="bubble-avatar">
+        <img src="avatar_le_tam.jpg?v=2" alt="Thầy Lê Tâm" class="bubble-avatar">
         <div class="speech-bubble">
           Em muốn học hay giải bài Toán nào hôm nay? Hãy nhập câu hỏi, hoặc chụp/tải ảnh bài tập để thầy cùng em tư duy từng bước nhé! ✨
         </div>
@@ -2137,7 +2137,7 @@ async function renderView() {
         <div class="chat-view-header">
           <div class="chat-view-header-left">
             <div class="chat-header-avatar-wrap">
-              <img src="avatar_co_yen.jpg" alt="Thầy Lê Tâm" class="chat-header-avatar">
+              <img src="avatar_le_tam.jpg?v=2" alt="Thầy Lê Tâm" class="chat-header-avatar">
               <span class="chat-status-dot" title="Sẵn sàng hướng dẫn"></span>
             </div>
             <div class="chat-header-info">
@@ -2741,7 +2741,7 @@ async function executeChatRequest(text, streamId, sendBtn, inputElement) {
   typing.className = 'chat-msg-row bot';
   typing.id = 'typingRow';
   typing.innerHTML = `
-    <img src="avatar_co_yen.jpg" alt="Thầy Lê Tâm" class="chat-msg-avatar">
+    <img src="avatar_le_tam.jpg?v=2" alt="Thầy Lê Tâm" class="chat-msg-avatar">
     <div class="chat-msg-content">
       <i>Thầy đang đọc bài và suy nghĩ câu hỏi gợi ý cho em nhé... 🌱</i>
     </div>
@@ -2772,7 +2772,7 @@ async function executeChatRequest(text, streamId, sendBtn, inputElement) {
       if (stream) {
         stream.innerHTML += `
           <div class="chat-msg-row bot">
-            <img src="avatar_co_yen.jpg" alt="Thầy Lê Tâm" class="chat-msg-avatar">
+            <img src="avatar_le_tam.jpg?v=2" alt="Thầy Lê Tâm" class="chat-msg-avatar">
             <div class="chat-msg-content">${formatMessageContent(d.reply)}</div>
           </div>
         `;
@@ -2781,7 +2781,7 @@ async function executeChatRequest(text, streamId, sendBtn, inputElement) {
       if (stream) {
         stream.innerHTML += `
           <div class="chat-msg-row bot">
-            <img src="avatar_co_yen.jpg" alt="Thầy Lê Tâm" class="chat-msg-avatar">
+            <img src="avatar_le_tam.jpg?v=2" alt="Thầy Lê Tâm" class="chat-msg-avatar">
             <div class="chat-msg-content">${esc(d.message || d.error || 'Thầy đang bận một chút, em gửi lại sau ít phút nhé.')}</div>
           </div>
         `;
@@ -2793,7 +2793,7 @@ async function executeChatRequest(text, streamId, sendBtn, inputElement) {
     if (stream) {
       stream.innerHTML += `
         <div class="chat-msg-row bot">
-          <img src="avatar_co_yen.jpg" alt="Thầy Lê Tâm" class="chat-msg-avatar">
+          <img src="avatar_le_tam.jpg?v=2" alt="Thầy Lê Tâm" class="chat-msg-avatar">
           <div class="chat-msg-content">Có chút gián đoạn kết nối, em hãy thử lại nhé! 🌿</div>
         </div>
       `;
